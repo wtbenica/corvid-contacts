@@ -1,0 +1,44 @@
+# Build and artifacts
+bin
+gen
+obj
+**/build/
+**/.artifacts/
+gradle-app.setting
+
+# Gradle Wrapper
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradlew
+!gradlew.bat
+
+# IDE - Android Studio / IntelliJ IDEA
+.idea/**/*
+!.idea/runConfigurations/
+!.idea/codeStyles/
+!.idea/vcs.xml
+
+# Security and secrets
+**/*local.properties
+**/secrets.xml
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.jceks
+*.pkcs12
+!app/debug.keystore
+app/release/
+
+# OS and logs
+*.log
+.DS_Store
+Thumbs.db
+
+# Tools and others
+.kotlin/
+lint/
+Planning/
+Screenshot*
+screens/
+*.vcf

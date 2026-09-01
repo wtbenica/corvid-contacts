@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><!-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0 -->
+<paths>
+    <cache-path
+        name="shared_contacts"
+        path="." />
+</paths>

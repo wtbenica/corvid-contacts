@@ -1,0 +1,503 @@
+<!-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0 -->
+
+<resources>
+    <string name="app_name">Corvid Contacts</string>
+
+    <!-- Action Patterns -->
+    <string name="action_add_item">Add %1$s</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_discard">Discard</string>
+    <string name="action_remove">Remove</string>
+    <string name="common_back">Back</string>
+
+    <!-- Brands -->
+    <string name="brand_google_places" translatable="false">Google Places</string>
+    <string name="brand_photon" translatable="false">Photon (OpenStreetMap)</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Corvid Contacts</string>
+    <string name="login_subtitle">Sign in to your Nextcloud or CardDAV server</string>
+    <string name="login_server_url">Server URL</string>
+    <string name="login_username">Username</string>
+    <string name="login_app_password">App Password</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+    <string name="common_auto_load_remote_photos_title">Fetch &amp; Embed Remote Photos</string>
+    <string name="common_auto_load_remote_photos_description">Fetch photos from external links and save them to your contacts. This avoids repeated calls to those servers — which might track you — and keeps photos available offline.</string>
+    <string name="login_sync_disclosure">Corvid keeps your address book consistent by automatically standardizing phone number formats. By signing in, some contact details will be reformatted on your server, though no information will be lost.</string>
+    <string name="login_button">Login</string>
+    <string name="login_remove">Remove</string>
+    <string name="login_error_security">Security error: This server requires a secure connection (HTTPS) or the app\'s network policy blocked this cleartext (HTTP) request.</string>
+    <string name="login_error_connection">Connection error: Could not connect to the server. Please check your URL and internet connection.</string>
+    <string name="login_error_generic">Authentication failed (Status: %1$d)</string>
+    <string name="login_error_unknown">Unknown error</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_title">Corvid Contacts</string>
+    <string name="welcome_subtitle">Your contacts, private and synced.</string>
+    <string name="welcome_hero_own_data_title">Private by Design</string>
+    <string name="welcome_hero_own_data_desc">Your contacts belong to you. Keep them local on your device, or sync with your own private server. No tracking, ever.</string>
+    <string name="welcome_hero_improvements_title">Clean &amp; Consistent</string>
+    <string name="welcome_hero_improvements_desc">Corvid handles the details by automatically formatting phone numbers and optimizing photos to keep your address book looking its best.</string>
+    <string name="welcome_hero_offline_title">Built for Offline</string>
+    <string name="welcome_hero_offline_desc">Browse and edit your contacts anytime, anywhere. Your data is stored locally first, and syncing is always optional.</string>
+    <string name="welcome_action_sign_in">Sign In to Server</string>
+    <string name="welcome_legal_prefix">By continuing, you agree to our</string>
+    <string name="welcome_legal_and">and</string>
+    <string name="common_terms_of_use">Terms of Use</string>
+    <string name="welcome_action_use_locally">Use Locally (Offline)</string>
+
+    <!-- Contact List Screen -->
+    <string name="list_title_contacts">Contacts</string>
+    <string name="list_title_archived">Archived</string>
+    <plurals name="list_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <plurals name="list_title_contacts_selected">
+        <item quantity="one">Contact Selected</item>
+        <item quantity="other">Contacts Selected</item>
+    </plurals>
+    <string name="list_search_placeholder">Search name, group, or company…</string>
+    <string name="list_empty_title">No contacts found</string>
+    <string name="list_empty_description">Your contacts will appear here once synced.</string>
+    <string name="list_empty_local_description">Your contacts will appear here once you add them.</string>
+    <string name="list_empty_single_book_description">%s doesn\'t seem to have any contacts.</string>
+    <string name="list_no_results_title">No results found</string>
+    <string name="list_no_results_description">Try adjusting your search or filters.</string>
+    <string name="list_group_all">All</string>
+    <string name="list_group_favorites">Favorites</string>
+    <string name="list_menu_show_archived">Show Archived</string>
+    <string name="list_menu_show_active">Show Active</string>
+    <string name="list_menu_sync">Sync</string>
+    <string name="list_menu_set_up_sync">Set Up Sync…</string>
+    <string name="list_menu_send_feedback">Send Feedback</string>
+    <string name="feedback_email_subject">Corvid Contacts Feedback</string>
+    <string name="list_menu_show_menu">Show Menu</string>
+    <string name="list_menu_set_self">Set up My Card</string>
+    <string name="list_menu_logout">Logout</string>
+    <string name="logout_confirm_title">Logout?</string>
+    <string name="logout_confirm_message">This will remove your account and all local copies of your contacts from this device. Your data on the server won\'t be touched.</string>
+
+    <string name="list_action_clear_selection">Clear selection</string>
+    <string name="list_action_select_all">Select all</string>
+    <string name="list_action_deselect_all">Deselect all</string>
+    <string name="list_action_add_to_group">Add to group</string>
+    <string name="list_action_remove_from_group">Remove from \"%1$s\"</string>
+    <string name="list_action_deselect_contact">Remove %1$s from selection</string>
+    <string name="list_action_archive_selected">Archive selected</string>
+    <string name="list_action_unarchive_selected">Unarchive selected</string>
+    <string name="list_action_move_selected">Move to address book</string>
+    <string name="list_action_share_selected">Share selected</string>
+    <string name="list_action_delete_selected">Delete selected</string>
+    <string name="list_error_move_failed">Failed to move contact to new address book</string>
+    <string name="list_error_bulk_partial_failure">Some contacts couldn\'t be updated. Check your connection and try again.</string>
+    <string name="list_error_no_name">No Name</string>
+    <string name="list_repair_notification">Repaired %1$s on server.</string>
+    <string name="list_group_dialog_title">Add to Group</string>
+    <string name="list_group_dialog_description">Select an existing group or create a new one.</string>
+    <string name="list_group_name_label">Group Name</string>
+    <string name="list_group_action_add">Add</string>
+    <string name="list_group_action_cancel">Cancel</string>
+
+    <!-- Snackbars -->
+    <plurals name="snackbar_contacts_archived">
+        <item quantity="one">Contact archived</item>
+        <item quantity="other">%1$d contacts archived</item>
+    </plurals>
+    <plurals name="snackbar_contacts_unarchived">
+        <item quantity="one">Contact restored</item>
+        <item quantity="other">%1$d contacts restored</item>
+    </plurals>
+    <plurals name="snackbar_contacts_deleted">
+        <item quantity="one">Contact deleted</item>
+        <item quantity="other">%1$d contacts deleted</item>
+    </plurals>
+    <plurals name="list_delete_confirm_title">
+        <item quantity="one">Delete contact?</item>
+        <item quantity="other">Delete %1$d contacts?</item>
+    </plurals>
+    <plurals name="list_delete_confirm_message">
+        <item quantity="one">This will permanently delete this contact. This can\'t be undone.</item>
+        <item quantity="other">This will permanently delete %1$d contacts. This can\'t be undone.</item>
+    </plurals>
+    <plurals name="snackbar_contacts_moved">
+        <item quantity="one">Contact moved</item>
+        <item quantity="other">%1$d contacts moved</item>
+    </plurals>
+    <plurals name="snackbar_contacts_added_to_group">
+        <item quantity="one">Contact added to %2$s</item>
+        <item quantity="other">%1$d contacts added to %2$s</item>
+    </plurals>
+    <plurals name="snackbar_contacts_removed_from_group">
+        <item quantity="one">Contact removed from %2$s</item>
+        <item quantity="other">%1$d contacts removed from %2$s</item>
+    </plurals>
+    <string name="snackbar_contact_saved">Contact saved</string>
+    <string name="snackbar_contact_moved">Contact moved</string>
+    <string name="snackbar_contact_merged">Contact merged</string>
+
+    <!-- Contact Detail Screen -->
+    <string name="detail_title">Details</string>
+    <string name="detail_no_contact_title">No contact selected</string>
+    <string name="detail_no_contact_description">Select a contact from the list to view their details.</string>
+    <string name="detail_menu_edit">Edit</string>
+    <string name="detail_menu_favorite">Favorite</string>
+    <string name="detail_menu_archive">Archive</string>
+    <string name="detail_menu_unarchive">Unarchive</string>
+    <string name="detail_menu_merge">Merge Contact…</string>
+    <string name="detail_menu_delete">Delete</string>
+    <string name="detail_delete_confirm_title">Delete contact?</string>
+    <string name="detail_delete_confirm_message">This will permanently delete %1$s. This can\'t be undone.</string>
+    <string name="detail_error_action_failed">Something went wrong. Check your connection and try again.</string>
+
+    <string name="detail_action_more">More options</string>
+    <string name="detail_photo_not_downloaded">Photo not downloaded</string>
+    <string name="detail_action_download_photo">Download</string>
+    <string name="detail_photo_url_label">Photo Link</string>
+    <string name="detail_action_sms">SMS</string>
+    <string name="detail_action_call">Call</string>
+    <string name="detail_action_email">Send Email</string>
+    <string name="detail_action_directions">Directions</string>
+    <string name="detail_action_open_link">Open Link</string>
+    <string name="detail_action_view_contact">View Contact</string>
+
+    <string name="detail_share_selection_title_qr">Share via QR</string>
+    <string name="detail_share_selection_title_vcard">Share Contact</string>
+    <string name="detail_share_selection_subtitle">Select what to include in the vCard</string>
+    <string name="detail_share_selection_phone">Phone (%1$s)</string>
+    <string name="detail_share_selection_email">Email (%1$s)</string>
+    <string name="detail_share_selection_address">Address (%1$s)</string>
+    <string name="detail_share_selection_company">Company</string>
+    <string name="detail_share_selection_job_title">Job Title</string>
+    <string name="detail_share_selection_birthday">Birthday</string>
+    <string name="detail_share_selection_notes">Notes</string>
+    <string name="detail_share_selection_website">Website</string>
+    <string name="detail_share_selection_social">Social (%1$s)</string>
+    <string name="detail_job_at">%1$s at %2$s</string>
+
+    <!-- Contact Edit Screen -->
+    <string name="edit_title_new">New Contact</string>
+    <string name="edit_title_edit">Edit Contact</string>
+
+    <string name="edit_error_required_to_save">A name is required to save.</string>
+    <string name="edit_error_save_failed">Failed to save contact. Check your connection and try again.</string>
+    <string name="edit_section_identity">Identity</string>
+    <string name="edit_section_name_photo">Name and Photo</string>
+    <string name="edit_section_additional_fields">Additional Fields</string>
+    <string name="edit_section_work">Work</string>
+    <string name="edit_section_contact">Contact Methods</string>
+    <string name="edit_section_networks">Networks</string>
+    <string name="edit_section_relationships">Relationships</string>
+    <string name="edit_section_misc">Misc</string>
+
+    <string name="edit_action_manage_address_books">Manage address books</string>
+    <string name="edit_action_manage_groups">Manage groups</string>
+
+
+    <string name="edit_action_show_more_fields">Show more fields</string>
+    <string name="edit_action_show_fewer_fields">Show fewer fields</string>
+    <string name="edit_delete_field_confirm_title">Remove this field?</string>
+    <string name="edit_delete_field_confirm_message">This can\'t be undone.</string>
+    <string name="edit_action_more_countries">More…</string>
+    <string name="edit_action_clear_birthday">Clear Birthday</string>
+    <string name="edit_avatar_settings">Contact Photo</string>
+    <string name="edit_avatar_edit_dialog_title">Edit Photo &amp; Color</string>
+    <string name="edit_avatar_theme_colors">Contact Color</string>
+    <string name="edit_action_pick_photo">Select</string>
+    <string name="edit_action_remove_photo">Remove</string>
+    <string name="edit_action_set_color">Set Color</string>
+    <string name="edit_action_use_book_color">Use Book Color</string>
+    <string name="edit_label_target_address_book">Target Address Book</string>
+    <string name="edit_read_only_warning">Read-only address book. Changes cannot be saved.</string>
+
+    <!-- VCard Contact Types (for phone, email, address, etc.) -->
+
+    <string name="vcard_type_cell">Cell</string>
+    <string name="vcard_type_mobile">Mobile</string>
+    <string name="vcard_type_fax">Fax</string>
+
+    <string name="vcard_type_pref">Preferred</string>
+    <string name="vcard_type_school">School</string>
+    <string name="vcard_type_parent">Parent</string>
+    <string name="vcard_type_grandparent">Grandparent</string>
+    <string name="vcard_type_child">Child</string>
+    <string name="vcard_type_student">Student</string>
+    <string name="vcard_type_spouse">Spouse</string>
+    <string name="vcard_type_internet">Internet</string>
+    <string name="vcard_type_teacher">Teacher</string>
+    <string name="vcard_type_assistant">Assistant</string>
+    <string name="vcard_type_manager">Manager</string>
+    <string name="vcard_type_twitter" translatable="false">Twitter</string>
+    <string name="vcard_type_linkedin" translatable="false">LinkedIn</string>
+    <string name="vcard_type_facebook" translatable="false">Facebook</string>
+    <string name="vcard_type_instagram" translatable="false">Instagram</string>
+    <string name="vcard_type_mastodon" translatable="false">Mastodon</string>
+    <string name="vcard_type_signal" translatable="false">Signal</string>
+    <string name="vcard_type_whatsapp" translatable="false">WhatsApp</string>
+    <string name="vcard_type_telegram" translatable="false">Telegram</string>
+
+    <!-- Settings Screen -->
+
+    <string name="settings_section_account">Account</string>
+    <string name="settings_section_data">Data Management</string>
+    <string name="settings_section_address_books">Address Books</string>
+    <string name="settings_address_book_change_appearance">Change Icon/Color</string>
+    <string name="settings_address_book_reorder">Reorder</string>
+    <string name="settings_group_order_title">Group Order</string>
+    <string name="settings_group_rename">Rename Group</string>
+    <string name="settings_address_book_appearance_dialog_title">Choose Icon &amp; Color</string>
+    <string name="settings_address_book_hue_slider_label">Address Book Hue</string>
+    <string name="settings_group_rename_dialog_title">Rename Group</string>
+    <string name="settings_group_name_label">Group Name</string>
+    <string name="settings_group_action_rename">Rename</string>
+    <string name="settings_export_title">Export Contacts</string>
+    <string name="settings_export_description">Save all contacts to a .vcf file</string>
+    <string name="settings_import_title">Import Contacts</string>
+    <string name="settings_import_description">Add contacts from a .vcf file</string>
+    <string name="settings_import_pick_book_title">Choose an address book</string>
+    <string name="settings_import_create_new_book">Create new address book…</string>
+    <string name="settings_import_result_title">Import Complete</string>
+    <string name="settings_import_remote_photos_title">Download contact photos?</string>
+    <string name="settings_import_remote_photos_description">Some contacts in this file have photos hosted online instead of included in the file. Downloading them now means connecting to those servers.</string>
+    <string name="settings_import_remote_photos_download">Download</string>
+    <string name="settings_import_remote_photos_skip">Skip</string>
+    <plurals name="settings_import_result_full">
+        <item quantity="one">Imported the contact.</item>
+        <item quantity="other">Imported all %1$d contacts.</item>
+    </plurals>
+    <plurals name="settings_import_result_partial">
+        <item quantity="one">Imported %1$d of %2$d contact. %3$d couldn\'t be read.</item>
+        <item quantity="other">Imported %1$d of %2$d contacts. %3$d couldn\'t be read.</item>
+    </plurals>
+    <string name="settings_reset_onboarding_title">Redo Initial Setup</string>
+    <string name="settings_reset_onboarding_description">Show the first-run setup screens again</string>
+    <string name="address_lookup_photon_source_label">Learn more</string>
+    <string name="settings_address_book_unnamed">Unnamed Address Book</string>
+    <string name="local_address_book_name">My Contacts</string>
+    <string name="settings_address_book_add">Add Address Book</string>
+    <string name="settings_address_book_more_options">More Options</string>
+    <string name="settings_address_book_rename">Rename</string>
+    <string name="settings_address_book_delete">Delete</string>
+    <string name="settings_address_book_show">Show</string>
+    <string name="settings_address_book_hide">Hide</string>
+    <string name="settings_address_book_hidden_label">Hidden</string>
+    <string name="settings_address_book_create">Create</string>
+    <string name="settings_address_book_create_dialog_title">New Address Book</string>
+    <string name="settings_address_book_rename_dialog_title">Rename Address Book</string>
+    <string name="settings_address_book_delete_dialog_title">Delete Address Book?</string>
+    <string name="settings_address_book_delete_dialog_description">This deletes \"%1$s\" and every contact in it from the server. This can\'t be undone.</string>
+    <string name="settings_address_book_delete_dialog_description_local">This deletes \"%1$s\" and every contact in it from this device. This can\'t be undone.</string>
+    <string name="settings_address_book_delete_dialog_empty_description">This deletes the empty address book \"%1$s\" from the server. This can\'t be undone.</string>
+    <string name="settings_address_book_delete_dialog_empty_description_local">This deletes the empty address book \"%1$s\" from this device. This can\'t be undone.</string>
+    <string name="settings_address_book_name_label">Address Book Name</string>
+    <string name="settings_address_book_location_title">Where should this book live?</string>
+    <string name="settings_address_book_location_synced">Synced (this server)</string>
+    <string name="settings_address_book_location_local">Local (this device only)</string>
+    <string name="settings_address_book_local_badge">Local</string>
+    <string name="settings_address_book_generic_error">Something went wrong. Please try again.</string>
+    <string name="settings_address_book_creating">Creating your new address book…</string>
+    <string name="settings_address_book_renaming">Renaming address book…</string>
+    <string name="settings_address_book_deleting">Deleting address book…</string>
+    <string name="settings_address_book_upload">Upload to Server</string>
+    <string name="settings_address_book_upload_dialog_title">Upload to Server</string>
+    <string name="settings_address_book_upload_dialog_description">This uploads the address book and its contacts to your account. It stays on this device until the upload finishes.</string>
+    <plurals name="settings_address_book_upload_result_full">
+        <item quantity="one">Uploaded the contact to the server.</item>
+        <item quantity="other">Uploaded all %1$d contacts to the server.</item>
+    </plurals>
+    <plurals name="settings_address_book_upload_result_partial">
+        <item quantity="one">Uploaded %1$d of %2$d contact. %3$d couldn\'t be uploaded — try again to retry them (they may end up in a separate address book).</item>
+        <item quantity="other">Uploaded %1$d of %2$d contacts. %3$d couldn\'t be uploaded — try again to retry them (they may end up in a separate address book).</item>
+    </plurals>
+
+
+    <!-- About Screen -->
+    <string name="about_title">About</string>
+    <string name="about_description">A privacy-focused standalone contacts app for Nextcloud and CardDAV.</string>
+    <string name="about_license_text">PolyForm Noncommercial License 1.0.0\nCopyright © 2026 Wesley Benica\nSource available; noncommercial use only.</string>
+    <string name="about_section_license">License</string>
+    <string name="about_section_libraries">Open Source Libraries</string>
+    <string name="about_action_show_licenses">Show open source licenses</string>
+    <string name="about_section_privacy_policy">Privacy Policy</string>
+    <string name="about_privacy_policy_text">How Corvid Contacts handles your data.</string>
+    <string name="about_section_eula">Terms of Use (EULA)</string>
+    <string name="about_eula_text">The End User License Agreement for Corvid Contacts.</string>
+    <string name="about_action_open_in_browser">Open in browser</string>
+
+    <!-- Birthday Notifications -->
+    <string name="birthday_notification_channel_name">Birthdays</string>
+    <string name="birthday_notification_channel_description">Reminders for contact birthdays</string>
+    <string name="birthday_notification_title">Contact Birthday</string>
+    <string name="birthday_notification_today">Has a birthday today!</string>
+    <string name="birthday_notification_tomorrow">Has a birthday tomorrow!</string>
+
+    <!-- Common UI -->
+    <string name="common_try_again">Try Again</string>
+    <string name="common_done">Done</string>
+    <string name="common_unknown">Unknown</string>
+    <string name="common_address_book">Address Book</string>
+    <string name="common_all_books">All Books</string>
+    <string name="common_first_name">First Name</string>
+    <string name="common_last_name">Last Name</string>
+    <string name="common_middle_name">Middle Name</string>
+    <string name="common_prefix">Prefix (Dr., Mr., etc.)</string>
+    <string name="common_suffix">Suffix (Jr., PhD, etc.)</string>
+    <string name="common_display_name">Display Name</string>
+    <string name="common_email">Email</string>
+    <string name="common_phone">Phone</string>
+    <string name="common_address">Address</string>
+    <string name="common_street">Street</string>
+    <string name="common_state_province">State / Province</string>
+    <string name="common_postal_code">Postal Code</string>
+    <string name="common_birthday">Birthday</string>
+    <string name="common_company">Company</string>
+    <string name="common_job_title">Job Title</string>
+    <string name="common_nickname">Nickname</string>
+    <string name="common_notes">Notes</string>
+    <string name="common_website">Website</string>
+    <string name="common_social">Social</string>
+    <string name="common_country">Country</string>
+    <string name="common_city">City</string>
+    <string name="common_qr_code">QR Code</string>
+    <string name="common_work">Work</string>
+    <string name="common_home">Home</string>
+    <string name="common_other">Other</string>
+    <string name="common_share">Share</string>
+    <string name="common_settings">Settings</string>
+    <string name="common_about">About</string>
+    <string name="common_type">Type</string>
+    <string name="common_groups">Groups</string>
+    <string name="common_relationship">Relationship</string>
+    <string name="common_contact">Contact</string>
+    <string name="common_group">Group</string>
+    <string name="detail_section_contact">Contact Methods</string>
+    <string name="detail_section_web">Web</string>
+    <string name="detail_section_relationships">Relationships</string>
+    <string name="detail_section_other">Other</string>
+    <string name="common_settings_phone_formatting">Phone Formatting</string>
+    <string name="common_settings_country_code_title">Prepend Country Code</string>
+    <string name="common_settings_country_code_description">Automatically add the local country code to formatted numbers</string>
+    <string name="common_settings_address_lookup_title">Address Lookup</string>
+    <string name="common_settings_address_lookup_description">When you type an address, the app can suggest matches by sending what you type to a third-party service.</string>
+    <string name="common_settings_theme_title">Theme</string>
+    <string name="common_settings_theme_system">Follow System</string>
+    <string name="common_settings_theme_light">Light Mode</string>
+    <string name="common_settings_theme_dark">Dark Mode</string>
+    <string name="common_address_lookup_photon_description">Privacy-focused; logs are only stored briefly and never shared.</string>
+    <string name="common_address_lookup_google_description">More accurate; search data is sent to Google.</string>
+    <string name="common_qr_scan_instruction">Scan this code with another device to add this contact.</string>
+    <string name="edit_unsaved_changes_title">Unsaved Changes</string>
+    <string name="edit_unsaved_changes_message">You have unsaved changes. Do you want to save or discard them?</string>
+    <string name="edit_label_url">URL</string>
+    <string name="common_error_unknown">An unknown error occurred</string>
+    <string name="common_error_sync_title">Sync Failed</string>
+    <string name="common_error_step1">Could not find your Nextcloud user profile.</string>
+    <string name="common_error_step2">Could not locate your address books.</string>
+    <string name="common_error_step3">Failed to download your contact lists.</string>
+    <string name="common_error_401">Session expired. Please log in again.</string>
+    <string name="common_error_birthday">A contact has an invalid birthday format.</string>
+    <string name="common_share_contact">Share Contact</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Quick action for a contact</string>
+    <string name="widget_config_select_action">Select Action</string>
+    <string name="widget_config_action_prompt">What would you like to do with %1$s?</string>
+    <string name="widget_action_call">Call</string>
+    <string name="widget_action_text">Send Text Message</string>
+    <string name="widget_action_email">Send Email</string>
+    <string name="widget_action_directions">Get Directions</string>
+
+    <string name="ok">OK</string>
+    <string name="list_title_select_contact">Select a Contact</string>
+    <string name="list_title_select_merge_target">Choose a Contact to Merge</string>
+    <string name="detail_share_qr_code">Show QR Code</string>
+    <string name="vcard_type_friend">Friend</string>
+    <string name="vcard_type_websites">Web site</string>
+    <string name="vcard_type_main">Main</string>
+    <string name="licenses_title">Open Source Licenses</string>
+    <string name="list_empty_no_books">No Address Books Selected</string>
+    <string name="list_empty_no_books_description">All your contacts are hidden. Select an address book below to show them.</string>
+
+    <string name="list_action_clear_group_filter">Clear group filter</string>
+    <string name="list_menu_delete_local_data">Delete Local Data</string>
+    <string name="list_delete_local_data_confirm_title">Delete Local Data?</string>
+    <string name="list_delete_local_data_confirm_message">This permanently deletes every contact and address book saved in Corvid Contacts — it won\'t touch any other contacts on your device. There\'s no server copy either, so export a backup first if you\'d like to keep them.</string>
+    <string name="list_delete_local_data_empty_message">This will reset all app settings and data. Your contacts are already empty, so nothing will be lost except your preferences.</string>
+    <string name="list_delete_local_data_confirm_action">Delete Everything</string>
+    <string name="list_action_clear_self">Clear</string>
+    <string name="widget_placeholder">Configure widget</string>
+    <string name="widget_photo_description">Contact Photo</string>
+    <string name="widget_confirm_title">Confirm Detail</string>
+    <string name="widget_confirm_save">Save</string>
+    <string name="widget_config_select_detail">Select %1$s</string>
+    <string name="widget_action_view">Open contact</string>
+    <string name="button_open_menu">Open Menu</string>
+
+    <!-- Onboarding Screen -->
+    <string name="onboarding_title">Setup</string>
+    <string name="onboarding_setup_title">Personalize Corvid</string>
+    <string name="onboarding_setup_description">Corvid is syncing your contacts in the background…</string>
+    <string name="onboarding_setup_description_complete">Sync complete! You can continue with setup.</string>
+    <string name="onboarding_setup_syncing">Finalizing sync…</string>
+    <string name="onboarding_setup_transparency_title">Note</string>
+    <string name="onboarding_local_migration_title">What about your local contacts?</string>
+    <string name="onboarding_local_migration_description">You have contacts that aren\'t synced anywhere yet. For each address book, choose whether to keep it local to this device or upload it to your new server.</string>
+    <string name="onboarding_local_migration_keep_separate">Keep local to this device</string>
+    <string name="onboarding_local_migration_upload">Upload to this server</string>
+    <string name="onboarding_local_migration_discard">Discard (Delete)</string>
+    <string name="onboarding_local_migration_uploading">Uploading…</string>
+    <string name="onboarding_local_migration_rename_hint">Optionally rename it before uploading</string>
+    <string name="onboarding_address_lookup_off_title">Off</string>
+    <string name="onboarding_address_lookup_off_description">No lookup when entering addresses</string>
+    <string name="onboarding_action_continue">Continue</string>
+    <string name="onboarding_birthday_title">Birthday Reminders</string>
+    <string name="onboarding_birthday_description_has_birthdays">We found contacts with birthdays! Would you like to receive notifications on their special day?</string>
+    <string name="onboarding_birthday_description_no_birthdays">Would you like to be notified when your contacts have birthdays?</string>
+    <string name="onboarding_action_enable_notifications">Enable Notifications</string>
+    <string name="onboarding_action_not_now">Not Now</string>
+    <string name="onboarding_action_keep_enabled">Keep Enabled</string>
+    <string name="onboarding_action_turn_off">Turn Off</string>
+    <string name="onboarding_self_contact_title">Your Profile</string>
+    <string name="onboarding_self_contact_description">Choose the contact card that contains your info. This makes it easier to share with others.</string>
+    <string name="onboarding_self_contact_empty_syncing">Your synced contacts will appear here shortly. Once they do, you can select yours from the list.</string>
+    <string name="onboarding_self_contact_empty_local">Your contact list is empty. You can add your information now, or skip this step for later.</string>
+    <string name="onboarding_self_contact_search_label">Search contacts</string>
+    <string name="onboarding_self_contact_create_new">Add My Information</string>
+    <string name="onboarding_action_skip">Skip for now</string>
+
+    <!-- Address Book Icon Names -->
+    <string name="contact_icon_person">Person</string>
+    <string name="contact_icon_work">Work</string>
+    <string name="contact_icon_group">Group</string>
+    <string name="contact_icon_school">School</string>
+    <string name="contact_icon_book">Book</string>
+
+    <!-- Search Bottom Bar -->
+    <string name="list_search_clear">Clear search</string>
+    <string name="list_filter_button_description">Filters</string>
+
+    <!-- Merge Contacts -->
+    <string name="merge_review_title">Merge Contacts</string>
+    <string name="merge_review_keep_both">Keep Both</string>
+    <string name="merge_review_confirm_action">Merge Contacts</string>
+    <string name="merge_confirm_dialog_title">Merge these contacts?</string>
+    <string name="merge_confirm_dialog_message">%1$s will be merged into %2$s and then deleted. This can\'t be undone.</string>
+    <string name="merge_unsaved_changes_title">Unsaved Changes</string>
+    <string name="merge_unsaved_changes_message">You have unsaved changes to the merge. Do you want to continue merging or discard your changes?</string>
+    <string name="merge_action_continue_merge">Continue Merging</string>
+    <string name="merge_conflict_label">Needs your review</string>
+    <string name="merge_notes_use_survivor">Use this note</string>
+    <string name="merge_notes_use_absorbed">Use other note</string>
+    <string name="merge_conflict_field_photo">Photo</string>
+    <string name="merge_conflict_photo_remove">No photo</string>
+    <string name="detail_share_selection_display_name">Display Name</string>
+    <string name="detail_share_selection_nickname">Nickname</string>
+    <string name="detail_share_selection_first_name">First Name</string>
+    <string name="detail_share_selection_last_name">Last Name</string>
+    <string name="detail_share_selection_other_name">Other Name Parts (Middle, Prefix, etc.)</string>
+    <string name="detail_share_selection_photo">Profile Photo</string>
+    <string name="detail_share_selection_relationship">Relationship (%1$s)</string>
+</resources>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Excludes app credentials (server URL, username, app password) from cloud backup and device transfer
+             so a restored backup never silently re-authenticates with potentially stale or revoked credentials. -->
+        <exclude
+            domain="file"
+            path="datastore/auth_prefs.preferences_pb" />
+    </cloud-backup>
+    <device-transfer>
+        <!-- Excludes app credentials (server URL, username, app password) from device transfer
+             so transferred data never silently re-authenticates with potentially stale or revoked credentials. -->
+        <exclude
+            domain="file"
+            path="datastore/auth_prefs.preferences_pb" />
+    </device-transfer>
+</data-extraction-rules>

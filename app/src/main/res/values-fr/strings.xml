@@ -1,0 +1,505 @@
+<!-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0 -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Corvid Contacts</string>
+
+    <!-- Action Patterns -->
+    <string name="action_add_item">Ajouter %1$s</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_discard">Ignorer</string>
+    <string name="action_remove">Supprimer</string>
+    <string name="common_back">Retour</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Corvid Contacts</string>
+    <string name="login_subtitle">Connectez-vous à votre serveur Nextcloud ou CardDAV</string>
+    <string name="login_server_url">URL du serveur</string>
+    <string name="login_username">Nom d\'utilisateur</string>
+    <string name="login_app_password">Mot de passe d\'application</string>
+    <string name="login_show_password">Afficher le mot de passe</string>
+    <string name="login_hide_password">Masquer le mot de passe</string>
+    <string name="login_button">Connexion</string>
+    <string name="common_auto_load_remote_photos_title">Récupérer et intégrer les photos distantes</string>
+    <string name="common_auto_load_remote_photos_description">Récupère les photos à partir de liens externes et les enregistre dans vos contacts. Cela évite des appels répétés à ces serveurs, qui pourraient vous suivre à la trace, et garde les photos disponibles hors ligne.</string>
+    <string name="login_sync_disclosure">Corvid assure la cohérence de votre carnet d\'adresses en standardisant automatiquement les formats de numéros de téléphone. En vous connectant, certains détails des contacts seront reformatés sur votre serveur, bien qu\'aucune information ne soit perdue.</string>
+    <string name="login_remove">Supprimer</string>
+    <string name="login_error_security">Erreur de sécurité : ce serveur nécessite une connexion sécurisée (HTTPS) ou la politique réseau de l\'application a bloqué cette requête en texte clair (HTTP).</string>
+    <string name="login_error_connection">Erreur de connexion : impossible de se connecter au serveur. Veuillez vérifier votre URL et votre connexion Internet.</string>
+    <string name="login_error_generic">Échec de l\'authentification (Statut : %1$d)</string>
+    <string name="login_error_unknown">Erreur inconnue</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_title">Corvid Contacts</string>
+    <string name="welcome_subtitle">Vos contacts, privés et synchronisés.</string>
+    <string name="welcome_hero_own_data_title">La vie privée dès la conception</string>
+    <string name="welcome_hero_own_data_desc">Vos contacts vous appartiennent. Gardez-les localement sur votre appareil ou synchronisez-les avec votre propre serveur privé. Aucun suivi, jamais.</string>
+    <string name="welcome_hero_improvements_title">Propre et cohérent</string>
+    <string name="welcome_hero_improvements_desc">Corvid s\'occupe des détails en formatant automatiquement les numéros de téléphone et en optimisant les photos pour que votre carnet d\'adresses reste impeccable.</string>
+    <string name="welcome_hero_offline_title">Conçu pour le mode hors ligne</string>
+    <string name="welcome_hero_offline_desc">Consultez et modifiez vos contacts n\'importe quand, n\'importe où. Vos données sont d\'abord stockées localement, et la synchronisation est toujours facultative.</string>
+    <string name="welcome_action_sign_in">Se connecter au serveur</string>
+    <string name="welcome_legal_prefix">En continuant, vous acceptez notre</string>
+    <string name="welcome_legal_and">et nos</string>
+    <string name="common_terms_of_use">Conditions d\'utilisation</string>
+    <string name="welcome_action_use_locally">Utiliser localement (hors ligne)</string>
+
+    <!-- Contact List Screen -->
+    <string name="list_title_contacts">Contacts</string>
+    <string name="list_title_archived">Archivés</string>
+    <plurals name="list_selected_count">
+        <item quantity="one">%1$d sélectionné</item>
+        <item quantity="many">%1$d sélectionnés</item>
+        <item quantity="other">%1$d sélectionnés</item>
+    </plurals>
+    <plurals name="list_title_contacts_selected">
+        <item quantity="one">Contact Sélectionné</item>
+        <item quantity="many">Contacts Sélectionnés</item>
+        <item quantity="other">Contacts Sélectionnés</item>
+    </plurals>
+    <string name="list_search_placeholder">Rechercher nom, groupe ou entreprise…</string>
+    <string name="list_empty_title">Aucun contact trouvé</string>
+    <string name="list_empty_description">Vos contacts apparaîtront ici une fois synchronisés.</string>
+    <string name="list_empty_local_description">Vos contacts apparaîtront ici une fois que vous les aurez ajoutés.</string>
+    <string name="list_empty_single_book_description">%s ne semble avoir aucun contact.</string>
+    <string name="list_no_results_title">Aucun résultat trouvé</string>
+    <string name="list_no_results_description">Essayez d\'ajuster votre recherche ou vos filtres.</string>
+    <string name="list_group_all">Tous</string>
+    <string name="list_group_favorites">Favoris</string>
+    <string name="list_menu_show_archived">Afficher les archivés</string>
+    <string name="list_menu_show_active">Afficher les actifs</string>
+    <string name="list_menu_sync">Synchroniser</string>
+    <string name="list_menu_set_up_sync">Configurer la synchronisation…</string>
+    <string name="list_menu_send_feedback">Envoyer des commentaires</string>
+    <string name="feedback_email_subject">Commentaires sur Corvid Contacts</string>
+    <string name="list_menu_show_menu">Afficher le menu</string>
+    <string name="list_menu_set_self">Configurer Ma carte</string>
+    <string name="list_menu_logout">Déconnexion</string>
+    <string name="logout_confirm_title">Déconnexion ?</string>
+    <string name="logout_confirm_message">Cela supprimera votre compte et toutes les copies locales de vos contacts de cet appareil. Vos données sur le serveur ne seront pas modifiées.</string>
+
+    <string name="list_action_clear_selection">Effacer la sélection</string>
+    <string name="list_action_select_all">Tout sélectionner</string>
+    <string name="list_action_deselect_all">Tout désélectionner</string>
+    <string name="list_action_add_to_group">Ajouter au groupe</string>
+    <string name="list_action_remove_from_group">Supprimer de \"%1$s\"</string>
+    <string name="list_action_deselect_contact">Retirer %1$s de la sélection</string>
+    <string name="list_action_archive_selected">Archiver la sélection</string>
+    <string name="list_action_unarchive_selected">Désarchiver la sélection</string>
+    <string name="list_action_move_selected">Déplacer vers le carnet d\'adresses</string>
+    <string name="list_action_share_selected">Partager la sélection</string>
+    <string name="list_action_delete_selected">Supprimer la sélection</string>
+    <string name="list_error_move_failed">Échec du déplacement du contact vers le nouveau carnet d\'adresses</string>
+    <string name="list_error_bulk_partial_failure">Certains contacts n\'ont pas pu être mis à jour. Vérifiez votre connexion et réessayez.</string>
+    <string name="list_error_no_name">Sans nom</string>
+    <string name="list_repair_notification">%1$s réparé(s) sur le serveur.</string>
+    <string name="list_group_dialog_title">Ajouter au groupe</string>
+    <string name="list_group_dialog_description">Sélectionnez un groupe existant ou créez-en un nouveau.</string>
+    <string name="list_group_name_label">Nom du groupe</string>
+    <string name="list_group_action_add">Ajouter</string>
+    <string name="list_group_action_cancel">Annuler</string>
+    <plurals name="list_delete_confirm_title">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Supprimer le contact ?</item>
+        <item quantity="many">Supprimer %1$d contacts ?</item>
+        <item quantity="other">Supprimer %1$d contacts ?</item>
+    </plurals>
+    <plurals name="list_delete_confirm_message">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Cela supprimera définitivement ce contact. Cette action est irréversible.</item>
+        <item quantity="many">Cela supprimera définitivement %1$d contacts. Cette action est irréversible.</item>
+        <item quantity="other">Cela supprimera définitivement %1$d contacts. Cette action est irréversible.</item>
+    </plurals>
+
+    <!-- Snackbars -->
+    <plurals name="snackbar_contacts_archived">
+        <item quantity="one">%1$d contact archivé</item>
+        <item quantity="many">%1$d contacts archivés</item>
+        <item quantity="other">%1$d contacts archivés</item>
+    </plurals>
+    <plurals name="snackbar_contacts_unarchived">
+        <item quantity="one">%1$d contact restauré</item>
+        <item quantity="many">%1$d contacts restaurés</item>
+        <item quantity="other">%1$d contacts restaurés</item>
+    </plurals>
+    <plurals name="snackbar_contacts_deleted">
+        <item quantity="one">%1$d contact supprimé</item>
+        <item quantity="many">%1$d contacts supprimés</item>
+        <item quantity="other">%1$d contacts supprimés</item>
+    </plurals>
+    <plurals name="snackbar_contacts_moved">
+        <item quantity="one">%1$d contact déplacé</item>
+        <item quantity="many">%1$d contacts déplacés</item>
+        <item quantity="other">%1$d contacts déplacés</item>
+    </plurals>
+    <plurals name="snackbar_contacts_added_to_group">
+        <item quantity="one">%1$d contact ajouté à %2$s</item>
+        <item quantity="many">%1$d contacts ajoutés à %2$s</item>
+        <item quantity="other">%1$d contacts ajoutés à %2$s</item>
+    </plurals>
+    <plurals name="snackbar_contacts_removed_from_group">
+        <item quantity="one">%1$d contact retiré de %2$s</item>
+        <item quantity="many">%1$d contacts retirés de %2$s</item>
+        <item quantity="other">%1$d contacts retirés de %2$s</item>
+    </plurals>
+    <string name="snackbar_contact_saved">Contact enregistré</string>
+    <string name="snackbar_contact_moved">Contact déplacé</string>
+    <string name="snackbar_contact_merged">Contact fusionné</string>
+
+    <!-- Contact Detail Screen -->
+    <string name="detail_title">Détails</string>
+    <string name="detail_no_contact_title">Aucun contact sélectionné</string>
+    <string name="detail_no_contact_description">Sélectionnez un contact dans la liste pour voir ses détails.</string>
+    <string name="detail_menu_edit">Modifier</string>
+    <string name="detail_menu_favorite">Favori</string>
+    <string name="detail_menu_archive">Archiver</string>
+    <string name="detail_menu_unarchive">Désarchiver</string>
+    <string name="detail_menu_merge">Fusionner le contact…</string>
+    <string name="detail_menu_delete">Supprimer</string>
+    <string name="detail_delete_confirm_title">Supprimer le contact ?</string>
+    <string name="detail_delete_confirm_message">Cela supprimera définitivement %1$s. Cette action est irréversible.</string>
+    <string name="detail_error_action_failed">Une erreur s\'est produite. Vérifiez votre connexion et réessayez.</string>
+
+    <string name="detail_action_more">Plus d\'options</string>
+    <string name="detail_photo_not_downloaded">Photo non téléchargée</string>
+    <string name="detail_action_download_photo">Télécharger</string>
+    <string name="detail_photo_url_label">Lien de la photo</string>
+    <string name="detail_action_sms">SMS</string>
+    <string name="detail_action_call">Appeler</string>
+    <string name="detail_action_email">Envoyer un e-mail</string>
+    <string name="detail_action_directions">Itinéraire</string>
+    <string name="detail_action_open_link">Ouvrir le lien</string>
+    <string name="detail_action_view_contact">Voir le contact</string>
+
+    <string name="detail_share_selection_title_qr">Partager par QR</string>
+    <string name="detail_share_selection_title_vcard">Partager le contact</string>
+    <string name="detail_share_selection_subtitle">Sélectionnez ce qu\'il faut inclure dans la vCard</string>
+    <string name="detail_share_selection_phone">Téléphone (%1$s)</string>
+    <string name="detail_share_selection_email">E-mail (%1$s)</string>
+    <string name="detail_share_selection_address">Adresse (%1$s)</string>
+    <string name="detail_share_selection_company">Entreprise</string>
+    <string name="detail_share_selection_job_title">Poste</string>
+    <string name="detail_share_selection_birthday">Anniversaire</string>
+    <string name="detail_share_selection_notes">Notes</string>
+    <string name="detail_share_selection_website">Site web</string>
+    <string name="detail_share_selection_social">Réseau social (%1$s)</string>
+    <string name="detail_job_at">%1$s chez %2$s</string>
+
+    <!-- Contact Edit Screen -->
+    <string name="edit_title_new">Nouveau contact</string>
+    <string name="edit_title_edit">Modifier le contact</string>
+
+    <string name="edit_error_required_to_save">Un nom est requis pour enregistrer.</string>
+    <string name="edit_error_save_failed">Échec de l\'enregistrement du contact. Vérifiez votre connexion et réessayez.</string>
+    <string name="edit_section_identity">Identité</string>
+    <string name="edit_section_name_photo">Nom et photo</string>
+    <string name="edit_section_additional_fields">Champs supplémentaires</string>
+    <string name="edit_section_work">Travail</string>
+    <string name="edit_section_contact">Méthodes de contact</string>
+    <string name="edit_section_networks">Réseaux</string>
+    <string name="edit_section_relationships">Relations</string>
+    <string name="edit_section_misc">Divers</string>
+
+    <string name="edit_action_manage_address_books">Gérer les carnets d\'adresses</string>
+    <string name="edit_action_manage_groups">Gérer les groupes</string>
+
+
+    <string name="edit_action_show_more_fields">Afficher plus de champs</string>
+    <string name="edit_action_show_fewer_fields">Afficher moins de champs</string>
+    <string name="edit_delete_field_confirm_title">Supprimer ce champ ?</string>
+    <string name="edit_delete_field_confirm_message">Cette action est irréversible.</string>
+    <string name="edit_action_more_countries">Plus…</string>
+    <string name="edit_action_clear_birthday">Effacer l\'anniversaire</string>
+    <string name="edit_avatar_settings">Photo du contact</string>
+    <string name="edit_avatar_edit_dialog_title">Modifier la photo et la couleur</string>
+    <string name="edit_avatar_theme_colors">Couleur du contact</string>
+    <string name="edit_action_pick_photo">Sélectionner</string>
+    <string name="edit_action_remove_photo">Supprimer</string>
+    <string name="edit_action_set_color">Définir la couleur</string>
+    <string name="edit_action_use_book_color">Utiliser la couleur du carnet</string>
+    <string name="edit_label_target_address_book">Carnet d\'adresses de destination</string>
+    <string name="edit_read_only_warning">Carnet d\'adresses en lecture seule. Les modifications ne peuvent pas être enregistrées.</string>
+
+    <!-- VCard Contact Types -->
+
+    <string name="vcard_type_cell">Mobile</string>
+    <string name="vcard_type_mobile">Portable</string>
+    <string name="vcard_type_fax">Fax</string>
+
+    <string name="vcard_type_pref">Préféré</string>
+    <string name="vcard_type_school">École</string>
+    <string name="vcard_type_parent">Parent</string>
+    <string name="vcard_type_grandparent">Grand-parent</string>
+    <string name="vcard_type_child">Enfant</string>
+    <string name="vcard_type_student">Étudiant</string>
+    <string name="vcard_type_spouse">Conjoint</string>
+    <string name="vcard_type_internet">Internet</string>
+    <string name="vcard_type_teacher">Enseignant</string>
+    <string name="vcard_type_assistant">Assistant</string>
+    <string name="vcard_type_manager">Manager</string>
+
+    <!-- Settings Screen -->
+
+    <string name="settings_section_account">Compte</string>
+    <string name="settings_section_data">Gestion des données</string>
+    <string name="settings_section_address_books">Carnets d\'adresses</string>
+    <string name="settings_address_book_change_appearance">Changer l\'icône/couleur</string>
+    <string name="settings_address_book_reorder">Réordonner</string>
+    <string name="settings_group_order_title">Ordre des groupes</string>
+    <string name="settings_group_rename">Renommer le groupe</string>
+    <string name="settings_address_book_appearance_dialog_title">Choisir l\'icône et la couleur</string>
+    <string name="settings_address_book_hue_slider_label">Teinte du carnet d\'adresses</string>
+    <string name="settings_group_rename_dialog_title">Renommer le groupe</string>
+    <string name="settings_group_name_label">Nom du groupe</string>
+    <string name="settings_group_action_rename">Renommer</string>
+    <string name="settings_export_title">Exporter les contacts</string>
+    <string name="settings_export_description">Enregistrer tous les contacts dans un fichier .vcf</string>
+    <string name="settings_import_title">Importer des contacts</string>
+    <string name="settings_import_description">Ajouter des contacts depuis un fichier .vcf</string>
+    <string name="settings_import_pick_book_title">Choisissez un carnet d\'adresses</string>
+    <string name="settings_import_create_new_book">Créer un nouveau carnet d\'adresses…</string>
+    <string name="settings_import_result_title">Importation terminée</string>
+    <string name="settings_import_remote_photos_title">Télécharger les photos des contacts ?</string>
+    <string name="settings_import_remote_photos_description">Certains contacts de ce fichier ont des photos hébergées en ligne plutôt qu\'incluses dans le fichier. Les télécharger maintenant implique de se connecter à ces serveurs.</string>
+    <string name="settings_import_remote_photos_download">Télécharger</string>
+    <string name="settings_import_remote_photos_skip">Ignorer</string>
+    <plurals name="settings_import_result_full">
+        <item quantity="one">%1$d contact a été importé.</item>
+        <item quantity="many">Les %1$d contacts ont été importés.</item>
+        <item quantity="other">Les %1$d contacts ont été importés.</item>
+    </plurals>
+    <plurals name="settings_import_result_partial">
+        <item quantity="one">%1$d contact sur %2$d a été importé. %3$d n\'a pas pu être lu.</item>
+        <item quantity="many">%1$d contacts sur %2$d ont été importés. %3$d n\'ont pas pu être lus.</item>
+        <item quantity="other">%1$d contacts sur %2$d ont été importés. %3$d n\'ont pas pu être lus.</item>
+    </plurals>
+    <string name="settings_reset_onboarding_title">Refaire la configuration initiale</string>
+    <string name="settings_reset_onboarding_description">Réafficher les écrans de configuration initiale</string>
+    <string name="address_lookup_photon_source_label">En savoir plus</string>
+    <string name="settings_address_book_unnamed">Carnet d\'adresses sans nom</string>
+    <string name="local_address_book_name">Mes contacts</string>
+    <string name="settings_address_book_add">Ajouter un carnet</string>
+    <string name="settings_address_book_more_options">Plus d\'options</string>
+    <string name="settings_address_book_rename">Renommer</string>
+    <string name="settings_address_book_delete">Supprimer</string>
+    <string name="settings_address_book_show">Afficher</string>
+    <string name="settings_address_book_hide">Masquer</string>
+    <string name="settings_address_book_hidden_label">Masqué</string>
+    <string name="settings_address_book_create">Créer</string>
+    <string name="settings_address_book_create_dialog_title">Nouveau carnet d\'adresses</string>
+    <string name="settings_address_book_rename_dialog_title">Renommer le carnet</string>
+    <string name="settings_address_book_delete_dialog_title">Supprimer le carnet ?</string>
+    <string name="settings_address_book_delete_dialog_description">Cela supprimera \"%1$s\" et tous les contacts qu\'il contient du serveur. Cette action est irréversible.</string>
+    <string name="settings_address_book_delete_dialog_description_local">Cela supprimera \"%1$s\" et tous les contacts qu\'il contient de cet appareil. Cette action est irréversible.</string>
+    <string name="settings_address_book_delete_dialog_empty_description">Cela supprimera le carnet d\'adresses vide \"%1$s\" du serveur. Cette action est irréversible.</string>
+    <string name="settings_address_book_delete_dialog_empty_description_local">Cela supprimera le carnet d\'adresses vide \"%1$s\" de cet appareil. Cette action est irréversible.</string>
+    <string name="settings_address_book_name_label">Nom du carnet</string>
+    <string name="settings_address_book_location_title">Où ce carnet doit-il vivre ?</string>
+    <string name="settings_address_book_location_synced">Synchronisé (ce serveur)</string>
+    <string name="settings_address_book_location_local">Local (cet appareil uniquement)</string>
+    <string name="settings_address_book_local_badge">Local</string>
+    <string name="settings_address_book_generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
+    <string name="settings_address_book_creating">Création de votre nouveau carnet…</string>
+    <string name="settings_address_book_renaming">Renommage du carnet…</string>
+    <string name="settings_address_book_deleting">Suppression du carnet…</string>
+    <string name="settings_address_book_upload">Envoyer vers le serveur</string>
+    <string name="settings_address_book_upload_dialog_title">Envoyer vers le serveur</string>
+    <string name="settings_address_book_upload_dialog_description">Ceci envoie le carnet d\'adresses et ses contacts vers votre compte. Il reste sur cet appareil jusqu\'à la fin de l\'envoi.</string>
+    <plurals name="settings_address_book_upload_result_full">
+        <item quantity="one">%1$d contact a été envoyé au serveur.</item>
+        <item quantity="many">Les %1$d contacts ont été envoyés au serveur.</item>
+        <item quantity="other">Les %1$d contacts ont été envoyés au serveur.</item>
+    </plurals>
+    <plurals name="settings_address_book_upload_result_partial">
+        <item quantity="one">%1$d contact sur %2$d a été envoyé. %3$d n\'a pas pu être envoyé — réessayez pour les envoyer à nouveau (ils pourraient se retrouver dans un carnet séparé).</item>
+        <item quantity="many">%1$d contacts sur %2$d ont été envoyés. %3$d n\'ont pas pu être envoyés — réessayez pour les envoyer à nouveau (ils pourraient se retrouver dans un carnet séparé).</item>
+        <item quantity="other">%1$d contacts sur %2$d ont été envoyés. %3$d n\'ont pas pu être envoyés — réessayez pour les envoyer à nouveau (ils pourraient se retrouver dans un carnet séparé).</item>
+    </plurals>
+
+
+    <!-- About Screen -->
+    <string name="about_title">À propos</string>
+    <string name="about_description">Une application de contacts autonome axée sur la vie privée pour Nextcloud et CardDAV.</string>
+    <string name="about_license_text">Licence PolyForm Noncommercial 1.0.0\nCopyright © 2026 Wesley Benica\nCode source disponible ; usage non commercial uniquement.</string>
+    <string name="about_section_license">Licence</string>
+    <string name="about_section_libraries">Bibliothèques Open Source</string>
+    <string name="about_action_show_licenses">Afficher les licences open source</string>
+    <string name="about_section_privacy_policy">Politique de confidentialité</string>
+    <string name="about_privacy_policy_text">Comment Corvid Contacts traite vos données.</string>
+    <string name="about_section_eula">Conditions d\'utilisation (CLUF)</string>
+    <string name="about_eula_text">Le contrat de licence utilisateur final de Corvid Contacts.</string>
+    <string name="about_action_open_in_browser">Ouvrir dans le navigateur</string>
+
+    <!-- Birthday Notifications -->
+    <string name="birthday_notification_channel_name">Anniversaires</string>
+    <string name="birthday_notification_channel_description">Rappels pour les anniversaires des contacts</string>
+    <string name="birthday_notification_title">Anniversaire d\'un contact</string>
+    <string name="birthday_notification_today">A son anniversaire aujourd\'hui !</string>
+    <string name="birthday_notification_tomorrow">A son anniversaire demain !</string>
+
+    <!-- Common UI -->
+    <string name="common_try_again">Réessayer</string>
+    <string name="common_done">Terminé</string>
+    <string name="common_unknown">Inconnu</string>
+    <string name="common_address_book">Carnet d\'adresses</string>
+    <string name="common_all_books">Tous les carnets</string>
+    <string name="common_first_name">Prénom</string>
+    <string name="common_last_name">Nom</string>
+    <string name="common_middle_name">Deuxième prénom</string>
+    <string name="common_prefix">Préfixe (Dr, M., etc.)</string>
+    <string name="common_suffix">Suffixe (Jr, PhD, etc.)</string>
+    <string name="common_display_name">Nom d\'affichage</string>
+    <string name="common_email">E-mail</string>
+    <string name="common_phone">Téléphone</string>
+    <string name="common_address">Adresse</string>
+    <string name="common_street">Rue</string>
+    <string name="common_state_province">État / Province</string>
+    <string name="common_postal_code">Code postal</string>
+    <string name="common_birthday">Anniversaire</string>
+    <string name="common_company">Entreprise</string>
+    <string name="common_job_title">Poste</string>
+    <string name="common_nickname">Surnom</string>
+    <string name="common_notes">Notes</string>
+    <string name="common_website">Site web</string>
+    <string name="common_social">Réseaux sociaux</string>
+    <string name="common_country">Pays</string>
+    <string name="common_city">Ville</string>
+    <string name="common_qr_code">Code QR</string>
+    <string name="common_work">Travail</string>
+    <string name="common_home">Domicile</string>
+    <string name="common_other">Autre</string>
+    <string name="common_share">Partager</string>
+    <string name="common_settings">Paramètres</string>
+    <string name="common_about">À propos</string>
+    <string name="common_type">Type</string>
+    <string name="common_groups">Groupes</string>
+    <string name="common_relationship">Relation</string>
+    <string name="common_contact">Contact</string>
+    <string name="common_group">Groupe</string>
+    <string name="detail_section_contact">Méthodes de contact</string>
+    <string name="detail_section_web">Web</string>
+    <string name="detail_section_relationships">Relations</string>
+    <string name="detail_section_other">Autre</string>
+    <string name="common_settings_phone_formatting">Format des numéros</string>
+    <string name="common_settings_country_code_title">Préfixe de pays</string>
+    <string name="common_settings_country_code_description">Ajouter automatiquement le code pays aux numéros formatés</string>
+    <string name="common_settings_address_lookup_title">Recherche d\'adresses</string>
+    <string name="common_settings_address_lookup_description">Lorsque vous saisissez une adresse, l\'application peut suggérer des correspondances en envoyant ce que vous tapez à un service tiers.</string>
+    <string name="common_settings_theme_title">Thème</string>
+    <string name="common_settings_theme_system">Suivre le système</string>
+    <string name="common_settings_theme_light">Mode clair</string>
+    <string name="common_settings_theme_dark">Mode sombre</string>
+    <string name="common_address_lookup_photon_description">Respectueux de la vie privée ; les journaux ne sont conservés que brièvement et ne sont jamais partagés.</string>
+    <string name="common_address_lookup_google_description">Plus précis ; les données de recherche sont envoyées à Google.</string>
+    <string name="common_qr_scan_instruction">Scannez ce code avec un autre appareil pour ajouter ce contact.</string>
+    <string name="edit_unsaved_changes_title">Modifications non enregistrées</string>
+    <string name="edit_unsaved_changes_message">Vous avez des modifications non enregistrées. Voulez-vous les enregistrer ou les ignorer ?</string>
+    <string name="edit_label_url">URL</string>
+    <string name="common_error_unknown">Une erreur inconnue s\'est produite</string>
+    <string name="common_error_sync_title">Échec de la synchronisation</string>
+    <string name="common_error_step1">Impossible de trouver votre profil utilisateur Nextcloud.</string>
+    <string name="common_error_step2">Impossible de localiser vos carnets d\'adresses.</string>
+    <string name="common_error_step3">Échec du téléchargement de vos listes de contacts.</string>
+    <string name="common_error_401">Session expirée. Veuillez vous reconnecter.</string>
+    <string name="common_error_birthday">Un contact a un format d\'anniversaire invalide.</string>
+    <string name="common_share_contact">Partager le contact</string>
+
+
+    <!-- Widget -->
+    <string name="widget_description">Action rapide pour un contact</string>
+    <string name="widget_config_select_action">Sélectionner l\'action</string>
+    <string name="widget_config_action_prompt">Que souhaitez-vous faire avec %1$s ?</string>
+    <string name="widget_action_call">Appeler</string>
+    <string name="widget_action_text">Envoyer un SMS</string>
+    <string name="widget_action_email">Envoyer un e-mail</string>
+    <string name="widget_action_directions">Itinéraire</string>
+
+
+    <string name="ok">OK</string>
+    <string name="list_title_select_contact">Choisir un contact</string>
+    <string name="list_title_select_merge_target">Choisir un contact à fusionner</string>
+    <string name="detail_share_qr_code">Afficher le code QR</string>
+    <string name="vcard_type_friend">Ami/e</string>
+    <string name="vcard_type_websites">Site web</string>
+    <string name="vcard_type_main">Principal</string>
+    <string name="licenses_title">Licences de logiciels libres</string>
+    <string name="list_empty_no_books">Aucun carnet d\'adresses sélectionné</string>
+    <string name="list_empty_no_books_description">Tous vos contacts sont masqués. Sélectionnez un carnet d\'adresses ci-dessous pour les afficher.</string>
+
+    <string name="list_action_clear_group_filter">Effacer le filtre de groupe</string>
+    <string name="list_menu_delete_local_data">Supprimer les données locales</string>
+    <string name="list_delete_local_data_confirm_title">Supprimer les données locales ?</string>
+    <string name="list_delete_local_data_confirm_message">Cette action supprime définitivement tous les contacts et carnets d\'adresses enregistrés dans Corvid Contacts — les autres contacts de votre appareil ne sont pas concernés. Il n\'existe pas non plus de copie sur un serveur : exportez une sauvegarde d\'abord si vous souhaitez les conserver.</string>
+    <string name="list_delete_local_data_empty_message">Cela réinitialisera tous les paramètres et données de l\'application. Vos contacts sont déjà vides, donc rien ne sera perdu à part vos préférences.</string>
+    <string name="list_delete_local_data_confirm_action">Tout supprimer</string>
+    <string name="list_action_clear_self">Effacer</string>
+    <string name="widget_placeholder">Configurer le widget</string>
+    <string name="widget_photo_description">Photo du contact</string>
+    <string name="widget_confirm_title">Confirmer les détails</string>
+    <string name="widget_confirm_save">Enregistrer</string>
+    <string name="widget_config_select_detail">Sélectionner %1$s</string>
+    <string name="widget_action_view">Ouvrir contact</string>
+    <string name="button_open_menu">Ouvrir le menu</string>
+
+    <!-- Onboarding Screen -->
+    <string name="onboarding_title">Configuration</string>
+    <string name="onboarding_setup_title">Personnaliser Corvid</string>
+    <string name="onboarding_setup_description">Corvid synchronise vos contacts en arrière-plan…</string>
+    <string name="onboarding_setup_description_complete">Synchronisation terminée ! Vous pouvez continuer la configuration.</string>
+    <string name="onboarding_setup_syncing">Finalisation de la synchronisation…</string>
+    <string name="onboarding_setup_transparency_title">Note</string>
+    <string name="onboarding_local_migration_title">Qu\'en est-il de vos contacts locaux ?</string>
+    <string name="onboarding_local_migration_description">Vous avez des contacts qui ne sont encore synchronisés nulle part. Pour chaque carnet d\'adresses, choisissez de le garder local sur cet appareil ou de le transférer vers votre nouveau serveur.</string>
+    <string name="onboarding_local_migration_keep_separate">Garder local sur cet appareil</string>
+    <string name="onboarding_local_migration_upload">Transférer vers ce serveur</string>
+    <string name="onboarding_local_migration_discard">Supprimer</string>
+    <string name="onboarding_local_migration_uploading">Transfert en cours…</string>
+    <string name="onboarding_local_migration_rename_hint">Vous pouvez le renommer avant le transfert</string>
+    <string name="onboarding_address_lookup_off_title">Désactivé</string>
+    <string name="onboarding_address_lookup_off_description">Aucune recherche lors de la saisie des adresses</string>
+    <string name="onboarding_action_continue">Continuer</string>
+    <string name="onboarding_birthday_title">Rappels d\'anniversaire</string>
+    <string name="onboarding_birthday_description_has_birthdays">Nous avons trouvé des contacts avec des anniversaires ! Souhaitez-vous recevoir des notifications le jour J ?</string>
+    <string name="onboarding_birthday_description_no_birthdays">Souhaitez-vous être averti des anniversaires de vos contacts ?</string>
+    <string name="onboarding_action_enable_notifications">Activer les notifications</string>
+    <string name="onboarding_action_not_now">Pas maintenant</string>
+    <string name="onboarding_action_keep_enabled">Garder activé</string>
+    <string name="onboarding_action_turn_off">Désactiver</string>
+    <string name="onboarding_self_contact_title">Votre profil</string>
+    <string name="onboarding_self_contact_description">Choisissez la fiche contact qui contient vos informations. Cela facilite le partage avec les autres.</string>
+    <string name="onboarding_self_contact_empty_syncing">Vos contacts synchronisés apparaîtront ici sous peu. Une fois qu\'ils seront là, vous pourrez sélectionner le vôtre dans la liste.</string>
+    <string name="onboarding_self_contact_empty_local">Votre liste de contacts est vide. Vous pouvez ajouter vos informations maintenant ou ignorer cette étape pour plus tard.</string>
+    <string name="onboarding_self_contact_search_label">Rechercher des contacts</string>
+    <string name="onboarding_self_contact_create_new">Ajouter mes informations</string>
+    <string name="onboarding_action_skip">Ignorer pour l\'instant</string>
+    <!-- Address Book Icon Names -->
+    <string name="contact_icon_person">Personne</string>
+    <string name="contact_icon_work">Travail</string>
+    <string name="contact_icon_group">Groupe</string>
+    <string name="contact_icon_school">École</string>
+    <string name="contact_icon_book">Livre</string>
+
+    <!-- Search Bottom Bar -->
+    <string name="list_search_clear">Effacer la recherche</string>
+    <string name="list_filter_button_description">Filtres</string>
+
+    <!-- Merge Contacts -->
+    <string name="merge_review_title">Fusionner les contacts</string>
+    <string name="merge_review_keep_both">Conserver les deux</string>
+    <string name="merge_review_confirm_action">Fusionner les contacts</string>
+    <string name="merge_confirm_dialog_title">Fusionner ces contacts ?</string>
+    <string name="merge_confirm_dialog_message">%1$s sera fusionné avec %2$s puis supprimé. Cette action est irréversible.</string>
+    <string name="merge_unsaved_changes_title">Modifications non enregistrées</string>
+    <string name="merge_unsaved_changes_message">Vous avez des modifications non enregistrées pour la fusion. Voulez-vous continuer la fusion ou ignorer vos modifications ?</string>
+    <string name="merge_action_continue_merge">Continuer la fusion</string>
+    <string name="merge_conflict_label">Nécessite votre attention</string>
+    <string name="merge_notes_use_survivor">Utiliser cette note</string>
+    <string name="merge_notes_use_absorbed">Utiliser l\'autre note</string>
+    <string name="merge_conflict_field_photo">Photo</string>
+    <string name="merge_conflict_photo_remove">Aucune photo</string>
+    <string name="detail_share_selection_display_name">Nom d\'affichage</string>
+    <string name="detail_share_selection_nickname">Surnom</string>
+    <string name="detail_share_selection_first_name">Prénom</string>
+    <string name="detail_share_selection_last_name">Nom de famille</string>
+    <string name="detail_share_selection_other_name">Autres parties du nom (deuxième prénom, préfixe, etc.)</string>
+    <string name="detail_share_selection_photo">Photo de profil</string>
+    <string name="detail_share_selection_relationship">Relation (%1$s)</string>
+</resources>
