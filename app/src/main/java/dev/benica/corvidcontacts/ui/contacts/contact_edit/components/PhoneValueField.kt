@@ -36,6 +36,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import java.util.Locale
 
 /**
  * A customized Composable field specialized for capturing telephone contact metadata.
@@ -62,19 +63,23 @@ fun PhoneValueField(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val countries = remember { PhoneFormatter.getCountries(context) }
+    val deviceRegion = remember { Locale.getDefault().country.uppercase().ifBlank { "US" } }
     val selectedCountry =
         remember(region) {
-            countries.find { it.code == region } ?: countries.find { it.code == "US" }
+            countries.find { it.code == region }
+                ?: countries.find { it.code == deviceRegion }
+                ?: countries.find { it.code == "US" }
         }
 
     val initialFocusModifier = Modifier.rememberInitialFocusModifier(requestInitialFocus)
 
     val priorityCountries = remember {
         listOf(
+            deviceRegion,
             "US",
             "CA",
             "MX"
-        ).mapNotNull { code -> countries.find { it.code == code } }
+        ).distinct().mapNotNull { code -> countries.find { it.code == code } }
     }
 
     Column(
@@ -159,7 +164,7 @@ fun PhoneValueField(
                     val text = fieldValue.text
                     val cleaned =
                         text.filter { c -> c.isDigit() || c == '+' || c == '*' || c == '#' }
-                    var activeRegion = region ?: "US"
+                    var activeRegion = region ?: deviceRegion
                     var textToFormat = text
 
                     // Smart region detection: if user types '+', try to move it to the dropdown
