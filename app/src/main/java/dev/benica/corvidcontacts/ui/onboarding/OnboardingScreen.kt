@@ -66,8 +66,8 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScrollableColumn
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCWidthClampedBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCTextButton
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCWidthClampedBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ContactAvatar
 import dev.benica.corvidcontacts.ui.contacts.contact_edit.ContactEditScreen
 import dev.benica.corvidcontacts.ui.settings.SettingsHeader
@@ -108,9 +108,9 @@ fun OnboardingScreen(
             allGroups = allGroups,
             includeCountryCode = alwaysAddCountryCode,
             geocoderRepository = geocoderRepository,
-            allContacts = contacts,
             onSave = { viewModel.saveNewSelfContact(it) },
-            onBack = viewModel::cancelCreatingSelfContact
+            onBack = viewModel::cancelCreatingSelfContact,
+            allContacts = contacts
         )
         return
     }
@@ -127,58 +127,58 @@ fun OnboardingScreen(
         },
         content = { padding ->
             CCWidthClampedBox(modifier = Modifier.padding(padding)) {
-            val currentUiState = uiState
-            val scrollState = rememberScrollState()
-            // Only unscrolled steps need the outer Column scrollable; the list-based ones scroll themselves.
-            val needsOuterScroll = currentUiState is OnboardingUiState.Setup ||
-                currentUiState is OnboardingUiState.FinalizingSync ||
-                currentUiState is OnboardingUiState.BirthdayNotifications
+                val currentUiState = uiState
+                val scrollState = rememberScrollState()
+                // Only unscrolled steps need the outer Column scrollable; the list-based ones scroll themselves.
+                val needsOuterScroll = currentUiState is OnboardingUiState.Setup ||
+                        currentUiState is OnboardingUiState.FinalizingSync ||
+                        currentUiState is OnboardingUiState.BirthdayNotifications
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(if (needsOuterScroll) Modifier.verticalScroll(scrollState) else Modifier),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                when (currentUiState) {
-                    OnboardingUiState.Setup -> SetupStep(
-                        themeMode = themeMode,
-                        initialAlwaysAdd = alwaysAddCountryCode,
-                        initialAddressMode = addressLookupMode,
-                        isSyncing = isBackgroundSyncing,
-                        hasServerConnection = hasServerConnection,
-                        onThemeSelection = viewModel::setThemeMode,
-                        onComplete = viewModel::saveSetupPreferences
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(if (needsOuterScroll) Modifier.verticalScroll(scrollState) else Modifier),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    when (currentUiState) {
+                        OnboardingUiState.Setup -> SetupStep(
+                            themeMode = themeMode,
+                            initialAlwaysAdd = alwaysAddCountryCode,
+                            initialAddressMode = addressLookupMode,
+                            isSyncing = isBackgroundSyncing,
+                            hasServerConnection = hasServerConnection,
+                            onThemeSelection = viewModel::setThemeMode,
+                            onComplete = viewModel::saveSetupPreferences
+                        )
 
-                    OnboardingUiState.FinalizingSync -> FinalizingSyncStep()
+                        OnboardingUiState.FinalizingSync -> FinalizingSyncStep()
 
-                    is OnboardingUiState.LocalDataMigration -> LocalDataMigrationStep(
-                        localBooks = currentUiState.localBooks,
-                        isSubmitting = isMigratingLocalData,
-                        hasServerConnection = hasServerConnection,
-                        onSelection = viewModel::resolveLocalDataMigration
-                    )
+                        is OnboardingUiState.LocalDataMigration -> LocalDataMigrationStep(
+                            localBooks = currentUiState.localBooks,
+                            isSubmitting = isMigratingLocalData,
+                            hasServerConnection = hasServerConnection,
+                            onSelection = viewModel::resolveLocalDataMigration
+                        )
 
-                    OnboardingUiState.BirthdayNotifications -> BirthdayNotificationsStep(
-                        hasBirthdays = hasBirthdays,
-                        currentlyEnabled = currentBirthdayNotificationsEnabled,
-                        onSelection = viewModel::setBirthdayNotificationsEnabled
-                    )
+                        OnboardingUiState.BirthdayNotifications -> BirthdayNotificationsStep(
+                            hasBirthdays = hasBirthdays,
+                            currentlyEnabled = currentBirthdayNotificationsEnabled,
+                            onSelection = viewModel::setBirthdayNotificationsEnabled
+                        )
 
-                    OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
-                        contacts = contacts,
-                        hasServerConnection = hasServerConnection,
-                        onSelection = viewModel::setSelfContact,
-                        onCreateNew = viewModel::startCreatingSelfContact
-                    )
+                        OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
+                            contacts = contacts,
+                            hasServerConnection = hasServerConnection,
+                            onSelection = viewModel::setSelfContact,
+                            onCreateNew = viewModel::startCreatingSelfContact
+                        )
 
-                    // Handled above via early return - never reached, but kept here so this `when`
-                    // stays exhaustive if that changes later.
-                    OnboardingUiState.CreatingSelfContact -> Unit
+                        // Handled above via early return - never reached, but kept here so this `when`
+                        // stays exhaustive if that changes later.
+                        OnboardingUiState.CreatingSelfContact -> Unit
+                    }
                 }
-            }
             }
         }
     )

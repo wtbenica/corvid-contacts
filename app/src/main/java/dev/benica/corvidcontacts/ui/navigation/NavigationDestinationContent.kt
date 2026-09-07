@@ -85,8 +85,6 @@ internal fun ContactEditContent(
         allGroups = allGroups,
         includeCountryCode = alwaysAddCountryCode,
         geocoderRepository = geocoderRepository,
-        initialAddressBookHref = key.initialAddressBookHref,
-        allContacts = allContactsWithBook,
         onSave = { savedContact ->
             val success = contactsViewModel.saveContact(savedContact)
             if (success && key.markAsSelfOnSave) {
@@ -105,6 +103,8 @@ internal fun ContactEditContent(
                 backStack.add(Destination.ContactDetail(contactId))
             }
         },
+        initialAddressBookHref = key.initialAddressBookHref,
+        allContacts = allContactsWithBook,
         showScaffold = showScaffold,
         onChromeChange = onChromeChange,
         onNavigationGuardReady = onNavigationGuardReady,
