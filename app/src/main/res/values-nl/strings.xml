@@ -1,0 +1,490 @@
+<!-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0 -->
+
+<resources>
+    <string name="app_name">Corvid Contacts</string>
+
+    <!-- Action Patterns -->
+    <string name="action_add_item">%1$s toevoegen</string>
+    <string name="action_save">Opslaan</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_discard">Verwerpen</string>
+    <string name="action_remove">Verwijderen</string>
+    <string name="common_back">Terug</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Corvid Contacts</string>
+    <string name="login_subtitle">Log in bij je Nextcloud- of CardDAV-server</string>
+    <string name="login_server_url">Server-URL</string>
+    <string name="login_username">Gebruikersnaam</string>
+    <string name="login_app_password">App-wachtwoord</string>
+    <string name="login_show_password">Wachtwoord tonen</string>
+    <string name="login_hide_password">Wachtwoord verbergen</string>
+    <string name="common_auto_load_remote_photos_title">Externe foto\'s ophalen &amp; insluiten</string>
+    <string name="common_auto_load_remote_photos_description">Haalt foto\'s op van externe links en slaat ze op bij je contacten. Dit voorkomt herhaalde verzoeken aan die servers — die je zouden kunnen volgen — en houdt foto\'s offline beschikbaar.</string>
+    <string name="login_sync_disclosure">Corvid houdt je adresboek consistent door telefoonnummers automatisch in een uniform formaat te zetten. Bij het inloggen worden sommige contactgegevens op je server opnieuw geformatteerd, maar er gaat geen informatie verloren.</string>
+    <string name="login_button">Inloggen</string>
+    <string name="login_remove">Verwijderen</string>
+    <string name="login_error_security">Beveiligingsfout: Deze server vereist een beveiligde verbinding (HTTPS), of het netwerkbeleid van de app heeft dit onversleutelde (HTTP) verzoek geblokkeerd.</string>
+    <string name="login_error_connection">Verbindingsfout: Kan geen verbinding maken met de server. Controleer je URL en internetverbinding.</string>
+    <string name="login_error_generic">Authenticatie mislukt (status: %1$d)</string>
+    <string name="login_error_unknown">Onbekende fout</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_title">Corvid Contacts</string>
+    <string name="welcome_subtitle">Jouw contacten, privé en gesynchroniseerd.</string>
+    <string name="welcome_hero_own_data_title">Privé vanaf de basis</string>
+    <string name="welcome_hero_own_data_desc">Je contacten zijn van jou. Bewaar ze lokaal op je apparaat of synchroniseer ze met je eigen privéserver. Geen tracking, nooit.</string>
+    <string name="welcome_hero_improvements_title">Netjes &amp; consistent</string>
+    <string name="welcome_hero_improvements_desc">Corvid regelt de details door telefoonnummers automatisch te formatteren en foto\'s te optimaliseren, zodat je adresboek er altijd verzorgd uitziet.</string>
+    <string name="welcome_hero_offline_title">Gemaakt voor offline</string>
+    <string name="welcome_hero_offline_desc">Blader door en bewerk je contacten wanneer en waar je maar wilt. Je gegevens worden eerst lokaal opgeslagen, en synchroniseren is altijd optioneel.</string>
+    <string name="welcome_action_sign_in">Inloggen bij server</string>
+    <string name="welcome_legal_prefix">Door verder te gaan, ga je akkoord met onze</string>
+    <string name="welcome_legal_and">en</string>
+    <string name="common_terms_of_use">Gebruiksvoorwaarden</string>
+    <string name="welcome_action_use_locally">Lokaal gebruiken (offline)</string>
+
+    <!-- Contact List Screen -->
+    <string name="list_title_contacts">Contacten</string>
+    <string name="list_title_archived">Gearchiveerd</string>
+    <plurals name="list_selected_count">
+        <item quantity="one">%1$d geselecteerd</item>
+        <item quantity="other">%1$d geselecteerd</item>
+    </plurals>
+    <plurals name="list_title_contacts_selected">
+        <item quantity="one">Contact geselecteerd</item>
+        <item quantity="other">Contacten geselecteerd</item>
+    </plurals>
+    <string name="list_search_placeholder">Naam, groep of bedrijf zoeken…</string>
+    <string name="list_empty_title">Geen contacten gevonden</string>
+    <string name="list_empty_description">Je contacten verschijnen hier zodra ze zijn gesynchroniseerd.</string>
+    <string name="list_empty_local_description">Je contacten verschijnen hier zodra je ze toevoegt.</string>
+    <string name="list_empty_single_book_description">%s lijkt geen contacten te bevatten.</string>
+    <string name="list_no_results_title">Geen resultaten gevonden</string>
+    <string name="list_no_results_description">Probeer je zoekopdracht of filters aan te passen.</string>
+    <string name="list_group_all">Alle</string>
+    <string name="list_group_favorites">Favorieten</string>
+    <string name="list_menu_show_archived">Gearchiveerde tonen</string>
+    <string name="list_menu_show_active">Actieve tonen</string>
+    <string name="list_menu_sync">Synchroniseren</string>
+    <string name="list_menu_set_up_sync">Synchronisatie instellen…</string>
+    <string name="list_menu_send_feedback">Feedback versturen</string>
+    <string name="feedback_email_subject">Corvid Contacts feedback</string>
+    <string name="list_menu_show_menu">Menu tonen</string>
+    <string name="list_menu_set_self">Mijn kaart instellen</string>
+    <string name="list_menu_logout">Uitloggen</string>
+    <string name="logout_confirm_title">Uitloggen?</string>
+    <string name="logout_confirm_message">Hierdoor worden je account en alle lokale kopieën van je contacten van dit apparaat verwijderd. Je gegevens op de server blijven onaangetast.</string>
+
+    <string name="list_action_clear_selection">Selectie opheffen</string>
+    <string name="list_action_select_all">Alles selecteren</string>
+    <string name="list_action_deselect_all">Selectie voor alles opheffen</string>
+    <string name="list_action_add_to_group">Aan groep toevoegen</string>
+    <string name="list_action_remove_from_group">Verwijderen uit \"%1$s\"</string>
+    <string name="list_action_deselect_contact">%1$s uit selectie verwijderen</string>
+    <string name="list_action_archive_selected">Geselecteerde archiveren</string>
+    <string name="list_action_unarchive_selected">Geselecteerde herstellen</string>
+    <string name="list_action_move_selected">Naar adresboek verplaatsen</string>
+    <string name="list_action_share_selected">Geselecteerde delen</string>
+    <string name="list_action_delete_selected">Geselecteerde verwijderen</string>
+    <string name="list_error_move_failed">Contact kon niet naar nieuw adresboek worden verplaatst</string>
+    <string name="list_error_bulk_partial_failure">Sommige contacten konden niet worden bijgewerkt. Controleer je verbinding en probeer het opnieuw.</string>
+    <string name="list_error_no_name">Geen naam</string>
+    <string name="list_repair_notification">%1$s hersteld op server.</string>
+    <string name="list_group_dialog_title">Aan groep toevoegen</string>
+    <string name="list_group_dialog_description">Selecteer een bestaande groep of maak een nieuwe aan.</string>
+    <string name="list_group_name_label">Groepsnaam</string>
+    <string name="list_group_action_add">Toevoegen</string>
+    <string name="list_group_action_cancel">Annuleren</string>
+
+    <!-- Snackbars -->
+    <plurals name="snackbar_contacts_archived">
+        <item quantity="one">Contact gearchiveerd</item>
+        <item quantity="other">%1$d contacten gearchiveerd</item>
+    </plurals>
+    <plurals name="snackbar_contacts_unarchived">
+        <item quantity="one">Contact hersteld</item>
+        <item quantity="other">%1$d contacten hersteld</item>
+    </plurals>
+    <plurals name="snackbar_contacts_deleted">
+        <item quantity="one">Contact verwijderd</item>
+        <item quantity="other">%1$d contacten verwijderd</item>
+    </plurals>
+    <plurals name="list_delete_confirm_title">
+        <item quantity="one">Contact verwijderen?</item>
+        <item quantity="other">%1$d contacten verwijderen?</item>
+    </plurals>
+    <plurals name="list_delete_confirm_message">
+        <item quantity="one">Dit verwijdert dit contact permanent. Dit kan niet ongedaan worden gemaakt.</item>
+        <item quantity="other">Dit verwijdert %1$d contacten permanent. Dit kan niet ongedaan worden gemaakt.</item>
+    </plurals>
+    <plurals name="snackbar_contacts_moved">
+        <item quantity="one">Contact verplaatst</item>
+        <item quantity="other">%1$d contacten verplaatst</item>
+    </plurals>
+    <plurals name="snackbar_contacts_added_to_group">
+        <item quantity="one">Contact toegevoegd aan %2$s</item>
+        <item quantity="other">%1$d contacten toegevoegd aan %2$s</item>
+    </plurals>
+    <plurals name="snackbar_contacts_removed_from_group">
+        <item quantity="one">Contact verwijderd uit %2$s</item>
+        <item quantity="other">%1$d contacten verwijderd uit %2$s</item>
+    </plurals>
+    <string name="snackbar_contact_saved">Contact opgeslagen</string>
+    <string name="snackbar_contact_moved">Contact verplaatst</string>
+    <string name="snackbar_contact_merged">Contact samengevoegd</string>
+
+    <!-- Contact Detail Screen -->
+    <string name="detail_title">Details</string>
+    <string name="detail_no_contact_title">Geen contact geselecteerd</string>
+    <string name="detail_no_contact_description">Selecteer een contact uit de lijst om de details te bekijken.</string>
+    <string name="detail_menu_edit">Bewerken</string>
+    <string name="detail_menu_favorite">Favoriet</string>
+    <string name="detail_menu_archive">Archiveren</string>
+    <string name="detail_menu_unarchive">Herstellen</string>
+    <string name="detail_menu_merge">Contact samenvoegen…</string>
+    <string name="detail_menu_delete">Verwijderen</string>
+    <string name="detail_delete_confirm_title">Contact verwijderen?</string>
+    <string name="detail_delete_confirm_message">Dit verwijdert %1$s permanent. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="detail_error_action_failed">Er is iets misgegaan. Controleer je verbinding en probeer het opnieuw.</string>
+
+    <string name="detail_action_more">Meer opties</string>
+    <string name="detail_photo_not_downloaded">Foto niet gedownload</string>
+    <string name="detail_action_download_photo">Downloaden</string>
+    <string name="detail_photo_url_label">Fotolink</string>
+    <string name="detail_action_sms">SMS</string>
+    <string name="detail_action_call">Bellen</string>
+    <string name="detail_action_email">E-mail versturen</string>
+    <string name="detail_action_directions">Route</string>
+    <string name="detail_action_open_link">Link openen</string>
+    <string name="detail_action_view_contact">Contact bekijken</string>
+
+    <string name="detail_share_selection_title_qr">Delen via QR</string>
+    <string name="detail_share_selection_title_vcard">Contact delen</string>
+    <string name="detail_share_selection_subtitle">Selecteer wat in de vCard moet worden opgenomen</string>
+    <string name="detail_share_selection_phone">Telefoon (%1$s)</string>
+    <string name="detail_share_selection_email">E-mail (%1$s)</string>
+    <string name="detail_share_selection_address">Adres (%1$s)</string>
+    <string name="detail_share_selection_company">Bedrijf</string>
+    <string name="detail_share_selection_job_title">Functietitel</string>
+    <string name="detail_share_selection_birthday">Verjaardag</string>
+    <string name="detail_share_selection_notes">Notities</string>
+    <string name="detail_share_selection_website">Website</string>
+    <string name="detail_share_selection_social">Sociaal (%1$s)</string>
+    <string name="detail_job_at">%1$s bij %2$s</string>
+
+    <!-- Contact Edit Screen -->
+    <string name="edit_title_new">Nieuw contact</string>
+    <string name="edit_title_edit">Contact bewerken</string>
+
+    <string name="edit_error_required_to_save">Er is een naam nodig om op te slaan.</string>
+    <string name="edit_error_save_failed">Contact kon niet worden opgeslagen. Controleer je verbinding en probeer het opnieuw.</string>
+    <string name="edit_section_identity">Identiteit</string>
+    <string name="edit_section_name_photo">Naam en foto</string>
+    <string name="edit_section_additional_fields">Extra velden</string>
+    <string name="edit_section_work">Werk</string>
+    <string name="edit_section_contact">Contactmethoden</string>
+    <string name="edit_section_networks">Netwerken</string>
+    <string name="edit_section_relationships">Relaties</string>
+    <string name="edit_section_misc">Overig</string>
+
+    <string name="edit_action_manage_address_books">Adresboeken beheren</string>
+    <string name="edit_action_manage_groups">Groepen beheren</string>
+
+
+    <string name="edit_action_show_more_fields">Meer velden tonen</string>
+    <string name="edit_action_show_fewer_fields">Minder velden tonen</string>
+    <string name="edit_delete_field_confirm_title">Dit veld verwijderen?</string>
+    <string name="edit_delete_field_confirm_message">Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="edit_action_more_countries">Meer…</string>
+    <string name="edit_action_clear_birthday">Verjaardag wissen</string>
+    <string name="edit_avatar_settings">Contactfoto</string>
+    <string name="edit_avatar_edit_dialog_title">Foto &amp; kleur bewerken</string>
+    <string name="edit_avatar_theme_colors">Contactkleur</string>
+    <string name="edit_action_pick_photo">Selecteren</string>
+    <string name="edit_action_remove_photo">Verwijderen</string>
+    <string name="edit_action_set_color">Kleur instellen</string>
+    <string name="edit_action_use_book_color">Adresboekkleur gebruiken</string>
+    <string name="edit_label_target_address_book">Doeladresboek</string>
+    <string name="edit_read_only_warning">Alleen-lezen adresboek. Wijzigingen kunnen niet worden opgeslagen.</string>
+
+    <!-- VCard Contact Types (for phone, email, address, etc.) -->
+
+    <string name="vcard_type_cell">GSM</string>
+    <string name="vcard_type_mobile">Mobiel</string>
+    <string name="vcard_type_fax">Fax</string>
+
+    <string name="vcard_type_pref">Voorkeur</string>
+    <string name="vcard_type_school">School</string>
+    <string name="vcard_type_parent">Ouder</string>
+    <string name="vcard_type_grandparent">Grootouder</string>
+    <string name="vcard_type_child">Kind</string>
+    <string name="vcard_type_student">Student</string>
+    <string name="vcard_type_spouse">Partner</string>
+    <string name="vcard_type_internet">Internet</string>
+    <string name="vcard_type_teacher">Leraar</string>
+    <string name="vcard_type_assistant">Assistent</string>
+    <string name="vcard_type_manager">Manager</string>
+
+    <!-- Settings Screen -->
+
+    <string name="settings_section_account">Account</string>
+    <string name="settings_section_data">Gegevensbeheer</string>
+    <string name="settings_section_address_books">Adresboeken</string>
+    <string name="settings_address_book_change_appearance">Pictogram/kleur wijzigen</string>
+    <string name="settings_address_book_reorder">Herschikken</string>
+    <string name="settings_group_order_title">Groepsvolgorde</string>
+    <string name="settings_group_rename">Groep hernoemen</string>
+    <string name="settings_address_book_appearance_dialog_title">Pictogram &amp; kleur kiezen</string>
+    <string name="settings_address_book_hue_slider_label">Adresboek-tint</string>
+    <string name="settings_group_rename_dialog_title">Groep hernoemen</string>
+    <string name="settings_group_name_label">Groepsnaam</string>
+    <string name="settings_group_action_rename">Hernoemen</string>
+    <string name="settings_export_title">Contacten exporteren</string>
+    <string name="settings_export_description">Alle contacten opslaan in een .vcf-bestand</string>
+    <string name="settings_import_title">Contacten importeren</string>
+    <string name="settings_import_description">Contacten toevoegen vanuit een .vcf-bestand</string>
+    <string name="settings_import_pick_book_title">Kies een adresboek</string>
+    <string name="settings_import_create_new_book">Nieuw adresboek aanmaken…</string>
+    <string name="settings_import_result_title">Importeren voltooid</string>
+    <string name="settings_import_remote_photos_title">Contactfoto\'s downloaden?</string>
+    <string name="settings_import_remote_photos_description">Sommige contacten in dit bestand hebben foto\'s die online worden gehost in plaats van in het bestand zelf. Ze nu downloaden betekent dat er verbinding wordt gemaakt met die servers.</string>
+    <string name="settings_import_remote_photos_download">Downloaden</string>
+    <string name="settings_import_remote_photos_skip">Overslaan</string>
+    <plurals name="settings_import_result_full">
+        <item quantity="one">Het contact is geïmporteerd.</item>
+        <item quantity="other">Alle %1$d contacten zijn geïmporteerd.</item>
+    </plurals>
+    <plurals name="settings_import_result_partial">
+        <item quantity="one">%1$d van %2$d contact geïmporteerd. %3$d kon niet worden gelezen.</item>
+        <item quantity="other">%1$d van %2$d contacten geïmporteerd. %3$d konden niet worden gelezen.</item>
+    </plurals>
+    <string name="settings_reset_onboarding_title">Eerste instelling opnieuw doorlopen</string>
+    <string name="settings_reset_onboarding_description">Toon de opstartschermen opnieuw</string>
+    <string name="address_lookup_photon_source_label">Meer informatie</string>
+    <string name="settings_address_book_unnamed">Naamloos adresboek</string>
+    <string name="local_address_book_name">Mijn contacten</string>
+    <string name="settings_address_book_add">Adresboek toevoegen</string>
+    <string name="settings_address_book_more_options">Meer opties</string>
+    <string name="settings_address_book_rename">Hernoemen</string>
+    <string name="settings_address_book_delete">Verwijderen</string>
+    <string name="settings_address_book_show">Tonen</string>
+    <string name="settings_address_book_hide">Verbergen</string>
+    <string name="settings_address_book_hidden_label">Verborgen</string>
+    <string name="settings_address_book_create">Aanmaken</string>
+    <string name="settings_address_book_create_dialog_title">Nieuw adresboek</string>
+    <string name="settings_address_book_rename_dialog_title">Adresboek hernoemen</string>
+    <string name="settings_address_book_delete_dialog_title">Adresboek verwijderen?</string>
+    <string name="settings_address_book_delete_dialog_description">Dit verwijdert \"%1$s\" en alle contacten erin van de server. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="settings_address_book_delete_dialog_description_local">Dit verwijdert \"%1$s\" en alle contacten erin van dit apparaat. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="settings_address_book_delete_dialog_empty_description">Dit verwijdert het lege adresboek \"%1$s\" van de server. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="settings_address_book_delete_dialog_empty_description_local">Dit verwijdert het lege adresboek \"%1$s\" van dit apparaat. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="settings_address_book_name_label">Adresboeknaam</string>
+    <string name="settings_address_book_location_title">Waar moet dit adresboek worden opgeslagen?</string>
+    <string name="settings_address_book_location_synced">Gesynchroniseerd (deze server)</string>
+    <string name="settings_address_book_location_local">Lokaal (alleen dit apparaat)</string>
+    <string name="settings_address_book_local_badge">Lokaal</string>
+    <string name="settings_address_book_generic_error">Er is iets misgegaan. Probeer het opnieuw.</string>
+    <string name="settings_address_book_creating">Nieuw adresboek wordt aangemaakt…</string>
+    <string name="settings_address_book_renaming">Adresboek wordt hernoemd…</string>
+    <string name="settings_address_book_deleting">Adresboek wordt verwijderd…</string>
+    <string name="settings_address_book_upload">Uploaden naar server</string>
+    <string name="settings_address_book_upload_dialog_title">Uploaden naar server</string>
+    <string name="settings_address_book_upload_dialog_description">Dit uploadt het adresboek en de contacten erin naar je account. Het blijft op dit apparaat totdat de upload is voltooid.</string>
+    <plurals name="settings_address_book_upload_result_full">
+        <item quantity="one">Het contact is naar de server geüpload.</item>
+        <item quantity="other">Alle %1$d contacten zijn naar de server geüpload.</item>
+    </plurals>
+    <plurals name="settings_address_book_upload_result_partial">
+        <item quantity="one">%1$d van %2$d contact geüpload. %3$d kon niet worden geüpload — probeer het opnieuw (het komt mogelijk in een apart adresboek terecht).</item>
+        <item quantity="other">%1$d van %2$d contacten geüpload. %3$d konden niet worden geüpload — probeer het opnieuw (ze komen mogelijk in een apart adresboek terecht).</item>
+    </plurals>
+
+
+    <!-- About Screen -->
+    <string name="about_title">Over</string>
+    <string name="about_description">Een op privacy gerichte, zelfstandige contacten-app voor Nextcloud en CardDAV.</string>
+    <string name="about_license_text">PolyForm Noncommercial License 1.0.0\nCopyright © 2026 Wesley Benica\nBroncode beschikbaar; alleen voor niet-commercieel gebruik.</string>
+    <string name="about_section_license">Licentie</string>
+    <string name="about_section_libraries">Opensourcebibliotheken</string>
+    <string name="about_action_show_licenses">Opensourcelicenties tonen</string>
+    <string name="about_section_privacy_policy">Privacybeleid</string>
+    <string name="about_privacy_policy_text">Hoe Corvid Contacts met je gegevens omgaat.</string>
+    <string name="about_section_eula">Gebruiksvoorwaarden (EULA)</string>
+    <string name="about_eula_text">De licentieovereenkomst voor eindgebruikers van Corvid Contacts.</string>
+    <string name="about_action_open_in_browser">Openen in browser</string>
+
+    <!-- Birthday Notifications -->
+    <string name="birthday_notification_channel_name">Verjaardagen</string>
+    <string name="birthday_notification_channel_description">Herinneringen voor verjaardagen van contacten</string>
+    <string name="birthday_notification_title">Verjaardag van contact</string>
+    <string name="birthday_notification_today">Heeft vandaag verjaardag!</string>
+    <string name="birthday_notification_tomorrow">Heeft morgen verjaardag!</string>
+
+    <!-- Common UI -->
+    <string name="common_try_again">Opnieuw proberen</string>
+    <string name="common_done">Klaar</string>
+    <string name="common_unknown">Onbekend</string>
+    <string name="common_address_book">Adresboek</string>
+    <string name="common_all_books">Alle adresboeken</string>
+    <string name="common_first_name">Voornaam</string>
+    <string name="common_last_name">Achternaam</string>
+    <string name="common_middle_name">Tweede voornaam</string>
+    <string name="common_prefix">Titel (Dr., Dhr., enz.)</string>
+    <string name="common_suffix">Achtervoegsel (Jr., PhD, enz.)</string>
+    <string name="common_display_name">Weergavenaam</string>
+    <string name="common_email">E-mail</string>
+    <string name="common_phone">Telefoon</string>
+    <string name="common_address">Adres</string>
+    <string name="common_street">Straat</string>
+    <string name="common_state_province">Staat / Provincie</string>
+    <string name="common_postal_code">Postcode</string>
+    <string name="common_birthday">Verjaardag</string>
+    <string name="common_company">Bedrijf</string>
+    <string name="common_job_title">Functietitel</string>
+    <string name="common_nickname">Bijnaam</string>
+    <string name="common_notes">Notities</string>
+    <string name="common_website">Website</string>
+    <string name="common_social">Sociaal</string>
+    <string name="common_country">Land</string>
+    <string name="common_city">Stad</string>
+    <string name="common_qr_code">QR-code</string>
+    <string name="common_work">Werk</string>
+    <string name="common_home">Privé</string>
+    <string name="common_other">Overig</string>
+    <string name="common_share">Delen</string>
+    <string name="common_settings">Instellingen</string>
+    <string name="common_about">Over</string>
+    <string name="common_type">Type</string>
+    <string name="common_groups">Groepen</string>
+    <string name="common_relationship">Relatie</string>
+    <string name="common_contact">Contact</string>
+    <string name="common_group">Groep</string>
+    <string name="detail_section_contact">Contactmethoden</string>
+    <string name="detail_section_web">Web</string>
+    <string name="detail_section_relationships">Relaties</string>
+    <string name="detail_section_other">Overig</string>
+    <string name="common_settings_phone_formatting">Telefoonnummeropmaak</string>
+    <string name="common_settings_country_code_title">Landcode toevoegen</string>
+    <string name="common_settings_country_code_description">Voegt automatisch de lokale landcode toe aan geformatteerde nummers</string>
+    <string name="common_settings_address_lookup_title">Adres opzoeken</string>
+    <string name="common_settings_address_lookup_description">Wanneer je een adres typt, kan de app suggesties doen door wat je typt naar een externe dienst te sturen.</string>
+    <string name="common_settings_theme_title">Thema</string>
+    <string name="common_settings_theme_system">Systeeminstelling volgen</string>
+    <string name="common_settings_theme_light">Lichte modus</string>
+    <string name="common_settings_theme_dark">Donkere modus</string>
+    <string name="common_address_lookup_photon_description">Privacyvriendelijk; logs worden slechts kort bewaard en nooit gedeeld.</string>
+    <string name="common_address_lookup_google_description">Nauwkeuriger; zoekgegevens worden naar Google verzonden.</string>
+    <string name="common_qr_scan_instruction">Scan deze code met een ander apparaat om dit contact toe te voegen.</string>
+    <string name="edit_unsaved_changes_title">Niet-opgeslagen wijzigingen</string>
+    <string name="edit_unsaved_changes_message">Je hebt niet-opgeslagen wijzigingen. Wil je ze opslaan of verwerpen?</string>
+    <string name="edit_label_url">URL</string>
+    <string name="common_error_unknown">Er is een onbekende fout opgetreden</string>
+    <string name="common_error_sync_title">Synchronisatie mislukt</string>
+    <string name="common_error_step1">Je Nextcloud-gebruikersprofiel kon niet worden gevonden.</string>
+    <string name="common_error_step2">Je adresboeken konden niet worden gevonden.</string>
+    <string name="common_error_step3">Je contactenlijsten konden niet worden gedownload.</string>
+    <string name="common_error_401">Sessie verlopen. Log opnieuw in.</string>
+    <string name="common_error_birthday">Een contact heeft een ongeldig verjaardagsformaat.</string>
+    <string name="common_share_contact">Contact delen</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Snelle actie voor een contact</string>
+    <string name="widget_config_select_action">Actie selecteren</string>
+    <string name="widget_config_action_prompt">Wat wil je doen met %1$s?</string>
+    <string name="widget_action_call">Bellen</string>
+    <string name="widget_action_text">Sms versturen</string>
+    <string name="widget_action_email">E-mail versturen</string>
+    <string name="widget_action_directions">Route ophalen</string>
+
+    <string name="ok">OK</string>
+    <string name="list_title_select_contact">Selecteer een contact</string>
+    <string name="list_title_select_merge_target">Kies een contact om samen te voegen</string>
+    <string name="detail_share_qr_code">QR-code tonen</string>
+    <string name="vcard_type_friend">Vriend</string>
+    <string name="vcard_type_websites">Website</string>
+    <string name="vcard_type_main">Primair</string>
+    <string name="licenses_title">Opensourcelicenties</string>
+    <string name="list_empty_no_books">Geen adresboeken geselecteerd</string>
+    <string name="list_empty_no_books_description">Al je contacten zijn verborgen. Selecteer hieronder een adresboek om ze te tonen.</string>
+
+    <string name="list_action_clear_group_filter">Groepsfilter wissen</string>
+    <string name="list_menu_delete_local_data">Lokale gegevens verwijderen</string>
+    <string name="list_delete_local_data_confirm_title">Lokale gegevens verwijderen?</string>
+    <string name="list_delete_local_data_confirm_message">Dit verwijdert permanent alle contacten en adresboeken die in Corvid Contacts zijn opgeslagen — andere contacten op je apparaat blijven ongemoeid. Er is ook geen kopie op een server, dus exporteer eerst een back-up als je ze wilt bewaren.</string>
+    <string name="list_delete_local_data_empty_message">Dit reset alle app-instellingen en -gegevens. Je contactenlijst is al leeg, dus er gaat niets verloren behalve je voorkeuren.</string>
+    <string name="list_delete_local_data_confirm_action">Alles verwijderen</string>
+    <string name="list_action_clear_self">Verwijderen</string>
+    <string name="widget_placeholder">Widget configureren</string>
+    <string name="widget_photo_description">Contactfoto</string>
+    <string name="widget_confirm_title">Detail bevestigen</string>
+    <string name="widget_confirm_save">Opslaan</string>
+    <string name="widget_config_select_detail">%1$s selecteren</string>
+    <string name="widget_action_view">Contact openen</string>
+    <string name="button_open_menu">Menu openen</string>
+
+    <!-- Onboarding Screen -->
+    <string name="onboarding_title">Instellen</string>
+    <string name="onboarding_setup_title">Corvid personaliseren</string>
+    <string name="onboarding_setup_description">Corvid synchroniseert je contacten op de achtergrond…</string>
+    <string name="onboarding_setup_description_complete">Synchronisatie voltooid! Je kunt doorgaan met instellen.</string>
+    <string name="onboarding_setup_syncing">Synchronisatie wordt afgerond…</string>
+    <string name="onboarding_setup_transparency_title">Opmerking</string>
+    <string name="onboarding_local_migration_title">Wat gebeurt er met je lokale contacten?</string>
+    <string name="onboarding_local_migration_description">Je hebt contacten die nog nergens zijn gesynchroniseerd. Kies voor elk adresboek of het lokaal op dit apparaat blijft of naar je nieuwe server wordt geüpload.</string>
+    <string name="onboarding_local_migration_keep_separate">Lokaal op dit apparaat houden</string>
+    <string name="onboarding_local_migration_upload">Uploaden naar deze server</string>
+    <string name="onboarding_local_migration_discard">Verwerpen (verwijderen)</string>
+    <string name="onboarding_local_migration_uploading">Uploaden…</string>
+    <string name="onboarding_local_migration_rename_hint">Optioneel hernoemen vóór het uploaden</string>
+    <string name="onboarding_address_lookup_off_title">Uit</string>
+    <string name="onboarding_address_lookup_off_description">Geen opzoeken bij het invoeren van adressen</string>
+    <string name="onboarding_action_continue">Doorgaan</string>
+    <string name="onboarding_birthday_title">Verjaardagsherinneringen</string>
+    <string name="onboarding_birthday_description_has_birthdays">We hebben contacten met verjaardagen gevonden! Wil je op hun speciale dag een melding ontvangen?</string>
+    <string name="onboarding_birthday_description_no_birthdays">Wil je een melding ontvangen wanneer je contacten jarig zijn?</string>
+    <string name="onboarding_action_enable_notifications">Meldingen inschakelen</string>
+    <string name="onboarding_action_not_now">Niet nu</string>
+    <string name="onboarding_action_keep_enabled">Ingeschakeld houden</string>
+    <string name="onboarding_action_turn_off">Uitschakelen</string>
+    <string name="onboarding_self_contact_title">Jouw profiel</string>
+    <string name="onboarding_self_contact_description">Kies de contactkaart met jouw eigen gegevens. Dit maakt delen met anderen makkelijker.</string>
+    <string name="onboarding_self_contact_empty_syncing">Je gesynchroniseerde contacten verschijnen hier binnenkort. Zodra dat gebeurt, kun je die van jou uit de lijst selecteren.</string>
+    <string name="onboarding_self_contact_empty_local">Je contactenlijst is leeg. Je kunt nu je gegevens toevoegen of deze stap voor later overslaan.</string>
+    <string name="onboarding_self_contact_search_label">Contacten zoeken</string>
+    <string name="onboarding_self_contact_create_new">Mijn gegevens toevoegen</string>
+    <string name="onboarding_action_skip">Voorlopig overslaan</string>
+
+    <!-- Address Book Icon Names -->
+    <string name="contact_icon_person">Persoon</string>
+    <string name="contact_icon_work">Werk</string>
+    <string name="contact_icon_group">Groep</string>
+    <string name="contact_icon_school">School</string>
+    <string name="contact_icon_book">Boek</string>
+
+    <!-- Search Bottom Bar -->
+    <string name="list_search_clear">Zoekopdracht wissen</string>
+    <string name="list_filter_button_description">Filters</string>
+
+    <!-- Merge Contacts -->
+    <string name="merge_review_title">Contacten samenvoegen</string>
+    <string name="merge_review_keep_both">Beide behouden</string>
+    <string name="merge_review_confirm_action">Contacten samenvoegen</string>
+    <string name="merge_confirm_dialog_title">Deze contacten samenvoegen?</string>
+    <string name="merge_confirm_dialog_message">%1$s wordt samengevoegd met %2$s en vervolgens verwijderd. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="merge_unsaved_changes_title">Niet-opgeslagen wijzigingen</string>
+    <string name="merge_unsaved_changes_message">Je hebt niet-opgeslagen wijzigingen in de samenvoeging. Wil je doorgaan met samenvoegen of je wijzigingen verwerpen?</string>
+    <string name="merge_action_continue_merge">Samenvoegen voortzetten</string>
+    <string name="merge_conflict_label">Vereist je controle</string>
+    <string name="merge_notes_use_survivor">Deze notitie gebruiken</string>
+    <string name="merge_notes_use_absorbed">Andere notitie gebruiken</string>
+    <string name="merge_conflict_field_photo">Foto</string>
+    <string name="merge_conflict_photo_remove">Geen foto</string>
+    <string name="detail_share_selection_display_name">Weergavenaam</string>
+    <string name="detail_share_selection_nickname">Bijnaam</string>
+    <string name="detail_share_selection_first_name">Voornaam</string>
+    <string name="detail_share_selection_last_name">Achternaam</string>
+    <string name="detail_share_selection_other_name">Overige naamdelen (tweede voornaam, titel, enz.)</string>
+    <string name="detail_share_selection_photo">Profielfoto</string>
+    <string name="detail_share_selection_relationship">Relatie (%1$s)</string>
+</resources>
