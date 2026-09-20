@@ -403,6 +403,7 @@ private fun SettingsScreen(
                         CreateAddressBookDialog(
                             isSubmitting = isBusy,
                             hasServerConnection = serverUrl != null,
+                            existingColors = addressBooks.map { it.colorInt },
                             onConfirm = { name, color, forceLocal, iconName ->
                                 scope.launch {
                                     isBusy = true

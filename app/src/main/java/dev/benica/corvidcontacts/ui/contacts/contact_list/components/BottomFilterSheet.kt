@@ -294,6 +294,7 @@ fun BottomFilterSheetContent(
         CreateAddressBookDialog(
             isSubmitting = isSubmittingAddressBookAction,
             hasServerConnection = hasServerConnection,
+            existingColors = manageableAddressBooks.map { it.colorInt },
             onConfirm = { name, color, forceLocal, iconName ->
                 if (!isSubmittingAddressBookAction) {
                     isSubmittingAddressBookAction = true

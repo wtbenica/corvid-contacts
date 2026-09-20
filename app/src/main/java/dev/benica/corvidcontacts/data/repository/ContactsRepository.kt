@@ -20,6 +20,7 @@ import dev.benica.corvidcontacts.data.remote.DavAddressBook
 import dev.benica.corvidcontacts.data.remote.DavParser
 import dev.benica.corvidcontacts.data.remote.NextcloudApiProvider
 import dev.benica.corvidcontacts.data.remote.NextcloudService
+import dev.benica.corvidcontacts.extensions.farthestHue
 import dev.benica.corvidcontacts.extensions.oklch
 import dev.benica.corvidcontacts.extensions.toOklch
 import dev.benica.corvidcontacts.ui.contacts.PhoneFormatter
@@ -37,8 +38,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.util.UUID
-import kotlin.math.abs
-import kotlin.math.min
 
 /**
  * Stats for a sync session.
@@ -167,38 +166,6 @@ class ContactsRepository(
             }
 
         return matchedBooks + newBooks
-    }
-
-    private fun farthestHue(usedHues: List<Float>): Float {
-        if (usedHues.isEmpty()) return 0f
-        var bestHue = 0f
-        var bestDistance = -1f
-        var candidate = 0f
-        while (candidate < 360f) {
-            val distance = usedHues.minOf {
-                circularHueDistance(
-                    candidate,
-                    it
-                )
-            }
-            if (distance > bestDistance) {
-                bestDistance = distance
-                bestHue = candidate
-            }
-            candidate += 1f
-        }
-        return bestHue
-    }
-
-    private fun circularHueDistance(
-        a: Float,
-        b: Float,
-    ): Float {
-        val diff = abs(a - b) % 360f
-        return min(
-            diff,
-            360f - diff
-        )
     }
 
     /**

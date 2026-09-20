@@ -30,7 +30,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
+import dev.benica.corvidcontacts.extensions.farthestHue
 import dev.benica.corvidcontacts.extensions.oklch
+import dev.benica.corvidcontacts.extensions.toOklch
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
@@ -42,6 +44,9 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSliderDefaults
  * local-only one. With no server connected at all, there's nothing to ask: the new book is always
  * local, same as today.
  *
+ * The color slider starts at the hue farthest from [existingColors] (the colors of every current
+ * address book, hidden ones included), so a new book is distinct by default but still adjustable.
+ *
  * The icon starts as the guess from the typed name and follows it until the user picks one;
  * [onConfirm] gets `null` for the icon if they never did, so the book keeps guessing from its name.
  */
@@ -49,11 +54,12 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSliderDefaults
 fun CreateAddressBookDialog(
     isSubmitting: Boolean,
     hasServerConnection: Boolean,
+    existingColors: List<Int>,
     onConfirm: (name: String, color: Color, forceLocal: Boolean, iconName: String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
-    var hue by remember { mutableFloatStateOf(0f) }
+    var hue by remember { mutableFloatStateOf(farthestHue(existingColors.map { Color(it).toOklch().h })) }
     var pickedIconName by remember { mutableStateOf<String?>(null) }
     var forceLocal by remember { mutableStateOf(false) }
     val selectedColor = oklch(

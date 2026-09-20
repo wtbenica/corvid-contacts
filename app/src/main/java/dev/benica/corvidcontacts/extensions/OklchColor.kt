@@ -3,9 +3,11 @@
 package dev.benica.corvidcontacts.extensions
 
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cbrt
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -138,3 +140,30 @@ fun oklch(
     chroma,
     hueDegrees
 ).toColor(alpha)
+
+/**
+ * The whole-degree hue (0-359) whose nearest neighbor among [usedHues] is as far away as possible
+ * around the color wheel, used to give a new address book a color distinct from the existing
+ * ones. Ties go to the lowest hue, so repeatedly adding the result to [usedHues] gives 0, 180, 90,
+ * 270, 45, 135, 225, 315, ... With nothing used yet the result is 0.
+ */
+fun farthestHue(usedHues: List<Float>): Float {
+    if (usedHues.isEmpty()) return 0f
+    var bestHue = 0f
+    var bestDistance = -1f
+    var candidate = 0f
+    while (candidate < 360f) {
+        val distance = usedHues.minOf { circularHueDistance(candidate, it) }
+        if (distance > bestDistance) {
+            bestDistance = distance
+            bestHue = candidate
+        }
+        candidate += 1f
+    }
+    return bestHue
+}
+
+private fun circularHueDistance(a: Float, b: Float): Float {
+    val diff = abs(a - b) % 360f
+    return min(diff, 360f - diff)
+}
