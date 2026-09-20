@@ -950,6 +950,7 @@ class ContactsRepository(
         displayName: String,
         colorInt: Int,
         forceLocal: Boolean = false,
+        iconName: String? = null,
     ): Result<AddressBookEntity> = syncMutex.withLock {
         val credentials = authRepository.credentials.first()
 
@@ -958,7 +959,8 @@ class ContactsRepository(
                 val entity = AddressBookEntity(
                     href = "$LOCAL_ADDRESS_BOOK_PREFIX${UUID.randomUUID()}",
                     displayName = displayName,
-                    colorInt = colorInt
+                    colorInt = colorInt,
+                    iconName = iconName
                 )
                 addressBookDao.insertAddressBooks(listOf(entity))
                 settingsRepository.markLocalBooksResolved(listOf(entity.href))
@@ -1028,7 +1030,7 @@ class ContactsRepository(
                 .firstOrNull { it.href !in hrefsBeforeSync }
                 ?: return Result.failure(Exception("Address book created but not found after sync"))
 
-            val coloredBook = newBook.copy(colorInt = colorInt)
+            val coloredBook = newBook.copy(colorInt = colorInt, iconName = iconName)
             addressBookDao.updateAddressBook(coloredBook)
             Result.success(coloredBook)
         } catch (e: Exception) {

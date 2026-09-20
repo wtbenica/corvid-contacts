@@ -115,11 +115,12 @@ fun ContactListScreen(
                 )
             },
             onUpdateAddressBookOrder = { viewModel.updateAddressBookOrder(it) },
-            onCreateAddressBook = { name, color, forceLocal ->
+            onCreateAddressBook = { name, color, forceLocal, iconName ->
                 viewModel.createAddressBook(
                     name,
                     color,
-                    forceLocal
+                    forceLocal,
+                    iconName
                 )
             },
             onRenameAddressBook = { book, newName ->

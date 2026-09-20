@@ -839,15 +839,17 @@ class ContactsViewModel(
         }
     }
 
-    /** Creates a new address book with [displayName] and [color], see [ContactsRepository.createAddressBook]. */
+    /** Creates a new address book with [displayName], [color], and optional [iconName], see [ContactsRepository.createAddressBook]. */
     suspend fun createAddressBook(
         displayName: String,
         color: Color,
         forceLocal: Boolean = false,
+        iconName: String? = null,
     ): Result<AddressBookEntity> = repository.createAddressBook(
         displayName,
         color.toArgb(),
-        forceLocal
+        forceLocal,
+        iconName
     )
 
     /** Renames [addressBook] on the server, see [ContactsRepository.renameAddressBook]. */

@@ -103,7 +103,7 @@ internal val mockListActions = ContactListActions(
     onSelectAddressBook = {},
     onUpdateAddressBookAppearance = { _, _, _ -> },
     onUpdateAddressBookOrder = {},
-    onCreateAddressBook = { _, _, _ ->
+    onCreateAddressBook = { _, _, _, _ ->
         Result.success(
             AddressBookEntity(
                 href = "preview",

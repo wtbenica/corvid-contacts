@@ -74,7 +74,7 @@ fun BottomFilterSheet(
     onGroupSelected: (String?) -> Unit,
     onUpdateAddressBookAppearance: (AddressBookEntity, Color, String?) -> Unit,
     onUpdateAddressBookOrder: (List<AddressBookEntity>) -> Unit,
-    onCreateAddressBook: suspend (String, Color, Boolean) -> Result<AddressBookEntity>,
+    onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
     onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
     onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
     onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
@@ -129,7 +129,7 @@ fun BottomFilterSheetContent(
     onGroupSelected: (String?) -> Unit,
     onUpdateAddressBookAppearance: (AddressBookEntity, Color, String?) -> Unit,
     onUpdateAddressBookOrder: (List<AddressBookEntity>) -> Unit,
-    onCreateAddressBook: suspend (String, Color, Boolean) -> Result<AddressBookEntity>,
+    onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
     onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
     onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
     onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
@@ -286,14 +286,15 @@ fun BottomFilterSheetContent(
         CreateAddressBookDialog(
             isSubmitting = isSubmittingAddressBookAction,
             hasServerConnection = hasServerConnection,
-            onConfirm = { name, color, forceLocal ->
+            onConfirm = { name, color, forceLocal, iconName ->
                 if (!isSubmittingAddressBookAction) {
                     isSubmittingAddressBookAction = true
                     scope.launch {
                         val result = onCreateAddressBook(
                             name,
                             color,
-                            forceLocal
+                            forceLocal,
+                            iconName
                         )
                         isSubmittingAddressBookAction = false
                         if (result.isSuccess) {
@@ -511,7 +512,7 @@ private fun BottomFilterSheetPreview() {
             onGroupSelected = { },
             onUpdateAddressBookAppearance = { _, _, _ -> },
             onUpdateAddressBookOrder = {},
-            onCreateAddressBook = { _, _, _ ->
+            onCreateAddressBook = { _, _, _, _ ->
                 Result.success(
                     AddressBookEntity(
                         href = "preview",

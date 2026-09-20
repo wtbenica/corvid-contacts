@@ -144,15 +144,17 @@ class SettingsViewModel(
         downloadRemotePhotos: Boolean,
     ): ImportResult = repository.importVCardText(vcardText, targetAddressBookHref, downloadRemotePhotos)
 
-    /** Creates a new address book with [displayName] and [color], see [ContactsRepository.createAddressBook]. */
+    /** Creates a new address book with [displayName], [color], and optional [iconName], see [ContactsRepository.createAddressBook]. */
     suspend fun createAddressBook(
         displayName: String,
         color: Color,
         forceLocal: Boolean = false,
+        iconName: String? = null,
     ): Result<AddressBookEntity> = repository.createAddressBook(
         displayName,
         color.toArgb(),
-        forceLocal
+        forceLocal,
+        iconName
     )
 
     /** Logs the user out, clearing credentials and that account's local data. */

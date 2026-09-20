@@ -71,7 +71,7 @@ data class ContactListActions(
     val onSelectAddressBook: (String?) -> Unit,
     val onUpdateAddressBookAppearance: (AddressBookEntity, Color, String?) -> Unit,
     val onUpdateAddressBookOrder: (List<AddressBookEntity>) -> Unit,
-    val onCreateAddressBook: suspend (String, Color, Boolean) -> Result<AddressBookEntity>,
+    val onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
     val onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
     val onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
     val onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,

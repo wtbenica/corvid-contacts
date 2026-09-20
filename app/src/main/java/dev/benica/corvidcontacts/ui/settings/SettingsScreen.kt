@@ -101,7 +101,7 @@ fun SettingsScreen(
         onImport = { text, href, downloadRemotePhotos ->
             viewModel.importContacts(text, href, downloadRemotePhotos)
         },
-        onCreateAddressBook = { name, color, forceLocal -> viewModel.createAddressBook(name, color, forceLocal) },
+        onCreateAddressBook = { name, color, forceLocal, iconName -> viewModel.createAddressBook(name, color, forceLocal, iconName) },
         onResetOnboarding = { viewModel.resetOnboarding() },
         onAboutClick = onAboutClick,
         onBack = onBack,
@@ -129,7 +129,7 @@ private fun SettingsScreen(
     onExport: suspend () -> String,
     onCheckImportHasRemotePhotos: (String) -> Boolean,
     onImport: suspend (String, String, Boolean) -> ImportResult,
-    onCreateAddressBook: suspend (String, Color, Boolean) -> Result<AddressBookEntity>,
+    onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
     onResetOnboarding: () -> Unit,
     onAboutClick: () -> Unit,
     onBack: () -> Unit,
@@ -409,10 +409,10 @@ private fun SettingsScreen(
                         CreateAddressBookDialog(
                             isSubmitting = isBusy,
                             hasServerConnection = serverUrl != null,
-                            onConfirm = { name, color, forceLocal ->
+                            onConfirm = { name, color, forceLocal, iconName ->
                                 scope.launch {
                                     isBusy = true
-                                    val result = onCreateAddressBook(name, color, forceLocal)
+                                    val result = onCreateAddressBook(name, color, forceLocal, iconName)
                                     isBusy = false
                                     result.onSuccess { book ->
                                         showCreateBookDialog = false
@@ -569,7 +569,7 @@ fun SettingsScreenPreview() {
             onExport = { "potato salad" },
             onCheckImportHasRemotePhotos = { false },
             onImport = { _, _, _ -> ImportResult(imported = 0, failed = 0) },
-            onCreateAddressBook = { _, _, _ -> Result.success(AddressBookEntity(href = "", displayName = null, colorInt = 0)) },
+            onCreateAddressBook = { _, _, _, _ -> Result.success(AddressBookEntity(href = "", displayName = null, colorInt = 0)) },
             onResetOnboarding = {},
             onAboutClick = {},
             onBack = {},

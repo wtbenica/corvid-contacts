@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,37 +31,44 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.extensions.oklch
+import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
-import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSlider
 import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSliderDefaults
 
 /**
- * Prompts for a name and initial color for a brand-new address book, plus - when [hasServerConnection]
- * is true - whether it should be a synced (server) book or a deliberately local-only one. With no
- * server connected at all, there's nothing to ask: the new book is always local, same as today.
+ * Prompts for a name, initial color, and icon for a brand-new address book, plus - when
+ * [hasServerConnection] is true - whether it should be a synced (server) book or a deliberately
+ * local-only one. With no server connected at all, there's nothing to ask: the new book is always
+ * local, same as today.
+ *
+ * The icon starts as the guess from the typed name and follows it until the user picks one;
+ * [onConfirm] gets `null` for the icon if they never did, so the book keeps guessing from its name.
  */
 @Composable
 fun CreateAddressBookDialog(
     isSubmitting: Boolean,
     hasServerConnection: Boolean,
-    onConfirm: (name: String, color: Color, forceLocal: Boolean) -> Unit,
+    onConfirm: (name: String, color: Color, forceLocal: Boolean, iconName: String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var hue by remember { mutableFloatStateOf(0f) }
+    var pickedIconName by remember { mutableStateOf<String?>(null) }
     var forceLocal by remember { mutableStateOf(false) }
+    val selectedColor = oklch(
+        HueSliderDefaults.LIGHTNESS,
+        HueSliderDefaults.CHROMA,
+        hue
+    )
 
     fun submit() {
         if (name.isNotBlank() && !isSubmitting) {
             onConfirm(
                 name.trim(),
-                oklch(
-                    HueSliderDefaults.LIGHTNESS,
-                    HueSliderDefaults.CHROMA,
-                    hue
-                ),
-                forceLocal
+                selectedColor,
+                forceLocal,
+                pickedIconName
             )
         }
     }
@@ -87,24 +92,14 @@ fun CreateAddressBookDialog(
                     keyboardActions = KeyboardActions(onDone = { submit() }),
                 )
                 Spacer(Modifier.height(16.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    HueSlider(
-                        hue = hue,
-                        onHueChange = { hue = it },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Surface(
-                        shape = CircleShape,
-                        color = oklch(
-                            HueSliderDefaults.LIGHTNESS,
-                            HueSliderDefaults.CHROMA,
-                            hue
-                        ),
-                        modifier = Modifier
-                            .size(48.dp)
-                    ) {}
-                }
+                AddressBookAppearancePicker(
+                    hue = hue,
+                    onHueChange = { hue = it },
+                    selectedColor = selectedColor,
+                    selectedIconName = pickedIconName
+                        ?: ContactColors.guessIconNameForAddressBook(name),
+                    onIconSelected = { pickedIconName = it },
+                )
 
                 if (hasServerConnection) {
                     Spacer(Modifier.height(16.dp))

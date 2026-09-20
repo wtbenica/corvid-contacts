@@ -2,31 +2,18 @@
 
 package dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.extensions.oklch
 import dev.benica.corvidcontacts.extensions.toOklch
-import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
-import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSlider
 import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSliderDefaults
 
 /**
@@ -58,44 +45,18 @@ fun AddressBookAppearanceDialog(
         title = R.string.settings_address_book_appearance_dialog_title,
         content = {
             Column {
-                HueSlider(
+                AddressBookAppearancePicker(
                     hue = hue,
                     onHueChange = { hue = it },
-                    modifier = Modifier.fillMaxWidth()
+                    selectedColor = selectedColor,
+                    selectedIconName = iconName,
+                    onIconSelected = { iconName = it },
                 )
-                Spacer(Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    ContactColors.iconPalette.forEach { (name, icon) ->
-                        val isSelected = name == iconName
-                        Surface(
-                            shape = CircleShape,
-                            color = if (isSelected) selectedColor.copy(alpha = 0.18f) else Color.Transparent,
-                        ) {
-                            CCIconButton(
-                                icon = icon,
-                                contentDescription = ContactColors.iconPaletteLabels[name]
-                                    ?: R.string.common_unknown,
-                                onClick = { iconName = name },
-                                color = if (isSelected) selectedColor else MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                }
             }
         },
         confirmButton = R.string.ok,
         onConfirm = {
-            onConfirm(
-                oklch(
-                    HueSliderDefaults.LIGHTNESS,
-                    HueSliderDefaults.CHROMA,
-                    hue
-                ),
-                iconName
-            )
+            onConfirm(selectedColor, iconName)
             onDismiss()
         },
         dismissButton = R.string.action_cancel,

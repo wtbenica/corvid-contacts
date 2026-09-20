@@ -540,8 +540,8 @@ private fun AdaptiveFilterButton(viewModel: ContactsViewModel) {
                                 viewModel.updateAddressBookAppearance(book, color, iconName)
                             },
                             onUpdateAddressBookOrder = { viewModel.updateAddressBookOrder(it) },
-                            onCreateAddressBook = { name, color, forceLocal ->
-                                viewModel.createAddressBook(name, color, forceLocal)
+                            onCreateAddressBook = { name, color, forceLocal, iconName ->
+                                viewModel.createAddressBook(name, color, forceLocal, iconName)
                             },
                             onRenameAddressBook = { book, newName ->
                                 viewModel.renameAddressBook(book, newName)
