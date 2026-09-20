@@ -339,6 +339,7 @@ fun StatelessContactListScreen(
                 onRenameAddressBook = actions.onRenameAddressBook,
                 onDeleteAddressBook = actions.onDeleteAddressBook,
                 onUploadLocalAddressBook = actions.onUploadLocalAddressBook,
+                onSetUpSync = actions.onSetUpSync,
                 onToggleAddressBookVisibility = actions.onToggleAddressBookVisibility,
                 onUpdateGroupOrder = actions.onUpdateGroupOrder,
                 onRenameGroup = actions.onRenameGroup,

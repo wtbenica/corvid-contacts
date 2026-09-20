@@ -40,6 +40,7 @@ import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.extensions.surface
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.AddressBookAppearanceDialog
@@ -78,6 +79,7 @@ fun BottomFilterSheet(
     onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
     onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
     onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
+    onSetUpSync: () -> Unit,
     onToggleAddressBookVisibility: (AddressBookEntity) -> Unit,
     onUpdateGroupOrder: (List<String>) -> Unit,
     onRenameGroup: (String, String) -> Unit,
@@ -106,6 +108,10 @@ fun BottomFilterSheet(
             onRenameAddressBook = onRenameAddressBook,
             onDeleteAddressBook = onDeleteAddressBook,
             onUploadLocalAddressBook = onUploadLocalAddressBook,
+            onSetUpSync = {
+                setFilterState(false)
+                onSetUpSync()
+            },
             onToggleAddressBookVisibility = onToggleAddressBookVisibility,
             onUpdateGroupOrder = onUpdateGroupOrder,
             onRenameGroup = onRenameGroup,
@@ -133,6 +139,7 @@ fun BottomFilterSheetContent(
     onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
     onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
     onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
+    onSetUpSync: () -> Unit,
     onToggleAddressBookVisibility: (AddressBookEntity) -> Unit,
     onUpdateGroupOrder: (List<String>) -> Unit,
     onRenameGroup: (String, String) -> Unit,
@@ -149,6 +156,7 @@ fun BottomFilterSheetContent(
     var addressBookToRename by remember { mutableStateOf<AddressBookEntity?>(null) }
     var addressBookToDelete by remember { mutableStateOf<AddressBookEntity?>(null) }
     var addressBookToUpload by remember { mutableStateOf<AddressBookEntity?>(null) }
+    var showSetUpSyncPrompt by remember { mutableStateOf(false) }
     var selectedBookForAppearance by remember { mutableStateOf<AddressBookEntity?>(null) }
     var isSubmittingAddressBookAction by remember { mutableStateOf(false) }
     var showManageGroupsDialog by remember { mutableStateOf(false) }
@@ -259,7 +267,7 @@ fun BottomFilterSheetContent(
             onRequestAppearance = { selectedBookForAppearance = it },
             onRequestRename = { addressBookToRename = it },
             onRequestDelete = { addressBookToDelete = it },
-            onRequestUpload = { addressBookToUpload = it },
+            onRequestUpload = { if (hasServerConnection) addressBookToUpload = it else showSetUpSyncPrompt = true },
             onToggleVisibility = onToggleAddressBookVisibility,
             onDismiss = { showManageBooksDialog = false }
         )
@@ -343,6 +351,22 @@ fun BottomFilterSheetContent(
                 }
             },
             onDismiss = { if (!isSubmittingAddressBookAction) addressBookToRename = null }
+        )
+    }
+
+    // Uploading needs a server; with none connected, offer to set one up instead of failing.
+    if (showSetUpSyncPrompt) {
+        CCAlertDialog(
+            onDismissRequest = { showSetUpSyncPrompt = false },
+            title = R.string.settings_address_book_upload_dialog_title,
+            content = { Text(stringResource(R.string.settings_address_book_upload_needs_server)) },
+            confirmButton = R.string.list_menu_set_up_sync,
+            onConfirm = {
+                showSetUpSyncPrompt = false
+                showManageBooksDialog = false
+                onSetUpSync()
+            },
+            dismissButton = R.string.action_cancel,
         )
     }
 
@@ -524,6 +548,7 @@ private fun BottomFilterSheetPreview() {
             },
             onRenameAddressBook = { _, _ -> Result.success(Unit) },
             onDeleteAddressBook = { Result.success(Unit) },
+            onSetUpSync = {},
             onUploadLocalAddressBook = { _, _ ->
                 Result.success(
                     AddressBookUploadResult(

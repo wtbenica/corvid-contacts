@@ -291,6 +291,7 @@
     <string name="settings_address_book_upload">Auf Server hochladen</string>
     <string name="settings_address_book_upload_dialog_title">Auf Server hochladen</string>
     <string name="settings_address_book_upload_dialog_description">Dadurch werden das Adressbuch und seine Kontakte in dein Konto hochgeladen. Es bleibt auf diesem Gerät, bis der Upload abgeschlossen ist.</string>
+    <string name="settings_address_book_upload_needs_server">Zum Hochladen wird ein Server benötigt, und es ist noch keiner verbunden. Synchronisierung jetzt einrichten?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="one">Der Kontakt wurde auf den Server hochgeladen.</item>
         <item quantity="other">Alle %1$d Kontakte wurden auf den Server hochgeladen.</item>

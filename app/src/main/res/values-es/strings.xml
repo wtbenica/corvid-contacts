@@ -303,6 +303,7 @@
     <string name="settings_address_book_upload">Subir al servidor</string>
     <string name="settings_address_book_upload_dialog_title">Subir al servidor</string>
     <string name="settings_address_book_upload_dialog_description">Esto sube la libreta de direcciones y sus contactos a tu cuenta. Permanecerá en este dispositivo hasta que la subida termine.</string>
+    <string name="settings_address_book_upload_needs_server">Para subirla hace falta un servidor, y todavía no hay ninguno conectado. ¿Configurar la sincronización ahora?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="one">Se subió el contacto al servidor.</item>
         <item quantity="many">Se subieron los %1$d contactos al servidor.</item>

@@ -291,6 +291,7 @@
     <string name="settings_address_book_upload">Uploaden naar server</string>
     <string name="settings_address_book_upload_dialog_title">Uploaden naar server</string>
     <string name="settings_address_book_upload_dialog_description">Dit uploadt het adresboek en de contacten erin naar je account. Het blijft op dit apparaat totdat de upload is voltooid.</string>
+    <string name="settings_address_book_upload_needs_server">Uploaden heeft een server nodig en er is er nog geen verbonden. Synchronisatie nu instellen?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="one">Het contact is naar de server geüpload.</item>
         <item quantity="other">Alle %1$d contacten zijn naar de server geüpload.</item>

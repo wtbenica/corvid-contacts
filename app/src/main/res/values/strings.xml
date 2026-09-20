@@ -303,6 +303,7 @@
     <string name="settings_address_book_upload">Upload to Server</string>
     <string name="settings_address_book_upload_dialog_title">Upload to Server</string>
     <string name="settings_address_book_upload_dialog_description">This uploads the address book and its contacts to your account. It stays on this device until the upload finishes.</string>
+    <string name="settings_address_book_upload_needs_server">Uploading needs a server, and none is connected yet. Set up sync now?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="one">Uploaded the contact to the server.</item>
         <item quantity="other">Uploaded all %1$d contacts to the server.</item>

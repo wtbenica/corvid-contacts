@@ -303,6 +303,7 @@
     <string name="settings_address_book_upload">Envoyer vers le serveur</string>
     <string name="settings_address_book_upload_dialog_title">Envoyer vers le serveur</string>
     <string name="settings_address_book_upload_dialog_description">Ceci envoie le carnet d\'adresses et ses contacts vers votre compte. Il reste sur cet appareil jusqu\'à la fin de l\'envoi.</string>
+    <string name="settings_address_book_upload_needs_server">L\'envoi nécessite un serveur, et aucun n\'est encore connecté. Configurer la synchronisation maintenant ?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="one">%1$d contact a été envoyé au serveur.</item>
         <item quantity="many">Les %1$d contacts ont été envoyés au serveur.</item>

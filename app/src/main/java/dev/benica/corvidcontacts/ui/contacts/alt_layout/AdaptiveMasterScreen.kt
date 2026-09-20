@@ -324,7 +324,7 @@ fun AdaptiveMasterScreen(
                     }
                 }
 
-                AdaptiveFilterButton(viewModel)
+                AdaptiveFilterButton(viewModel, onSetUpSync)
 
                 Box(modifier = Modifier.weight(1f)) {
                     when (val state = uiState) {
@@ -452,7 +452,7 @@ fun AdaptiveMasterScreen(
  * unchanged, just hosted in a [Popup] instead of a [androidx.compose.material3.ModalBottomSheet].
  */
 @Composable
-private fun AdaptiveFilterButton(viewModel: ContactsViewModel) {
+private fun AdaptiveFilterButton(viewModel: ContactsViewModel, onSetUpSync: () -> Unit) {
     val availableAddressBooks by viewModel.addressBooks.collectAsState()
     val manageableAddressBooks by viewModel.allManageableAddressBooks.collectAsState()
     val selectedHrefs by viewModel.selectedAddressBookHrefs.collectAsState()
@@ -550,6 +550,7 @@ private fun AdaptiveFilterButton(viewModel: ContactsViewModel) {
                             onUploadLocalAddressBook = { book, newName ->
                                 viewModel.uploadLocalAddressBook(book, newName)
                             },
+                            onSetUpSync = onSetUpSync,
                             onToggleAddressBookVisibility = {
                                 viewModel.toggleAddressBookVisibility(it)
                             },

@@ -279,6 +279,7 @@
     <string name="settings_address_book_upload">서버에 업로드</string>
     <string name="settings_address_book_upload_dialog_title">서버에 업로드</string>
     <string name="settings_address_book_upload_dialog_description">주소록과 그 안의 연락처가 계정에 업로드됩니다. 업로드가 완료될 때까지는 이 기기에 남아 있습니다.</string>
+    <string name="settings_address_book_upload_needs_server">업로드하려면 서버가 필요하지만 아직 연결된 서버가 없습니다. 지금 동기화를 설정할까요?</string>
     <plurals name="settings_address_book_upload_result_full">
         <item quantity="other">연락처 %1$d개를 모두 서버에 업로드했습니다.</item>
     </plurals>
