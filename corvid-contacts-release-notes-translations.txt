@@ -1,0 +1,27 @@
+<en-US>
+When you create a new address book, you can now choose an icon for it, and the color you pick is now shown as you choose it. This release also updates the libraries the app is built with.
+</en-US>
+<es-419>
+Al crear una libreta de direcciones nueva, ahora puedes elegir un icono, y el color que seleccionas se muestra mientras lo eliges. Esta versión también actualiza las bibliotecas con las que está creada la app.
+</es-419>
+<es-ES>
+Al crear una libreta de direcciones nueva, ahora puedes elegir un icono, y el color que seleccionas se muestra mientras lo eliges. Esta versión también actualiza las bibliotecas con las que está desarrollada la app.
+</es-ES>
+<es-US>
+Al crear una libreta de direcciones nueva, ahora puedes elegir un icono, y el color que seleccionas se muestra mientras lo eliges. Esta versión también actualiza las bibliotecas con las que está creada la app.
+</es-US>
+<fr-FR>
+Lorsque vous créez un carnet d'adresses, vous pouvez désormais choisir une icône, et la couleur sélectionnée s'affiche pendant que vous la choisissez. Cette version met également à jour les bibliothèques utilisées par l'application.
+</fr-FR>
+<fr-CA>
+Lorsque vous créez un carnet d'adresses, vous pouvez désormais choisir une icône, et la couleur sélectionnée s'affiche pendant que vous la choisissez. Cette version met également à jour les bibliothèques utilisées par l'application.
+</fr-CA>
+<de-DE>
+Wenn du ein neues Adressbuch erstellst, kannst du jetzt ein Symbol dafür auswählen, und die gewählte Farbe wird dir schon bei der Auswahl angezeigt. Diese Version aktualisiert außerdem die Bibliotheken, auf denen die App aufbaut.
+</de-DE>
+<nl-NL>
+Wanneer je een nieuw adresboek aanmaakt, kun je nu een pictogram kiezen, en de kleur die je kiest wordt direct weergegeven terwijl je kiest. Deze versie werkt ook de bibliotheken bij waarmee de app is gebouwd.
+</nl-NL>
+<ko-KR>
+새 주소록을 만들 때 이제 아이콘을 선택할 수 있으며, 선택한 색상이 고르는 즉시 표시됩니다. 이번 버전에서는 앱에 사용된 라이브러리도 업데이트했습니다.
+</ko-KR>
