@@ -219,23 +219,26 @@ fun ManageAddressBooksDialog(
                                                 )
                                             }
                                         }
-                                        Spacer(Modifier.width(8.dp))
-                                        Icon(
-                                            Icons.Rounded.DragHandle,
-                                            contentDescription = stringResource(R.string.settings_address_book_reorder),
-                                            modifier = Modifier.draggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        HapticFeedbackType.GestureThresholdActivate
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        HapticFeedbackType.GestureEnd
-                                                    )
-                                                }
+                                        // Nothing to reorder with a single book, so no handle.
+                                        if (addressBooks.size > 1) {
+                                            Spacer(Modifier.width(8.dp))
+                                            Icon(
+                                                Icons.Rounded.DragHandle,
+                                                contentDescription = stringResource(R.string.settings_address_book_reorder),
+                                                modifier = Modifier.draggableHandle(
+                                                    onDragStarted = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            HapticFeedbackType.GestureThresholdActivate
+                                                        )
+                                                    },
+                                                    onDragStopped = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            HapticFeedbackType.GestureEnd
+                                                        )
+                                                    }
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
                             )
