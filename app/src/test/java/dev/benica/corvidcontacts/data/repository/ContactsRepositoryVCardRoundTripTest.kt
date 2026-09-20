@@ -297,6 +297,8 @@ private class NoOpContactDao : ContactDao {
     override fun getAllContacts(): Flow<List<ContactWithAddressBook>> = flowOf(emptyList())
     override suspend fun getAllContactsSync(): List<ContactWithAddressBook> = emptyList()
     override suspend fun getContactById(id: String): ContactWithAddressBook? = null
+    override suspend fun getContactCountInAddressBook(addressBookHref: String): Int = 0
+    override suspend fun getContactsWithPendingRemotePhotos(): List<ContactEntity> = emptyList()
     override suspend fun insertContacts(contacts: List<ContactEntity>) = Unit
     override suspend fun deleteContact(contact: ContactEntity) = Unit
     override suspend fun deleteContactsByAddressBook(addressBookHref: String) = Unit

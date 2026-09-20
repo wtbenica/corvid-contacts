@@ -419,6 +419,12 @@ private class FakeContactDao(
             .find { it.id == id }
             ?.let(::withBook)
 
+    override suspend fun getContactCountInAddressBook(addressBookHref: String): Int =
+        contacts.value.count { it.addressBookHref == addressBookHref }
+
+    override suspend fun getContactsWithPendingRemotePhotos(): List<ContactEntity> =
+        contacts.value.filter { it.photoUrl?.startsWith("http", ignoreCase = true) == true }
+
     override suspend fun insertContacts(contacts: List<ContactEntity>) {
         val current = this.contacts.value
             .associateBy { it.id }
