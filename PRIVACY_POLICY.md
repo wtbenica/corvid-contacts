@@ -2,7 +2,7 @@
 
 # Corvid Contacts Privacy Policy
 
-*Last updated: August 2, 2026*
+*Last updated: September 19, 2026*
 
 This Privacy Policy describes how Corvid Contacts ("the app," "we," "us") handles your information. Corvid Contacts is developed by Wesley Benica (benica.dev). If you have questions, contact [privacy@benica.dev](mailto:privacy@benica.dev).
 
@@ -96,6 +96,7 @@ Contact data is transmitted to your configured server over HTTPS. Data at rest i
 - Uninstalling the app removes all locally stored data.
 - Logging out clears your stored server credentials from the device.
 - Because you control the CardDAV server, you control retention and deletion there as well, independent of this app.
+- Step-by-step instructions for deleting your data, on your device and elsewhere, are on the [data deletion page](https://benica.dev/projects/corvid-contacts/data-deletion).
 
 ## Third-party links
 
