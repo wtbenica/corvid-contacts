@@ -44,6 +44,7 @@ import dev.benica.corvidcontacts.BuildConfig
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.ui.EULA_URL
 import dev.benica.corvidcontacts.ui.PRIVACY_POLICY_URL
+import dev.benica.corvidcontacts.ui.RELEASE_NOTES_URL
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
@@ -145,6 +146,17 @@ fun AboutScreen(
                         icon = Icons.Rounded.ChevronRight,
                         contentDescription = R.string.about_action_show_licenses,
                         action = onShowLicenses
+                    )
+                )
+
+                InfoCard(
+                    title = stringResource(R.string.about_section_release_notes),
+                    icon = Icons.Rounded.Description,
+                    content = stringResource(R.string.about_release_notes_text),
+                    action = SimpleAction(
+                        icon = Icons.AutoMirrored.Rounded.OpenInNew,
+                        contentDescription = R.string.about_action_open_in_browser,
+                        action = { openUrl(RELEASE_NOTES_URL) }
                     )
                 )
 

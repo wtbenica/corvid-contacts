@@ -313,6 +313,8 @@
     <string name="about_privacy_policy_text">Hoe Corvid Contacts met je gegevens omgaat.</string>
     <string name="about_section_eula">Gebruiksvoorwaarden (EULA)</string>
     <string name="about_eula_text">De licentieovereenkomst voor eindgebruikers van Corvid Contacts.</string>
+    <string name="about_section_release_notes">Releaseopmerkingen</string>
+    <string name="about_release_notes_text">Wat er is veranderd in elke versie van Corvid Contacts.</string>
     <string name="about_action_open_in_browser">Openen in browser</string>
 
     <!-- Birthday Notifications -->

@@ -299,6 +299,8 @@
     <string name="about_privacy_policy_text">Corvid Contacts가 데이터를 다루는 방식입니다.</string>
     <string name="about_section_eula">이용약관(EULA)</string>
     <string name="about_eula_text">Corvid Contacts의 최종 사용자 라이선스 계약입니다.</string>
+    <string name="about_section_release_notes">릴리스 노트</string>
+    <string name="about_release_notes_text">Corvid Contacts의 각 버전에서 달라진 점입니다.</string>
     <string name="about_action_open_in_browser">브라우저에서 열기</string>
 
     <!-- Birthday Notifications -->

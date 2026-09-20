@@ -327,6 +327,8 @@
     <string name="about_privacy_policy_text">Cómo Corvid Contacts maneja tus datos.</string>
     <string name="about_section_eula">Condiciones de uso (EULA)</string>
     <string name="about_eula_text">El acuerdo de licencia de usuario final de Corvid Contacts.</string>
+    <string name="about_section_release_notes">Notas de la versión</string>
+    <string name="about_release_notes_text">Qué ha cambiado en cada versión de Corvid Contacts.</string>
     <string name="about_action_open_in_browser">Abrir en el navegador</string>
 
     <!-- Birthday Notifications -->
