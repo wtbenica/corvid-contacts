@@ -181,13 +181,7 @@ private fun SettingsScreen(
     }
 
     fun resolveImportDestination(text: String) {
-        when {
-            addressBooks.isEmpty() -> showCreateBookDialog = true
-            addressBooks.size == 1 ->
-                runImport(text, addressBooks.first().href, pendingDownloadRemotePhotos)
-
-            else -> showPickBookDialog = true
-        }
+        if (addressBooks.isEmpty()) showCreateBookDialog = true else showPickBookDialog = true
     }
 
     val importLauncher = rememberLauncherForActivityResult(
