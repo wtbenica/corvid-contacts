@@ -121,12 +121,6 @@ easylauncher {
     }
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-    }
-}
-
 dependencies {
     implementation(libs.glance.preview)
     implementation(libs.glance.appwidget.preview)
