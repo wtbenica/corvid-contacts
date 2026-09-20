@@ -4,6 +4,7 @@ package dev.benica.corvidcontacts.ui.settings
 
 import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -125,50 +126,50 @@ fun AboutScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            InfoCard(
-                title = stringResource(R.string.about_section_license),
-                icon = Icons.Rounded.Description,
-                content = stringResource(R.string.about_license_text)
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            InfoCard(
-                title = stringResource(R.string.about_section_libraries),
-                icon = Icons.Rounded.Description,
-                content = stringResource(R.string.about_action_show_licenses),
-                action = SimpleAction(
-                    icon = Icons.Rounded.ChevronRight,
-                    contentDescription = R.string.about_action_show_licenses,
-                    action = onShowLicenses
+            // One place sets the gap between cards, so they can't drift apart as rows are added.
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                InfoCard(
+                    title = stringResource(R.string.about_section_license),
+                    icon = Icons.Rounded.Description,
+                    content = stringResource(R.string.about_license_text)
                 )
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            InfoCard(
-                title = stringResource(R.string.about_section_privacy_policy),
-                icon = Icons.Rounded.Description,
-                content = stringResource(R.string.about_privacy_policy_text),
-                action = SimpleAction(
-                    icon = Icons.AutoMirrored.Rounded.OpenInNew,
-                    contentDescription = R.string.about_action_open_in_browser,
-                    action = { openUrl(PRIVACY_POLICY_URL) }
+                InfoCard(
+                    title = stringResource(R.string.about_section_libraries),
+                    icon = Icons.Rounded.Description,
+                    content = stringResource(R.string.about_action_show_licenses),
+                    action = SimpleAction(
+                        icon = Icons.Rounded.ChevronRight,
+                        contentDescription = R.string.about_action_show_licenses,
+                        action = onShowLicenses
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            InfoCard(
-                title = stringResource(R.string.about_section_eula),
-                icon = Icons.Rounded.Description,
-                content = stringResource(R.string.about_eula_text),
-                action = SimpleAction(
-                    icon = Icons.AutoMirrored.Rounded.OpenInNew,
-                    contentDescription = R.string.about_action_open_in_browser,
-                    action = { openUrl(EULA_URL) }
+                InfoCard(
+                    title = stringResource(R.string.about_section_privacy_policy),
+                    icon = Icons.Rounded.Description,
+                    content = stringResource(R.string.about_privacy_policy_text),
+                    action = SimpleAction(
+                        icon = Icons.AutoMirrored.Rounded.OpenInNew,
+                        contentDescription = R.string.about_action_open_in_browser,
+                        action = { openUrl(PRIVACY_POLICY_URL) }
+                    )
                 )
-            )
+
+                InfoCard(
+                    title = stringResource(R.string.about_section_eula),
+                    icon = Icons.Rounded.Description,
+                    content = stringResource(R.string.about_eula_text),
+                    action = SimpleAction(
+                        icon = Icons.AutoMirrored.Rounded.OpenInNew,
+                        contentDescription = R.string.about_action_open_in_browser,
+                        action = { openUrl(EULA_URL) }
+                    )
+                )
+            }
         }
         }
     }
