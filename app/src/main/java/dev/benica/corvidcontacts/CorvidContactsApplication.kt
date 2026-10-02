@@ -20,8 +20,10 @@ class CorvidContactsApplication : Application() {
         container = AppContainer(this)
         instance = this
 
-        // Initialize Places SDK (New)
-        if (!Places.isInitialized()) {
+        // Initialize Places SDK (New). Skipped without an API key (none in local.properties), since
+        // initializing with an empty key crashes; Places is only used if the user picks it for
+        // address lookup.
+        if (BuildConfig.GOOGLE_PLACES_API_KEY.isNotBlank() && !Places.isInitialized()) {
             Places.initializeWithNewPlacesApiEnabled(
                 this,
                 BuildConfig.GOOGLE_PLACES_API_KEY
