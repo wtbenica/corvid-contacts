@@ -17,7 +17,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SystemContactMirrorEntity::class,
         SystemGroupMirrorEntity::class,
     ],
-    version = 21,
+    version = 22,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -57,7 +57,30 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21)
+        /**
+         * Generalizes the group mapping from address books only to address books and contact
+         * categories: the key column is renamed and existing rows keep working under a `book:`
+         * prefix.
+         */
+        private val MIGRATION_21_22 = object : Migration(21, 22) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `system_group_mirror_new` (" +
+                        "`groupKey` TEXT NOT NULL, " +
+                        "`groupId` INTEGER NOT NULL, " +
+                        "`title` TEXT NOT NULL, " +
+                        "PRIMARY KEY(`groupKey`))"
+                )
+                db.execSQL(
+                    "INSERT INTO `system_group_mirror_new` (`groupKey`, `groupId`, `title`) " +
+                        "SELECT 'book:' || `bookHref`, `groupId`, `title` FROM `system_group_mirror`"
+                )
+                db.execSQL("DROP TABLE `system_group_mirror`")
+                db.execSQL("ALTER TABLE `system_group_mirror_new` RENAME TO `system_group_mirror`")
+            }
+        }
+
+        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22)
 
         @Volatile
         private var INSTANCE: AppDatabase? = null

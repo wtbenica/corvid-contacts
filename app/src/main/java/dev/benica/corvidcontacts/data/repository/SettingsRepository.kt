@@ -12,6 +12,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.sync.BirthdayWorker
 import kotlinx.coroutines.flow.Flow
@@ -55,6 +56,7 @@ class SettingsRepository(private val context: Context) {
         val AUTO_LOAD_REMOTE_PHOTOS = booleanPreferencesKey("auto_load_remote_photos")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val SYSTEM_CONTACTS_ENABLED = booleanPreferencesKey("system_contacts_enabled")
+        val SYSTEM_CONTACTS_LEVEL = stringPreferencesKey("system_contacts_level")
     }
 
     /** Whether the local country code should be auto-prepended to phone numbers. Defaults to `true`. */
@@ -109,6 +111,21 @@ class SettingsRepository(private val context: Context) {
     val systemContactsEnabled: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
         preferences[PreferencesKeys.SYSTEM_CONTACTS_ENABLED] ?: false
     }
+
+    /**
+     * How much of each shared contact is mirrored to the system contacts. Defaults to
+     * [SystemContactsLevel.CALLER_ID], the most private level.
+     */
+    val systemContactsLevel: Flow<SystemContactsLevel> =
+        context.settingsDataStore.data.map { preferences ->
+            preferences[PreferencesKeys.SYSTEM_CONTACTS_LEVEL]?.let { name ->
+                try {
+                    SystemContactsLevel.valueOf(name)
+                } catch (_: Exception) {
+                    null
+                }
+            } ?: SystemContactsLevel.CALLER_ID
+        }
 
     /** The user's preferred theme mode. Defaults to [ThemeMode.SYSTEM]. */
     val themeMode: Flow<ThemeMode> = context.settingsDataStore.data.map { preferences ->
@@ -244,6 +261,13 @@ class SettingsRepository(private val context: Context) {
     suspend fun saveSystemContactsEnabled(enabled: Boolean) {
         context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.SYSTEM_CONTACTS_ENABLED] = enabled
+        }
+    }
+
+    /** Sets how much of each shared contact is mirrored to the system contacts. */
+    suspend fun saveSystemContactsLevel(level: SystemContactsLevel) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[PreferencesKeys.SYSTEM_CONTACTS_LEVEL] = level.name
         }
     }
 

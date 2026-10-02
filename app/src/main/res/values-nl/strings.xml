@@ -493,7 +493,14 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Namen tonen in andere apps</string>
-    <string name="system_contacts_description">Voegt de namen, telefoonnummers en foto\'s van je contacten toe aan de contacten van dit toestel, zodat Berichten en de Telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan ze dan zien. Corvid stuurt ze niet naar Google. Deze kopie is alleen-lezen: bewerk contacten in Corvid.</string>
+    <string name="system_contacts_description">Kopieert je contacten naar de contacten van dit toestel, op het hieronder gekozen niveau, zodat Berichten en de Telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan zien wat je deelt. Corvid stuurt het niet naar Google. Deze kopie is alleen-lezen: bewerk contacten in Corvid.</string>
+    <string name="system_contacts_level_title">Wat je deelt</string>
+    <string name="system_contacts_level_caller_id">Nummerweergave</string>
+    <string name="system_contacts_level_caller_id_description">Naam, telefoonnummers en foto</string>
+    <string name="system_contacts_level_full">Volledig contact</string>
+    <string name="system_contacts_level_full_description">Ook e-mailadressen, adressen, socialemediaprofielen, websites, verjaardag, groepen, bedrijf, functie, bijnaam en relaties</string>
+    <string name="system_contacts_level_everything">Alles</string>
+    <string name="system_contacts_level_everything_description">Ook notities</string>
     <string name="system_contacts_books_hint">Kies welke adresboeken je deelt. Er wordt niets gedeeld totdat je er minstens één kiest.</string>
     <string name="system_contacts_add_account_unsupported">Schakel dit in plaats daarvan in via de instellingen van Corvid Contacts.</string>
 </resources>

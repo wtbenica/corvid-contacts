@@ -6,6 +6,7 @@ import android.util.Log
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -37,8 +38,12 @@ class SystemContactsMirrorManager(
                     // null means "feature off": remove the mirror once, then idle. With the feature on
                     // but no address book shared, the mirror is simply empty.
                     if (enabled) {
-                        combine(dao.observeSharedBooks(), dao.observeMirrorSources()) { books, sources ->
-                            SharedSnapshot(books, sources)
+                        combine(
+                            dao.observeSharedBooks(),
+                            dao.observeMirrorSources(),
+                            settingsRepository.systemContactsLevel
+                        ) { books, sources, level ->
+                            SharedSnapshot(books, sources, level)
                         }.debounce(DEBOUNCE_MS)
                     } else {
                         flowOf(null)
@@ -48,7 +53,7 @@ class SystemContactsMirrorManager(
                     try {
                         when {
                             snapshot == null -> mirror.removeAll()
-                            mirror.hasPermission() -> mirror.reconcile(snapshot.books, snapshot.sources)
+                            mirror.hasPermission() -> mirror.reconcile(snapshot.books, snapshot.sources, snapshot.level)
                         }
                     } catch (e: CancellationException) {
                         throw e
@@ -59,10 +64,11 @@ class SystemContactsMirrorManager(
         }
     }
 
-    /** The shared address books and the contacts in them, as of one database state. */
+    /** The shared address books, the contacts in them and the sharing level, as of one state. */
     private class SharedSnapshot(
         val books: List<AddressBookEntity>,
         val sources: List<MirrorSource>,
+        val level: SystemContactsLevel,
     )
 
     private companion object {

@@ -18,8 +18,17 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.Photo
+import android.provider.ContactsContract.CommonDataKinds.Relation
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
+import android.provider.ContactsContract.CommonDataKinds.Website
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.provider.ContactsContract.CommonDataKinds.Event
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.CommonDataKinds.Im
+import android.provider.ContactsContract.CommonDataKinds.Nickname
+import android.provider.ContactsContract.CommonDataKinds.Note
+import android.provider.ContactsContract.CommonDataKinds.Organization
 import android.provider.ContactsContract.Data
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
@@ -31,6 +40,7 @@ import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
 import dev.benica.corvidcontacts.data.local.SystemGroupMirrorEntity
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.PhotoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -48,9 +58,10 @@ import java.io.ByteArrayOutputStream
  * are kept in Room (see [SystemContactMirrorEntity]) and used for later updates and deletes. A
  * mirrored row that has disappeared is detected when an update affects nothing, and re-inserted.
  *
- * Only the Caller ID level is written for now: name, phone numbers and photo. Only address books
- * the user has chosen to share are mirrored, each as one system group so the books stay
- * distinguishable in the Contacts app.
+ * How much of each contact is written depends on the [SystemContactsLevel]. Only address books the
+ * user has chosen to share are mirrored, each as one system group so the books stay
+ * distinguishable in the Contacts app; at the Full contact level and up, contact categories become
+ * groups too.
  */
 class SystemContactsMirror(
     private val context: Context,
@@ -98,20 +109,32 @@ class SystemContactsMirror(
 
     /**
      * Brings the system contacts in line with [sources], the contacts in the shared address
-     * [books]. Requires [hasPermission].
+     * [books], written at [level]. Requires [hasPermission].
      */
     suspend fun reconcile(
         books: List<AddressBookEntity>,
         sources: List<MirrorSource>,
+        level: SystemContactsLevel,
     ) = withContext(Dispatchers.IO) {
         mutex.withLock {
             ensureAccount()
 
-            val groupIds = syncGroups(books)
-            val desired = sources.mapNotNull { source ->
-                MirrorPlan
-                    .toMirrorContact(source, photoStamp(source))
-                    ?.copy(groupId = groupIds[source.addressBookHref])
+            val contacts = sources.mapNotNull { source ->
+                MirrorPlan.toMirrorContact(source, photoStamp(source), level)
+            }
+
+            // Every group the contacts need: one per shared book, plus one per category in use.
+            val groups = LinkedHashMap<String, String>()
+            books.forEach { groups[MirrorPlan.bookGroupKey(it.href)] = bookTitle(it) }
+            contacts.forEach { contact ->
+                contact.categories.forEach { groups.putIfAbsent(MirrorPlan.categoryGroupKey(it), it) }
+            }
+            val groupIds = syncGroups(groups)
+
+            val desired = contacts.map { contact ->
+                val keys = listOf(MirrorPlan.bookGroupKey(contact.bookHref)) +
+                    contact.categories.map { MirrorPlan.categoryGroupKey(it) }
+                contact.copy(groupIds = keys.mapNotNull { groupIds[it] })
             }
             val plan = MirrorPlan.diff(desired, dao.getAll())
             if (plan.isEmpty) return@withLock
@@ -121,6 +144,10 @@ class SystemContactsMirror(
             applyInserts(plan.inserts)
         }
     }
+
+    private fun bookTitle(book: AddressBookEntity): String =
+        book.displayName?.takeIf { it.isNotBlank() }
+            ?: context.getString(R.string.settings_address_book_unnamed)
 
     /** Removes the account, which deletes every mirrored contact, and forgets the mapping. */
     suspend fun removeAll() = withContext(Dispatchers.IO) {
@@ -134,15 +161,14 @@ class SystemContactsMirror(
     }
 
     /**
-     * Makes the system groups match the shared [books] - creating, renaming and removing as
-     * needed - and returns each book's group id. A group that has vanished from the provider is
-     * detected when renaming it affects nothing, and re-created.
+     * Makes the system groups match [wanted] (group key to title) - creating, renaming and
+     * removing as needed - and returns each key's group id. A group that has vanished from the
+     * provider is detected when renaming it affects nothing, and re-created.
      */
-    private suspend fun syncGroups(books: List<AddressBookEntity>): Map<String, Long> {
-        val existing = dao.getAllGroups().associateBy { it.bookHref }
-        val sharedHrefs = books.mapTo(HashSet()) { it.href }
+    private suspend fun syncGroups(wanted: Map<String, String>): Map<String, Long> {
+        val existing = dao.getAllGroups().associateBy { it.groupKey }
 
-        val stale = existing.values.filter { it.bookHref !in sharedHrefs }
+        val stale = existing.values.filter { it.groupKey !in wanted }
         if (stale.isNotEmpty()) {
             apply(
                 stale.map {
@@ -152,17 +178,15 @@ class SystemContactsMirror(
                         .build()
                 }
             )
-            dao.deleteGroups(stale.map { it.bookHref })
+            dao.deleteGroups(stale.map { it.groupKey })
         }
 
         val result = HashMap<String, Long>()
-        for (book in books) {
-            val title = book.displayName?.takeIf { it.isNotBlank() }
-                ?: context.getString(R.string.settings_address_book_unnamed)
-            val current = existing[book.href]
+        for ((key, title) in wanted) {
+            val current = existing[key]
 
             if (current != null && current.title == title) {
-                result[book.href] = current.groupId
+                result[key] = current.groupId
                 continue
             }
             if (current != null) {
@@ -178,7 +202,7 @@ class SystemContactsMirror(
                         )
                     )
                     dao.upsertGroups(listOf(current.copy(title = title)))
-                    result[book.href] = current.groupId
+                    result[key] = current.groupId
                     continue
                 } catch (_: OperationApplicationException) {
                     // The group is gone; fall through and create it again.
@@ -192,14 +216,14 @@ class SystemContactsMirror(
                         .withValue(Groups.ACCOUNT_NAME, account.name)
                         .withValue(Groups.ACCOUNT_TYPE, account.type)
                         .withValue(Groups.TITLE, title)
-                        .withValue(Groups.SOURCE_ID, book.href)
+                        .withValue(Groups.SOURCE_ID, key)
                         .withValue(Groups.GROUP_VISIBLE, 1)
                         .build()
                 )
             )
             val groupId = ContentUris.parseId(requireNotNull(results[0].uri))
-            dao.upsertGroups(listOf(SystemGroupMirrorEntity(book.href, groupId, title)))
-            result[book.href] = groupId
+            dao.upsertGroups(listOf(SystemGroupMirrorEntity(key, groupId, title)))
+            result[key] = groupId
         }
         return result
     }
@@ -299,30 +323,99 @@ class SystemContactsMirror(
         return builder.build()
     }
 
-    /** The name, group and phone rows for [contact]; [bindRaw] attaches each to its raw contact. */
+    /**
+     * The data rows for [contact] - name, groups, phones and whatever the sharing level adds;
+     * [bindRaw] attaches each to its raw contact.
+     */
     private fun dataOps(
         contact: MirrorContact,
         bindRaw: (ContentProviderOperation.Builder) -> ContentProviderOperation.Builder,
     ): List<ContentProviderOperation> {
         val ops = ArrayList<ContentProviderOperation>()
-        ops += bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
-            .withValue(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
-            .withValue(StructuredName.DISPLAY_NAME, contact.displayName)
-            .withValue(StructuredName.GIVEN_NAME, contact.givenName)
-            .withValue(StructuredName.FAMILY_NAME, contact.familyName)
-            .build()
-        contact.groupId?.let { groupId ->
-            ops += bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
-                .withValue(Data.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(GroupMembership.GROUP_ROW_ID, groupId)
-                .build()
+        fun row(mimeType: String, fill: ContentProviderOperation.Builder.() -> Unit) {
+            val builder = bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
+                .withValue(Data.MIMETYPE, mimeType)
+            builder.fill()
+            ops += builder.build()
+        }
+
+        row(StructuredName.CONTENT_ITEM_TYPE) {
+            withValue(StructuredName.DISPLAY_NAME, contact.displayName)
+            withValue(StructuredName.GIVEN_NAME, contact.givenName)
+            withValue(StructuredName.FAMILY_NAME, contact.familyName)
+            withValue(StructuredName.MIDDLE_NAME, contact.middleName)
+            withValue(StructuredName.PREFIX, contact.prefix)
+            withValue(StructuredName.SUFFIX, contact.suffix)
+        }
+        contact.groupIds.forEach { groupId ->
+            row(GroupMembership.CONTENT_ITEM_TYPE) { withValue(GroupMembership.GROUP_ROW_ID, groupId) }
         }
         contact.phones.forEach { phone ->
-            ops += bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
-                .withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-                .withValue(Phone.NUMBER, phone.number)
-                .withValue(Phone.TYPE, phone.type)
-                .build()
+            row(Phone.CONTENT_ITEM_TYPE) {
+                withValue(Phone.NUMBER, phone.number)
+                withValue(Phone.TYPE, phone.type)
+            }
+        }
+        contact.emails.forEach { email ->
+            row(Email.CONTENT_ITEM_TYPE) {
+                withValue(Email.ADDRESS, email.address)
+                withValue(Email.TYPE, email.type)
+            }
+        }
+        contact.addresses.forEach { address ->
+            row(StructuredPostal.CONTENT_ITEM_TYPE) {
+                withValue(StructuredPostal.FORMATTED_ADDRESS, address.formatted)
+                withValue(StructuredPostal.STREET, address.street)
+                withValue(StructuredPostal.POBOX, address.poBox)
+                withValue(StructuredPostal.CITY, address.city)
+                withValue(StructuredPostal.REGION, address.region)
+                withValue(StructuredPostal.POSTCODE, address.postcode)
+                withValue(StructuredPostal.COUNTRY, address.country)
+                withValue(StructuredPostal.TYPE, address.type)
+            }
+        }
+        contact.websites.forEach { url ->
+            row(Website.CONTENT_ITEM_TYPE) {
+                withValue(Website.URL, url)
+                withValue(Website.TYPE, Website.TYPE_OTHER)
+            }
+        }
+        contact.socials.forEach { social ->
+            row(Im.CONTENT_ITEM_TYPE) {
+                withValue(Im.DATA, social.handle)
+                withValue(Im.PROTOCOL, Im.PROTOCOL_CUSTOM)
+                withValue(Im.CUSTOM_PROTOCOL, social.network)
+                withValue(Im.TYPE, Im.TYPE_OTHER)
+            }
+        }
+        contact.relations.forEach { relation ->
+            row(Relation.CONTENT_ITEM_TYPE) {
+                withValue(Relation.NAME, relation.name)
+                withValue(Relation.TYPE, relation.type)
+                if (relation.type == Relation.TYPE_CUSTOM) withValue(Relation.LABEL, relation.label)
+            }
+        }
+        contact.birthday?.let { date ->
+            row(Event.CONTENT_ITEM_TYPE) {
+                withValue(Event.START_DATE, date)
+                withValue(Event.TYPE, Event.TYPE_BIRTHDAY)
+            }
+        }
+        contact.organization?.let { organization ->
+            row(Organization.CONTENT_ITEM_TYPE) {
+                withValue(Organization.COMPANY, organization.company)
+                withValue(Organization.TITLE, organization.title)
+                withValue(Organization.TYPE, Organization.TYPE_WORK)
+            }
+        }
+        contact.nickname?.let { nickname ->
+            row(Nickname.CONTENT_ITEM_TYPE) {
+                withValue(Nickname.NAME, nickname)
+                withValue(Nickname.TYPE, Nickname.TYPE_DEFAULT)
+            }
+        }
+        contact.note?.let { note ->
+            row(Note.CONTENT_ITEM_TYPE) { withValue(Note.NOTE, note) }
         }
         return ops
     }

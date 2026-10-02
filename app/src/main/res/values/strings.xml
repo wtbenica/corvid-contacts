@@ -505,7 +505,14 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Show names in other apps</string>
-    <string name="system_contacts_description">Adds your contacts\' names, phone numbers and photos to this device\'s contacts, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see them. Corvid doesn\'t send them to Google. This copy is read-only: edit contacts in Corvid.</string>
+    <string name="system_contacts_description">Copies your contacts to this device\'s contacts, at the level you choose below, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see what you share. Corvid doesn\'t send it to Google. This copy is read-only: edit contacts in Corvid.</string>
+    <string name="system_contacts_level_title">What to share</string>
+    <string name="system_contacts_level_caller_id">Caller ID</string>
+    <string name="system_contacts_level_caller_id_description">Name, phone numbers and photo</string>
+    <string name="system_contacts_level_full">Full contact</string>
+    <string name="system_contacts_level_full_description">Also emails, addresses, social profiles, websites, birthday, groups, company, job title, nickname and relationships</string>
+    <string name="system_contacts_level_everything">Everything</string>
+    <string name="system_contacts_level_everything_description">Also notes</string>
     <string name="system_contacts_books_hint">Choose which address books to share. Nothing is shared until you pick at least one.</string>
     <string name="system_contacts_add_account_unsupported">Turn this on in Corvid Contacts settings instead.</string>
 </resources>

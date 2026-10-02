@@ -493,7 +493,14 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Namen in anderen Apps anzeigen</string>
-    <string name="system_contacts_description">Fügt Namen, Telefonnummern und Fotos deiner Kontakte zu den Kontakten dieses Geräts hinzu, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann sie dann sehen. Corvid sendet sie nicht an Google. Diese Kopie ist schreibgeschützt: Bearbeite Kontakte in Corvid.</string>
+    <string name="system_contacts_description">Kopiert deine Kontakte in dem unten gewählten Umfang in die Kontakte dieses Geräts, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google. Diese Kopie ist schreibgeschützt: Bearbeite Kontakte in Corvid.</string>
+    <string name="system_contacts_level_title">Was geteilt wird</string>
+    <string name="system_contacts_level_caller_id">Anrufer-ID</string>
+    <string name="system_contacts_level_caller_id_description">Name, Telefonnummern und Foto</string>
+    <string name="system_contacts_level_full">Vollständiger Kontakt</string>
+    <string name="system_contacts_level_full_description">Zusätzlich E-Mails, Adressen, Social-Media-Profile, Websites, Geburtstag, Gruppen, Firma, Berufsbezeichnung, Spitzname und Beziehungen</string>
+    <string name="system_contacts_level_everything">Alles</string>
+    <string name="system_contacts_level_everything_description">Zusätzlich Notizen</string>
     <string name="system_contacts_books_hint">Wähle, welche Adressbücher geteilt werden. Solange du keines auswählst, wird nichts geteilt.</string>
     <string name="system_contacts_add_account_unsupported">Aktiviere dies stattdessen in den Einstellungen von Corvid Contacts.</string>
 </resources>

@@ -70,9 +70,65 @@ class AppDatabaseMigrationTest {
 
                 val mirror = migrated.systemContactMirrorDao()
                 mirror.upsert(listOf(SystemContactMirrorEntity("c1", 10, "h")))
-                mirror.upsertGroups(listOf(SystemGroupMirrorEntity("local://contacts", 3, "My Contacts")))
+                mirror.upsertGroups(listOf(SystemGroupMirrorEntity("book:local://contacts", 3, "My Contacts")))
                 assertEquals(1, mirror.getAll().size)
                 assertEquals(1, mirror.getAllGroups().size)
+            }
+        } finally {
+            migrated.close()
+            dbFile.delete()
+        }
+    }
+
+    @Test
+    fun `group mapping rows from version 21 keep working under a book key`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val scratch = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        val contactsDdl = scratch.openHelper.writableDatabase
+            .query("SELECT sql FROM sqlite_master WHERE name = 'contacts'")
+            .use {
+                it.moveToFirst()
+                it.getString(0)
+            }
+        scratch.close()
+
+        val dbName = "migration-test-21.db"
+        val dbFile = context.getDatabasePath(dbName)
+        dbFile.parentFile?.mkdirs()
+        dbFile.delete()
+        SQLiteDatabase.openOrCreateDatabase(dbFile, null).use { db ->
+            db.execSQL(contactsDdl)
+            db.execSQL(
+                "CREATE TABLE `address_books` (`href` TEXT NOT NULL, `displayName` TEXT, " +
+                    "`isVisible` INTEGER NOT NULL, `colorInt` INTEGER NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL, `iconName` TEXT, " +
+                    "`shareWithSystem` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`href`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_contact_mirror` (`contactId` TEXT NOT NULL, " +
+                    "`rawContactId` INTEGER NOT NULL, `hash` TEXT NOT NULL, PRIMARY KEY(`contactId`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_group_mirror` (`bookHref` TEXT NOT NULL, " +
+                    "`groupId` INTEGER NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`bookHref`))"
+            )
+            db.execSQL("INSERT INTO system_group_mirror VALUES ('/books/main/', 42, 'Main')")
+            db.version = 21
+        }
+
+        val migrated = Room
+            .databaseBuilder(context, AppDatabase::class.java, dbName)
+            .addMigrations(*AppDatabase.MIGRATIONS)
+            .allowMainThreadQueries()
+            .build()
+        try {
+            runBlocking {
+                val groups = migrated.systemContactMirrorDao().getAllGroups()
+                assertEquals(listOf("book:/books/main/"), groups.map { it.groupKey })
+                assertEquals(42L, groups.single().groupId)
             }
         } finally {
             migrated.close()

@@ -1,7 +1,8 @@
 # Design: Opt-in system contacts mirror
 
-Status: steps 1 (Caller ID level, global toggle) and 2 (per-book sharing) are
-implemented and awaiting device testing. Steps 3 to 5 are not started.
+Status: steps 1 (Caller ID level, global toggle), 2 (per-book sharing) and 3
+(the three sharing levels) are implemented and awaiting device testing. Steps 4
+and 5 are not started.
 
 ## Goal
 
@@ -90,6 +91,10 @@ write-only approach turns out not to work reliably, fall back to requesting
      birthday, groups, organization, job title, nickname, relationships.
    - *Everything*: also notes.
 
+   The level is `SystemContactsLevel`, stored in the settings DataStore and
+   defaulting to Caller ID. Changing it rewrites the mirrored contacts, because the
+   level is part of each contact's hash.
+
 Notes are a separate level because they are free text where people commonly
 keep sensitive details. The levels are fixed presets. The existing share-contact
 screen, which has per-field selection, is not reused. It works from a populated
@@ -136,9 +141,10 @@ setting.
 - Photos: write the local photo file bytes to the `Photo` data row.
 - Each shared address book is one provider group (title = book name), so books
   remain distinguishable in the Contacts app. Contacts get a `GroupMembership`
-  row for their book's group. The book-to-group mapping lives in a
-  `system_group_mirror` table (`SystemGroupMirrorEntity`), and the group id is part
-  of each contact's hash, so a recreated group updates its contacts. Renaming a
+  row for their book's group. The group mapping lives in a
+  `system_group_mirror` table (`SystemGroupMirrorEntity`) keyed by a group key
+  (`book:<href>` or `category:<name>`), and the group ids are part of each
+  contact's hash, so a recreated group updates its contacts. Renaming a
   book renames its group, and un-sharing a book deletes its group and its
   contacts. Contact groups (vCard categories) map to provider groups at the Full
   contact level, which is not built yet.
@@ -208,6 +214,28 @@ last build step because it depends on the mapping and does not block caller ID.
   that other apps cannot access. This needs an update covering the opt-in
   mirror, and the Play Console permissions declaration needs updating.
 
+## Field mapping by level
+
+| Provider row | Caller ID | Full contact | Everything |
+| --- | --- | --- | --- |
+| Name (display, given, family) | yes | yes | yes |
+| Phone numbers | yes | yes | yes |
+| Photo | yes | yes | yes |
+| Name parts (middle, prefix, suffix) | no | yes | yes |
+| Emails, postal addresses, websites | no | yes | yes |
+| Social profiles (custom-protocol IM rows) | no | yes | yes |
+| Birthday | no | yes | yes |
+| Company and job title | no | yes | yes |
+| Nickname | no | yes | yes |
+| Relationships | no | yes | yes |
+| Category groups | no | yes | yes |
+| Notes | no | no | yes |
+
+Details: relationships stored as a contact UID are left out because they have no
+name to show, and only birthdays in `yyyy-MM-dd` or `--MM-dd` form are written.
+Phone, email and postal types have separate numbering in the provider, so each
+has its own mapping.
+
 ## Settings and copy
 
 A "System contacts" section:
@@ -257,6 +285,6 @@ Manual checks on a real device:
 1. Account plumbing, mapping table, mapper and diff behind the global toggle, at
    the Caller ID level. (Implemented; awaiting device testing.)
 2. Per-book sharing. (Implemented; awaiting device testing.)
-3. The Full contact and Everything levels.
+3. The Full contact and Everything levels. (Implemented; awaiting device testing.)
 4. Routing edits to Corvid.
 5. Privacy policy, settings copy, and Play declaration.

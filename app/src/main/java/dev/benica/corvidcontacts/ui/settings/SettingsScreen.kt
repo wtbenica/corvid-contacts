@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.data.repository.ImportResult
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
@@ -82,6 +83,7 @@ fun SettingsScreen(
     val addressLookupMode by viewModel.addressLookupMode.collectAsState()
     val autoLoadRemotePhotos by viewModel.autoLoadRemotePhotos.collectAsState()
     val systemContactsEnabled by viewModel.systemContactsEnabled.collectAsState()
+    val systemContactsLevel by viewModel.systemContactsLevel.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val addressBooks by viewModel.addressBooks.collectAsState()
 
@@ -92,12 +94,14 @@ fun SettingsScreen(
         addressLookupMode = addressLookupMode,
         autoLoadRemotePhotos = autoLoadRemotePhotos,
         systemContactsEnabled = systemContactsEnabled,
+        systemContactsLevel = systemContactsLevel,
         themeMode = themeMode,
         addressBooks = addressBooks,
         onAlwaysAddCountryCodeToggled = { alwaysAdd -> viewModel.setAlwaysAddCountryCode(alwaysAdd) },
         onAddressLookupModeSelected = { mode -> viewModel.setAddressLookupMode(mode) },
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
         onSystemContactsToggled = { enabled -> viewModel.setSystemContactsEnabled(enabled) },
+        onSystemContactsLevelSelected = { level -> viewModel.setSystemContactsLevel(level) },
         onAddressBookSharedWithSystemToggled = { href, share ->
             viewModel.setAddressBookSharedWithSystem(href, share)
         },
@@ -127,12 +131,14 @@ private fun SettingsScreen(
     addressLookupMode: AddressLookupMode,
     autoLoadRemotePhotos: Boolean,
     systemContactsEnabled: Boolean,
+    systemContactsLevel: SystemContactsLevel,
     themeMode: ThemeMode,
     addressBooks: List<AddressBookEntity>,
     onAlwaysAddCountryCodeToggled: (Boolean) -> Unit,
     onAddressLookupModeSelected: (AddressLookupMode) -> Unit,
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
     onSystemContactsToggled: (Boolean) -> Unit,
+    onSystemContactsLevelSelected: (SystemContactsLevel) -> Unit,
     onAddressBookSharedWithSystemToggled: (href: String, share: Boolean) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
@@ -265,6 +271,8 @@ private fun SettingsScreen(
                 SystemContactsSection(
                     enabled = systemContactsEnabled,
                     onToggled = onSystemContactsToggled,
+                    level = systemContactsLevel,
+                    onLevelSelected = onSystemContactsLevelSelected,
                     addressBooks = addressBooks,
                     onAddressBookToggled = onAddressBookSharedWithSystemToggled
                 )
@@ -572,12 +580,14 @@ fun SettingsScreenPreview() {
             addressLookupMode = AddressLookupMode.PHOTON,
             autoLoadRemotePhotos = false,
             systemContactsEnabled = false,
+            systemContactsLevel = SystemContactsLevel.CALLER_ID,
             themeMode = ThemeMode.SYSTEM,
             addressBooks = emptyList(),
             onAlwaysAddCountryCodeToggled = { },
             onAddressLookupModeSelected = {},
             onAutoLoadRemotePhotosToggled = {},
             onSystemContactsToggled = {},
+            onSystemContactsLevelSelected = {},
             onAddressBookSharedWithSystemToggled = { _, _ -> },
             onThemeModeSelected = {},
             onLogout = {},

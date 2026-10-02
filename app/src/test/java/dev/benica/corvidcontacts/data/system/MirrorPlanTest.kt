@@ -4,7 +4,12 @@ package dev.benica.corvidcontacts.data.system
 
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
+import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.Phone
+import dev.benica.corvidcontacts.data.model.Relationship
+import dev.benica.corvidcontacts.data.model.SocialProfile
+import dev.benica.corvidcontacts.data.model.StructuredAddress
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
@@ -21,10 +26,45 @@ class MirrorPlanTest {
         phones: List<Phone>? = listOf(Phone("+15551234567", "CELL")),
         hasPhoto: Boolean = false,
         addressBookHref: String = "/books/main/",
-    ) = MirrorSource(id, displayName, firstName, lastName, phones, hasPhoto, addressBookHref)
+        emails: List<Email>? = listOf(Email("ada@example.org", "WORK")),
+        addresses: List<StructuredAddress>? = listOf(
+            StructuredAddress(type = "HOME", street = "1 Main St", city = "London")
+        ),
+        birthday: String? = "1815-12-10",
+        notes: String? = "Door code 1234",
+        categories: List<String>? = listOf("Family", "Archived"),
+    ) = MirrorSource(
+        id = id,
+        displayName = displayName,
+        firstName = firstName,
+        lastName = lastName,
+        middleName = "Augusta",
+        prefix = "Countess",
+        suffix = null,
+        phones = phones,
+        emails = emails,
+        structuredAddresses = addresses,
+        websites = listOf("https://example.org"),
+        socialProfiles = listOf(SocialProfile("@ada", "MASTODON")),
+        relationships = listOf(
+            Relationship("SPOUSE", "William King"),
+            Relationship("FRIEND", "some-uid", isUid = true)
+        ),
+        birthday = birthday,
+        company = "Analytical Engines",
+        jobTitle = "Programmer",
+        nickname = "Ada",
+        notes = notes,
+        categories = categories,
+        hasPhoto = hasPhoto,
+        addressBookHref = addressBookHref,
+    )
 
-    private fun mirrored(source: MirrorSource, photoStamp: String? = null) =
-        MirrorPlan.toMirrorContact(source, photoStamp)!!
+    private fun mirrored(
+        source: MirrorSource,
+        photoStamp: String? = null,
+        level: SystemContactsLevel = SystemContactsLevel.CALLER_ID,
+    ) = MirrorPlan.toMirrorContact(source, photoStamp, level)!!
 
     @Test
     fun `contact with name and phone is mirrored with mapped phone type`() {
@@ -72,15 +112,15 @@ class MirrorPlanTest {
         val base = mirrored(source())
         assertEquals("/books/main/", base.bookHref)
         assertNotEquals(base.hash, mirrored(source(addressBookHref = "/books/other/")).hash)
-        assertNotEquals(base.hash, base.copy(groupId = 7).hash)
-        assertNotEquals(base.copy(groupId = 7).hash, base.copy(groupId = 8).hash)
-        assertEquals(base.copy(groupId = 7).hash, base.copy(groupId = 7).hash)
+        assertNotEquals(base.hash, base.copy(groupIds = listOf(7)).hash)
+        assertNotEquals(base.copy(groupIds = listOf(7)).hash, base.copy(groupIds = listOf(8)).hash)
+        assertEquals(base.copy(groupIds = listOf(7)).hash, base.copy(groupIds = listOf(7)).hash)
     }
 
     @Test
     fun `diff updates contacts whose group was recreated`() {
-        val before = mirrored(source()).copy(groupId = 7)
-        val after = before.copy(groupId = 9)
+        val before = mirrored(source()).copy(groupIds = listOf(7))
+        val after = before.copy(groupIds = listOf(9))
         val plan = MirrorPlan.diff(
             listOf(after),
             listOf(SystemContactMirrorEntity("1", 5, before.hash))
@@ -119,5 +159,90 @@ class MirrorPlanTest {
         val mapped = listOf(SystemContactMirrorEntity("1", 5, "h"))
         val plan = MirrorPlan.diff(emptyList(), mapped)
         assertEquals(mapped, plan.deletes)
+    }
+
+    @Test
+    fun `caller id level writes only name phones and photo`() {
+        val contact = mirrored(source(hasPhoto = true), photoStamp = "p")
+        assertTrue(contact.emails.isEmpty())
+        assertTrue(contact.addresses.isEmpty())
+        assertTrue(contact.websites.isEmpty() && contact.socials.isEmpty() && contact.relations.isEmpty())
+        assertNull(contact.birthday)
+        assertNull(contact.organization)
+        assertNull(contact.nickname)
+        assertNull(contact.note)
+        assertNull(contact.middleName)
+        assertTrue(contact.categories.isEmpty())
+        assertEquals("p", contact.photoStamp)
+    }
+
+    @Test
+    fun `full contact level adds everything except notes`() {
+        val contact = mirrored(source(), level = SystemContactsLevel.FULL)
+        assertEquals(listOf(MirrorEmail("ada@example.org", MirrorPlan.EMAIL_TYPE_WORK)), contact.emails)
+        assertEquals("1 Main St", contact.addresses.single().street)
+        assertEquals(MirrorPlan.POSTAL_TYPE_HOME, contact.addresses.single().type)
+        assertEquals(listOf("https://example.org"), contact.websites)
+        assertEquals(listOf(MirrorSocial("@ada", "MASTODON")), contact.socials)
+        assertEquals("1815-12-10", contact.birthday)
+        assertEquals(MirrorOrganization("Analytical Engines", "Programmer"), contact.organization)
+        assertEquals("Ada", contact.nickname)
+        assertEquals("Augusta", contact.middleName)
+        assertEquals("Countess", contact.prefix)
+        assertNull(contact.note)
+    }
+
+    @Test
+    fun `email and address types use their own numbering`() {
+        assertEquals(2, MirrorPlan.emailType("WORK"))
+        assertEquals(3, MirrorPlan.emailType(null))
+        assertEquals(4, MirrorPlan.emailType("MOBILE"))
+        assertEquals(2, MirrorPlan.addressType("WORK"))
+        assertEquals(3, MirrorPlan.addressType("SCHOOL"))
+        assertEquals(3, MirrorPlan.phoneType("WORK"))
+        assertEquals(7, MirrorPlan.phoneType("SCHOOL"))
+    }
+
+    @Test
+    fun `everything level adds notes`() {
+        assertEquals("Door code 1234", mirrored(source(), level = SystemContactsLevel.EVERYTHING).note)
+    }
+
+    @Test
+    fun `relationships stored as contact ids are left out and known types are mapped`() {
+        val relations = mirrored(source(), level = SystemContactsLevel.FULL).relations
+        assertEquals(listOf(MirrorRelation("William King", 14, null)), relations)
+        assertEquals(
+            MirrorRelation("Grace", MirrorPlan.RELATION_TYPE_CUSTOM, "Teacher"),
+            MirrorPlan.relation("TEACHER", "Grace")
+        )
+    }
+
+    @Test
+    fun `categories become groups except the archived bookkeeping one`() {
+        assertEquals(listOf("Family"), mirrored(source(), level = SystemContactsLevel.FULL).categories)
+    }
+
+    @Test
+    fun `birthdays are kept only in provider-readable forms`() {
+        assertEquals("--03-12", MirrorPlan.normalizeBirthday("--03-12"))
+        assertEquals("--03-12", MirrorPlan.normalizeBirthday("--0312"))
+        assertEquals("1815-12-10", MirrorPlan.normalizeBirthday("1815-12-10"))
+        assertNull(MirrorPlan.normalizeBirthday("December tenth"))
+        assertNull(MirrorPlan.normalizeBirthday(null))
+    }
+
+    @Test
+    fun `changing the level changes the hash so contacts are rewritten`() {
+        val caller = mirrored(source())
+        val full = mirrored(source(), level = SystemContactsLevel.FULL)
+        val everything = mirrored(source(), level = SystemContactsLevel.EVERYTHING)
+        assertNotEquals(caller.hash, full.hash)
+        assertNotEquals(full.hash, everything.hash)
+    }
+
+    @Test
+    fun `group keys distinguish books from categories`() {
+        assertNotEquals(MirrorPlan.bookGroupKey("Family"), MirrorPlan.categoryGroupKey("Family"))
     }
 }

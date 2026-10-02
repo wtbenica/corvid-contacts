@@ -6,16 +6,37 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.Phone
+import dev.benica.corvidcontacts.data.model.Relationship
+import dev.benica.corvidcontacts.data.model.SocialProfile
+import dev.benica.corvidcontacts.data.model.StructuredAddress
 import kotlinx.coroutines.flow.Flow
 
-/** The columns of a contact that can be mirrored to the system contacts at the Caller ID level. */
+/**
+ * The columns of a contact that can be mirrored to the system contacts, at any sharing level. The
+ * level decides which of them are actually written.
+ */
 data class MirrorSource(
     val id: ContactId,
     val displayName: String,
     val firstName: String?,
     val lastName: String?,
+    val middleName: String?,
+    val prefix: String?,
+    val suffix: String?,
     val phones: List<Phone>?,
+    val emails: List<Email>?,
+    val structuredAddresses: List<StructuredAddress>?,
+    val websites: List<String>?,
+    val socialProfiles: List<SocialProfile>?,
+    val relationships: List<Relationship>?,
+    val birthday: String?,
+    val company: String?,
+    val jobTitle: String?,
+    val nickname: String?,
+    val notes: String?,
+    val categories: List<String>?,
     val hasPhoto: Boolean,
     val addressBookHref: String,
 )
@@ -40,8 +61,8 @@ interface SystemContactMirrorDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertGroups(groups: List<SystemGroupMirrorEntity>)
 
-    @Query("DELETE FROM system_group_mirror WHERE bookHref IN (:bookHrefs)")
-    suspend fun deleteGroups(bookHrefs: List<String>)
+    @Query("DELETE FROM system_group_mirror WHERE groupKey IN (:groupKeys)")
+    suspend fun deleteGroups(groupKeys: List<String>)
 
     @Query("DELETE FROM system_group_mirror")
     suspend fun deleteAllGroups()
@@ -56,8 +77,10 @@ interface SystemContactMirrorDao {
      */
     @Query(
         """
-        SELECT c.id, c.displayName, c.firstName, c.lastName, c.phones, c.hasPhoto,
-               c.addressBookHref AS addressBookHref
+        SELECT c.id, c.displayName, c.firstName, c.lastName, c.middleName, c.prefix, c.suffix,
+               c.phones, c.emails, c.structuredAddresses, c.websites, c.socialProfiles,
+               c.relationships, c.birthday, c.company, c.jobTitle, c.nickname, c.notes,
+               c.categories, c.hasPhoto, c.addressBookHref AS addressBookHref
         FROM contacts c
         INNER JOIN address_books b ON c.addressBookHref = b.href
         WHERE c.isArchived = 0 AND b.shareWithSystem = 1
