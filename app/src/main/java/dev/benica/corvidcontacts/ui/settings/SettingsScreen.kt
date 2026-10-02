@@ -59,6 +59,7 @@ import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.DataManagementSection
 import dev.benica.corvidcontacts.ui.settings.sections.ExternalPhotosSection
 import dev.benica.corvidcontacts.ui.settings.sections.PhoneFormattingSection
+import dev.benica.corvidcontacts.ui.settings.sections.SystemContactsSection
 import dev.benica.corvidcontacts.ui.settings.sections.ThemeSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -80,6 +81,7 @@ fun SettingsScreen(
     val alwaysAddCountryCode by viewModel.alwaysAddCountryCode.collectAsState()
     val addressLookupMode by viewModel.addressLookupMode.collectAsState()
     val autoLoadRemotePhotos by viewModel.autoLoadRemotePhotos.collectAsState()
+    val systemContactsEnabled by viewModel.systemContactsEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val addressBooks by viewModel.addressBooks.collectAsState()
 
@@ -89,11 +91,13 @@ fun SettingsScreen(
         alwaysAddCountryCode = alwaysAddCountryCode,
         addressLookupMode = addressLookupMode,
         autoLoadRemotePhotos = autoLoadRemotePhotos,
+        systemContactsEnabled = systemContactsEnabled,
         themeMode = themeMode,
         addressBooks = addressBooks,
         onAlwaysAddCountryCodeToggled = { alwaysAdd -> viewModel.setAlwaysAddCountryCode(alwaysAdd) },
         onAddressLookupModeSelected = { mode -> viewModel.setAddressLookupMode(mode) },
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
+        onSystemContactsToggled = { enabled -> viewModel.setSystemContactsEnabled(enabled) },
         onThemeModeSelected = { theme -> viewModel.setThemeMode(theme) },
         onLogout = { viewModel.logout() },
         onExport = { viewModel.getExportData() },
@@ -119,11 +123,13 @@ private fun SettingsScreen(
     alwaysAddCountryCode: Boolean,
     addressLookupMode: AddressLookupMode,
     autoLoadRemotePhotos: Boolean,
+    systemContactsEnabled: Boolean,
     themeMode: ThemeMode,
     addressBooks: List<AddressBookEntity>,
     onAlwaysAddCountryCodeToggled: (Boolean) -> Unit,
     onAddressLookupModeSelected: (AddressLookupMode) -> Unit,
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
+    onSystemContactsToggled: (Boolean) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
     onExport: suspend () -> String,
@@ -250,6 +256,11 @@ private fun SettingsScreen(
                 ExternalPhotosSection(
                     autoLoadRemotePhotos = autoLoadRemotePhotos,
                     onAutoLoadRemotePhotosToggled = onAutoLoadRemotePhotosToggled
+                )
+
+                SystemContactsSection(
+                    enabled = systemContactsEnabled,
+                    onToggled = onSystemContactsToggled
                 )
             }
 
@@ -554,11 +565,13 @@ fun SettingsScreenPreview() {
             alwaysAddCountryCode = true,
             addressLookupMode = AddressLookupMode.PHOTON,
             autoLoadRemotePhotos = false,
+            systemContactsEnabled = false,
             themeMode = ThemeMode.SYSTEM,
             addressBooks = emptyList(),
             onAlwaysAddCountryCodeToggled = { },
             onAddressLookupModeSelected = {},
             onAutoLoadRemotePhotosToggled = {},
+            onSystemContactsToggled = {},
             onThemeModeSelected = {},
             onLogout = {},
             onExport = { "potato salad" },

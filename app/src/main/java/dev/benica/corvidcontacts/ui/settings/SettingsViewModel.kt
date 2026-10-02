@@ -73,6 +73,14 @@ class SettingsViewModel(
             false
         )
 
+    /** Whether contacts are mirrored into the system contacts so other apps can show names. */
+    val systemContactsEnabled: StateFlow<Boolean> = settingsRepository.systemContactsEnabled
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            false
+        )
+
     /** The user's preferred theme mode. */
     val themeMode: StateFlow<ThemeMode> = settingsRepository.themeMode
         .stateIn(
@@ -110,6 +118,13 @@ class SettingsViewModel(
             if (enabled) {
                 repository.downloadAllPendingRemotePhotos()
             }
+        }
+    }
+
+    /** Turns the system contacts mirror on or off (the caller has already obtained permission). */
+    fun setSystemContactsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.saveSystemContactsEnabled(enabled)
         }
     }
 

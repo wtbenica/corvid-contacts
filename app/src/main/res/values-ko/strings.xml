@@ -476,4 +476,9 @@
     <string name="detail_share_selection_other_name">기타 이름 항목(중간 이름, 접두어 등)</string>
     <string name="detail_share_selection_photo">프로필 사진</string>
     <string name="detail_share_selection_relationship">관계 (%1$s)</string>
+
+    <!-- System contacts -->
+    <string name="system_contacts_title">다른 앱에 이름 표시</string>
+    <string name="system_contacts_description">연락처의 이름, 전화번호, 사진을 이 기기의 연락처에 추가하여 메시지 앱과 전화 앱에서 누가 전화하거나 문자를 보냈는지 표시할 수 있게 합니다. 연락처 접근 권한이 있는 모든 앱이 이 정보를 볼 수 있습니다. Corvid는 이 정보를 Google로 보내지 않습니다. 이 사본은 읽기 전용이므로 연락처는 Corvid에서 편집하세요.</string>
+    <string name="system_contacts_add_account_unsupported">대신 Corvid Contacts 설정에서 켜 주세요.</string>
 </resources>

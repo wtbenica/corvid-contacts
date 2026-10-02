@@ -490,4 +490,9 @@
     <string name="detail_share_selection_other_name">Weitere Namensbestandteile (zweiter Vorname, Titel usw.)</string>
     <string name="detail_share_selection_photo">Profilfoto</string>
     <string name="detail_share_selection_relationship">Beziehung (%1$s)</string>
+
+    <!-- System contacts -->
+    <string name="system_contacts_title">Namen in anderen Apps anzeigen</string>
+    <string name="system_contacts_description">Fügt Namen, Telefonnummern und Fotos deiner Kontakte zu den Kontakten dieses Geräts hinzu, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann sie dann sehen. Corvid sendet sie nicht an Google. Diese Kopie ist schreibgeschützt: Bearbeite Kontakte in Corvid.</string>
+    <string name="system_contacts_add_account_unsupported">Aktiviere dies stattdessen in den Einstellungen von Corvid Contacts.</string>
 </resources>

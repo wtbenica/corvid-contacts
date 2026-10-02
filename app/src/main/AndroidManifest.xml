@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Opt-in "System contacts" feature: writes (never reads) a mirror of the user's contacts
+         under this app's own account so Messages/the dialer can show names. -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
     <!-- Places SDK declares these for optional location-biased autocomplete and
          "current place" detection, neither of which this app uses. -->
     <uses-permission
@@ -139,6 +143,31 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name=".data.system.SystemContactsAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/system_contacts_authenticator" />
+        </service>
+
+        <service
+            android:name=".data.system.SystemContactsSyncService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/system_contacts_syncadapter" />
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/system_contacts_structure" />
+        </service>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

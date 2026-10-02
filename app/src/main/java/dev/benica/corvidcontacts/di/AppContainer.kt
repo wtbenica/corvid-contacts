@@ -10,6 +10,8 @@ import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.data.repository.PhotoManager
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import dev.benica.corvidcontacts.data.repository.VCardMapper
+import dev.benica.corvidcontacts.data.system.SystemContactsMirror
+import dev.benica.corvidcontacts.data.system.SystemContactsMirrorManager
 
 /**
  * Dependency injection container for the application.
@@ -33,5 +35,15 @@ class AppContainer(context: Context) {
         settingsRepository,
         photoManager,
         vCardMapper
+    )
+
+    val systemContactsMirrorManager = SystemContactsMirrorManager(
+        settingsRepository,
+        database.systemContactMirrorDao(),
+        SystemContactsMirror(
+            context,
+            database.systemContactMirrorDao(),
+            photoManager
+        )
     )
 }

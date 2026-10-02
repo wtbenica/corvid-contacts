@@ -50,6 +50,10 @@ android {
             "\"$placesApiKey\""
         )
         manifestPlaceholders["googlePlacesApiKey"] = placesApiKey
+
+        // Account type that owns the mirrored system contacts. Must be unique per installed
+        // build, so the debug build overrides it.
+        resValue("string", "system_contacts_account_type", "dev.benica.corvidcontacts")
     }
 
     signingConfigs {
@@ -73,6 +77,7 @@ android {
         debug {
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
+            resValue("string", "system_contacts_account_type", "dev.benica.corvidcontacts.debug")
             versionNameSuffix = "-debug"
         }
         release {
@@ -96,6 +101,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
 
     testOptions {

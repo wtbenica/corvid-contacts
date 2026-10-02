@@ -1,6 +1,7 @@
 # Design: Opt-in system contacts mirror
 
-Status: draft, not implemented.
+Status: step 1 (Caller ID level, global toggle) is implemented and awaiting
+device testing. Steps 2 to 5 are not started.
 
 ## Goal
 
@@ -101,17 +102,31 @@ setting.
 - `res/xml/contacts.xml` declaring the account type as a contacts source, and
   the matching authenticator and sync adapter XML.
 - Manifest entries and the `WRITE_CONTACTS` permission.
+- The account type string comes from a `resValue` in `build.gradle.kts`, with a
+  separate value for debug builds so a debug and a release install can coexist.
+- The authenticator refuses "add account" from Android's account settings. The
+  account is created and removed only by the app.
+- The account's contacts-list visibility setting (`UNGROUPED_VISIBLE`) is set when
+  the account is created, otherwise contacts without a group are hidden from the
+  Contacts app.
 - Handle the user removing the account in Android settings: the system deletes
-  the mirrored rows, and the app must treat that as "mirror off" without
-  crashing, then offer to re-enable.
+  the mirrored rows. If the account is missing at reconcile time, the stored
+  mapping is treated as stale (this also covers a backup restored onto a new
+  device) and cleared, then the account is created again.
 
 ### Field mapping
 
 - Contact to `RawContacts` and `Data` rows via one `applyBatch` call per batch.
-- Mapping storage: for each mirrored contact, keep the provider raw-contact id
-  and a content hash in Room, on `ContactEntity` or in a small mapping table.
-  The hash covers the fields at the current sharing level, so changing the level
-  also causes updates.
+- Mapping storage: for each mirrored contact, Room keeps the provider
+  raw-contact id and a content hash in a separate `system_contact_mirror` table
+  (`SystemContactMirrorEntity`). It is not a column on `ContactEntity` because
+  server sync replaces contact rows wholesale, which would wipe it. The hash
+  covers the fields at the current sharing level, so changing the level also
+  causes updates. The table was added with a 19 to 20 Room migration.
+- Who is mirrored: a contact with no name or no phone number is not mirrored,
+  since it is no use for caller ID. Archived contacts are not mirrored either.
+  A contact that stops qualifying is deleted from the mirror on the next
+  reconcile.
 - Map phones to `Phone`, emails to `Email`, addresses to `StructuredPostal`,
   and so on. Fields with no provider equivalent are skipped.
 - Photos: write the local photo file bytes to the `Photo` data row.
@@ -128,11 +143,25 @@ setting.
   sharing setting changes, and as a full reconcile from `SyncWorker`.
 - A full reset (delete all rows for the account and re-insert) is the recovery
   path if the mapping and the provider disagree.
+- Implementation: `SystemContactsMirrorManager` watches the setting and a
+  Room query of mirror-relevant columns, debounced by 2 seconds, from an
+  application-scoped coroutine. This covers server sync, local edits, imports,
+  archiving and deletes without hooking each one. Turning the setting off removes
+  the account, which deletes every mirrored row, and clears the mapping.
+- An update first touches the raw contact with an expected count of 1, so a row
+  that has vanished fails the batch instead of attaching data to a stale id. The
+  contact is then re-inserted.
+- Photos are written as their own small batch, since photo bytes can approach
+  the binder transaction limit. Photos over 256 KB are downscaled to at most
+  about 720 px. A failed photo write leaves the contact without a photo and does
+  not fail the reconcile.
 
 ### Read-only rows
 
-- Mark mirrored rows read-only using the provider's per-row read-only flag
-  (`RAW_CONTACT_IS_READ_ONLY`; verify the exact constant and API level).
+- Mark mirrored rows read-only using `RawContacts.RAW_CONTACT_IS_READ_ONLY`
+  (a public constant in the SDK; still to be confirmed on a device). It is
+  set on insert. If the provider rejects it, the insert is retried once without
+  the flag, so the mirror still works but is editable.
 - Stock and Google Contacts honor the flag by hiding edit and delete.
 - It is not a security boundary. Any app with `WRITE_CONTACTS` can change the
   rows, and the next reconcile overwrites them. The user is told the mirror is
@@ -201,9 +230,13 @@ Manual checks on a real device:
 
 ## Open questions
 
-- Confirm the read-only flag constant, its minimum API, and that the stock
-  Contacts app honors it on current Android versions.
-- Confirm that write-only works end to end (see Permissions).
+- Confirm on a device that the read-only flag is accepted at insert time and that
+  the stock Contacts app honors it on current Android versions.
+- Confirm that write-only works end to end (see Permissions), including that the
+  `Settings` row insert, the sync-adapter-flagged inserts and deletes, and
+  `removeAccountExplicitly` all work with only `WRITE_CONTACTS`.
+- Confirm that Messages and the dialer resolve names and photos, and that nothing
+  appears in the Google account.
 - Confirm how the Contacts app handles an edit activity declared in
   `contacts.xml`.
 - How many contacts before batching or performance needs tuning?
@@ -213,8 +246,8 @@ Manual checks on a real device:
 
 ## Suggested order
 
-1. Account plumbing, mapping columns, mapper and diff behind the global toggle,
-   at the Caller ID level.
+1. Account plumbing, mapping table, mapper and diff behind the global toggle, at
+   the Caller ID level. (Implemented; awaiting device testing.)
 2. Per-book sharing.
 3. The Full contact and Everything levels.
 4. Routing edits to Corvid.

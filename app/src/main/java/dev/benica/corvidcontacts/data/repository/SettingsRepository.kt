@@ -54,6 +54,7 @@ class SettingsRepository(private val context: Context) {
         val RESOLVED_LOCAL_BOOK_HREFS = stringPreferencesKey("resolved_local_book_hrefs")
         val AUTO_LOAD_REMOTE_PHOTOS = booleanPreferencesKey("auto_load_remote_photos")
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val SYSTEM_CONTACTS_ENABLED = booleanPreferencesKey("system_contacts_enabled")
     }
 
     /** Whether the local country code should be auto-prepended to phone numbers. Defaults to `true`. */
@@ -99,6 +100,14 @@ class SettingsRepository(private val context: Context) {
      */
     val autoLoadRemotePhotos: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
         preferences[PreferencesKeys.AUTO_LOAD_REMOTE_PHOTOS] ?: false
+    }
+
+    /**
+     * Whether Corvid mirrors its contacts into Android's system contacts so other apps (Messages,
+     * the dialer) can show names for phone numbers. Defaults to `false`: sharing is opt-in.
+     */
+    val systemContactsEnabled: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+        preferences[PreferencesKeys.SYSTEM_CONTACTS_ENABLED] ?: false
     }
 
     /** The user's preferred theme mode. Defaults to [ThemeMode.SYSTEM]. */
@@ -228,6 +237,13 @@ class SettingsRepository(private val context: Context) {
     suspend fun saveAutoLoadRemotePhotos(enabled: Boolean) {
         context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.AUTO_LOAD_REMOTE_PHOTOS] = enabled
+        }
+    }
+
+    /** Turns the system contacts mirror on or off. */
+    suspend fun saveSystemContactsEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[PreferencesKeys.SYSTEM_CONTACTS_ENABLED] = enabled
         }
     }
 
