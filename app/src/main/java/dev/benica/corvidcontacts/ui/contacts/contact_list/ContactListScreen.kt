@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * @param onAddSelfContact Callback to add the user's own contact.
  * @param onSetUpSync Callback to set up synchronization.
  * @param onSettingsClick Callback when the settings button is clicked.
+ * @param onManageAddressBooks Callback to open the address book management screen, or `null` where
+ * there is none (the widget picker), which hides the filter sheet's manage button.
  * @param onContactSelected Callback when a contact is selected in picker mode.
  * @param onCancelSelectingContact Callback when selecting a contact is canceled.
  * @param onClearSelectingContact Callback when the selected contact is cleared.
@@ -40,6 +42,7 @@ fun ContactListScreen(
     onAddSelfContact: () -> Unit,
     onSetUpSync: () -> Unit,
     onSettingsClick: () -> Unit,
+    onManageAddressBooks: (() -> Unit)? = null,
     onContactSelected: (ContactWithAddressBook?) -> Unit,
     onCancelSelectingContact: () -> Unit,
     onClearSelectingContact: () -> Unit,
@@ -107,14 +110,6 @@ fun ContactListScreen(
             onSearchQueryChange = { viewModel.updateSearchQuery(it) },
             onGroupSelected = { viewModel.updateSelectedGroup(it) },
             onSelectAddressBook = { viewModel.selectAddressBook(it) },
-            onUpdateAddressBookAppearance = { book, color, iconName ->
-                viewModel.updateAddressBookAppearance(
-                    book,
-                    color,
-                    iconName
-                )
-            },
-            onUpdateAddressBookOrder = { viewModel.updateAddressBookOrder(it) },
             onCreateAddressBook = { name, color, forceLocal, iconName ->
                 viewModel.createAddressBook(
                     name,
@@ -123,20 +118,6 @@ fun ContactListScreen(
                     iconName
                 )
             },
-            onRenameAddressBook = { book, newName ->
-                viewModel.renameAddressBook(
-                    book,
-                    newName
-                )
-            },
-            onDeleteAddressBook = { viewModel.deleteAddressBook(it) },
-            onUploadLocalAddressBook = { book, newName ->
-                viewModel.uploadLocalAddressBook(
-                    book,
-                    newName
-                )
-            },
-            onToggleAddressBookVisibility = { viewModel.toggleAddressBookVisibility(it) },
             onUpdateGroupOrder = { viewModel.updateGroupOrder(it) },
             onRenameGroup = { oldName, newName ->
                 viewModel.renameGroup(
@@ -161,6 +142,7 @@ fun ContactListScreen(
             onContactClick = onContactClick,
             onAddContact = onAddContact,
             onSettingsClick = onSettingsClick,
+            onManageAddressBooks = onManageAddressBooks,
             onShareSelf = onShareSelf,
             onShareSelfViaQr = onShareSelfViaQr
         )

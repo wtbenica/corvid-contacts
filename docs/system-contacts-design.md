@@ -81,8 +81,8 @@ write-only approach turns out not to work reliably, fall back to requesting
 2. **Which address books to share** (per book, default off). This is the
    `AddressBookEntity.shareWithSystem` column, added with a 20 to 21 migration. It
    is separate from `isVisible`. With the feature on and no book shared, the
-   mirror is empty. The Settings section lists each book with its own switch once
-   the feature is on and the permission is held. Sync never resets the flag
+   mirror is empty. The switch lives on each address book's own settings page (see
+   "Address book pages" below), not in a list in Settings. Sync never resets the flag
    (address book inserts ignore existing rows), but a book that is removed and
    re-synced starts private again, which is the safe direction.
 3. **How much data to share** (global, one of three presets):
@@ -236,14 +236,37 @@ name to show, and only birthdays in `yyyy-MM-dd` or `--MM-dd` form are written.
 Phone, email and postal types have separate numbering in the provider, so each
 has its own mapping.
 
+## Address book pages
+
+Per-book sharing is part of a dedicated address book settings page rather than
+a dialog or a list in Settings, because sharing is a property of a book like its
+color or visibility.
+
+- The contact list's filter sheet has a manage button that opens an address book
+  list (`Destination.AddressBooks`): reorderable, with an add button and a status
+  line per book (local, hidden, shared). Tapping a book opens its page
+  (`Destination.AddressBookSettings(href)`). Settings has a "Manage address books"
+  row that opens the same list, so the filter sheet stays the primary path and
+  Settings is the secondary one.
+- A book's page holds its icon and color, name, visibility, sharing with other
+  apps, uploading a local book to a server, and deleting it. The existing dialogs
+  are reused from the page. The old manage-books dialog and the dialogs stacked
+  in the filter sheet are gone; the filter sheet keeps filtering and the add
+  button. The widget picker has no address book list, so the manage button is
+  hidden there.
+- The sharing switch is disabled, with an explanation, when the master toggle is
+  off or the permission is missing, and the row leads to Settings. This keeps the
+  feature discoverable from the book page without making the setting look broken.
+- The wide-screen layout has a case for both destinations.
+
 ## Settings and copy
 
 A "System contacts" section:
 
 - Master toggle with the explanation above.
-- Per-book toggles (only enabled when the master toggle is on).
-- Data-level picker with the three presets, and one line under each stating
-  exactly what it exposes.
+- Data-level picker with the three presets, below the toggle, with one line under
+  each stating exactly what it exposes.
+- A hint that which books are shared is set on each book's own page.
 - A statement that the mirror is read-only and never synced to Google by Corvid.
 
 ## Testing
@@ -257,6 +280,9 @@ Unit tests, in the style of `ContactsRepositoryVCardRoundTripTest`:
 Manual checks on a real device:
 
 - Messages and the dialer resolve names (and photos) for mirrored numbers.
+- The address book list and each book's page work from the filter sheet and from
+  Settings, on a phone and on a wide screen, including rename, hide, upload (local
+  books) and delete, and the sharing switch on a book's page.
 - Mirrored contacts appear in the Contacts app as read-only, or route to Corvid
   for editing.
 - Nothing appears in the Google account's contacts, and Google's device-contact

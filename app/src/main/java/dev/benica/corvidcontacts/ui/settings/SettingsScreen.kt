@@ -56,6 +56,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.common_ui.SecondaryHeader
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
 import dev.benica.corvidcontacts.ui.settings.sections.AccountSection
+import dev.benica.corvidcontacts.ui.settings.sections.AddressBooksLinkSection
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.DataManagementSection
 import dev.benica.corvidcontacts.ui.settings.sections.ExternalPhotosSection
@@ -73,6 +74,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onAboutClick: () -> Unit,
+    onAddressBooksClick: () -> Unit,
     modifier: Modifier = Modifier,
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
@@ -102,9 +104,6 @@ fun SettingsScreen(
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
         onSystemContactsToggled = { enabled -> viewModel.setSystemContactsEnabled(enabled) },
         onSystemContactsLevelSelected = { level -> viewModel.setSystemContactsLevel(level) },
-        onAddressBookSharedWithSystemToggled = { href, share ->
-            viewModel.setAddressBookSharedWithSystem(href, share)
-        },
         onThemeModeSelected = { theme -> viewModel.setThemeMode(theme) },
         onLogout = { viewModel.logout() },
         onExport = { viewModel.getExportData() },
@@ -115,6 +114,7 @@ fun SettingsScreen(
         onCreateAddressBook = { name, color, forceLocal, iconName -> viewModel.createAddressBook(name, color, forceLocal, iconName) },
         onResetOnboarding = { viewModel.resetOnboarding() },
         onAboutClick = onAboutClick,
+        onAddressBooksClick = onAddressBooksClick,
         onBack = onBack,
         modifier = modifier,
         showScaffold = showScaffold,
@@ -139,7 +139,6 @@ private fun SettingsScreen(
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
     onSystemContactsToggled: (Boolean) -> Unit,
     onSystemContactsLevelSelected: (SystemContactsLevel) -> Unit,
-    onAddressBookSharedWithSystemToggled: (href: String, share: Boolean) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
     onExport: suspend () -> String,
@@ -148,6 +147,7 @@ private fun SettingsScreen(
     onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
     onResetOnboarding: () -> Unit,
     onAboutClick: () -> Unit,
+    onAddressBooksClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     showScaffold: Boolean = true,
@@ -268,13 +268,13 @@ private fun SettingsScreen(
                     onAutoLoadRemotePhotosToggled = onAutoLoadRemotePhotosToggled
                 )
 
+                AddressBooksLinkSection(onClick = onAddressBooksClick)
+
                 SystemContactsSection(
                     enabled = systemContactsEnabled,
                     onToggled = onSystemContactsToggled,
                     level = systemContactsLevel,
                     onLevelSelected = onSystemContactsLevelSelected,
-                    addressBooks = addressBooks,
-                    onAddressBookToggled = onAddressBookSharedWithSystemToggled
                 )
             }
 
@@ -588,7 +588,6 @@ fun SettingsScreenPreview() {
             onAutoLoadRemotePhotosToggled = {},
             onSystemContactsToggled = {},
             onSystemContactsLevelSelected = {},
-            onAddressBookSharedWithSystemToggled = { _, _ -> },
             onThemeModeSelected = {},
             onLogout = {},
             onExport = { "potato salad" },
@@ -597,6 +596,7 @@ fun SettingsScreenPreview() {
             onCreateAddressBook = { _, _, _, _ -> Result.success(AddressBookEntity(href = "", displayName = null, colorInt = 0)) },
             onResetOnboarding = {},
             onAboutClick = {},
+            onAddressBooksClick = {},
             onBack = {},
         )
     }

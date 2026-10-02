@@ -56,6 +56,12 @@ sealed interface Destination : NavKey {
     data object Settings : Destination
 
     @Serializable
+    data object AddressBooks : Destination
+
+    @Serializable
+    data class AddressBookSettings(val href: String) : Destination
+
+    @Serializable
     data object About : Destination
 
     @Serializable

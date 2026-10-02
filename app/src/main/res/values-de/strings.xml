@@ -265,11 +265,8 @@
     <string name="settings_address_book_unnamed">Unbenanntes Adressbuch</string>
     <string name="local_address_book_name">Meine Kontakte</string>
     <string name="settings_address_book_add">Adressbuch hinzufügen</string>
-    <string name="settings_address_book_more_options">Weitere Optionen</string>
     <string name="settings_address_book_rename">Umbenennen</string>
     <string name="settings_address_book_delete">Löschen</string>
-    <string name="settings_address_book_show">Anzeigen</string>
-    <string name="settings_address_book_hide">Ausblenden</string>
     <string name="settings_address_book_hidden_label">Ausgeblendet</string>
     <string name="settings_address_book_create">Erstellen</string>
     <string name="settings_address_book_create_dialog_title">Neues Adressbuch</string>
@@ -501,6 +498,13 @@
     <string name="system_contacts_level_full_description">Zusätzlich E-Mails, Adressen, Social-Media-Profile, Websites, Geburtstag, Gruppen, Firma, Berufsbezeichnung, Spitzname und Beziehungen</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Zusätzlich Notizen</string>
-    <string name="system_contacts_books_hint">Wähle, welche Adressbücher geteilt werden. Solange du keines auswählst, wird nichts geteilt.</string>
+    <string name="address_book_shared_label">Mit anderen Apps geteilt</string>
+    <string name="address_book_setting_visibility">In der Kontaktliste anzeigen</string>
+    <string name="address_book_setting_visibility_description">Ausgeblendete Bücher bleiben auf deinem Gerät, erscheinen aber nicht in der Kontaktliste.</string>
+    <string name="address_book_setting_share">Mit anderen Apps teilen</string>
+    <string name="address_book_setting_share_description">Lässt Apps wie Nachrichten und die Telefon-App Namen für diese Kontakte anzeigen. Was geteilt wird, legst du in den Einstellungen unter „Namen in anderen Apps anzeigen“ fest.</string>
+    <string name="address_book_setting_share_off_hint">Aktiviere in den Einstellungen „Namen in anderen Apps anzeigen“, um dieses Buch zu teilen.</string>
+    <string name="settings_address_books_description">Aussehen, Sichtbarkeit und Teilen für jedes Adressbuch</string>
+    <string name="system_contacts_books_hint">Welche Adressbücher geteilt werden, legst du auf der Seite des jeweiligen Adressbuchs fest. Solange du es für keines aktivierst, wird nichts geteilt.</string>
     <string name="system_contacts_add_account_unsupported">Aktiviere dies stattdessen in den Einstellungen von Corvid Contacts.</string>
 </resources>

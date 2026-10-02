@@ -192,6 +192,34 @@ fun TabletNavigation(
             }
         }
 
+        is Destination.AddressBooks -> {
+            {
+                AddressBooksContent(
+                    contactsViewModel = contactsViewModel,
+                    authRepository = authRepository,
+                    settingsRepository = settingsRepository,
+                    backStack = backStack,
+                    showScaffold = false,
+                    onChromeChange = onChromeChange,
+                )
+            }
+        }
+
+        is Destination.AddressBookSettings -> {
+            {
+                AddressBookSettingsContent(
+                    key = current,
+                    contactsViewModel = contactsViewModel,
+                    contactsRepository = contactsRepository,
+                    authRepository = authRepository,
+                    settingsRepository = settingsRepository,
+                    backStack = backStack,
+                    showScaffold = false,
+                    onChromeChange = onChromeChange,
+                )
+            }
+        }
+
         is Destination.About -> {
             {
                 AboutContent(
@@ -269,6 +297,7 @@ fun TabletNavigation(
         },
         onNavigateToContact = { id -> navigateToContactDetail(id) },
         onSettingsClick = { backStack.add(Destination.Settings) },
+        onManageAddressBooks = { backStack.add(Destination.AddressBooks) },
         onSetUpSync = { backStack.add(Destination.Login()) },
         onShare = { id, isQr ->
             backStack.add(Destination.ShareSelection(id, isQr))

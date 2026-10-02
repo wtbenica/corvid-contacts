@@ -182,6 +182,7 @@ fun PhoneNavigation(
                     },
                     onSetUpSync = { backStack.add(Destination.Login()) },
                     onSettingsClick = { backStack.add(Destination.Settings) },
+                    onManageAddressBooks = { backStack.add(Destination.AddressBooks) },
                     onContactSelected = { contactWithBook ->
                         val sourceId = mergeSourceContactId
                         if (isPickingExternal) {
@@ -264,6 +265,27 @@ fun PhoneNavigation(
                 metadata = ListDetailSceneStrategy.detailPane()
             ) {
                 SettingsContent(contactsRepository, settingsRepository, authRepository, backStack)
+            }
+
+            is Destination.AddressBooks -> NavEntry(
+                key = key,
+                metadata = ListDetailSceneStrategy.detailPane()
+            ) {
+                AddressBooksContent(contactsViewModel, authRepository, settingsRepository, backStack)
+            }
+
+            is Destination.AddressBookSettings -> NavEntry(
+                key = key,
+                metadata = ListDetailSceneStrategy.detailPane()
+            ) {
+                AddressBookSettingsContent(
+                    key,
+                    contactsViewModel,
+                    contactsRepository,
+                    authRepository,
+                    settingsRepository,
+                    backStack
+                )
             }
 
             is Destination.About -> NavEntry(

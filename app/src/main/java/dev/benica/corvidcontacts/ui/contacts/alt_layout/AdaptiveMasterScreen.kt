@@ -106,6 +106,7 @@ fun AdaptiveMasterScreen(
     onMergeContact: (ContactEntity) -> Unit,
     onNavigateToContact: (String) -> Unit,
     onSettingsClick: () -> Unit,
+    onManageAddressBooks: () -> Unit,
     onSetUpSync: () -> Unit,
     onShare: (String, Boolean) -> Unit,
     onContactRemovedFromView: () -> Unit = {},
@@ -324,7 +325,7 @@ fun AdaptiveMasterScreen(
                     }
                 }
 
-                AdaptiveFilterButton(viewModel, onSetUpSync)
+                AdaptiveFilterButton(viewModel, onManageAddressBooks)
 
                 Box(modifier = Modifier.weight(1f)) {
                     when (val state = uiState) {
@@ -452,7 +453,7 @@ fun AdaptiveMasterScreen(
  * unchanged, just hosted in a [Popup] instead of a [androidx.compose.material3.ModalBottomSheet].
  */
 @Composable
-private fun AdaptiveFilterButton(viewModel: ContactsViewModel, onSetUpSync: () -> Unit) {
+private fun AdaptiveFilterButton(viewModel: ContactsViewModel, onManageAddressBooks: () -> Unit) {
     val availableAddressBooks by viewModel.addressBooks.collectAsState()
     val manageableAddressBooks by viewModel.allManageableAddressBooks.collectAsState()
     val selectedHrefs by viewModel.selectedAddressBookHrefs.collectAsState()
@@ -472,12 +473,6 @@ private fun AdaptiveFilterButton(viewModel: ContactsViewModel, onSetUpSync: () -
         .joinToString(" · ")
         .ifBlank { stringResource(R.string.common_all_books) }
 
-    val contactCountByAddressBook = remember(uiState) {
-        (uiState as? ContactsUiState.Success)?.contacts
-            ?.groupBy { it.contact.addressBookHref }
-            ?.mapValues { it.value.size }
-            ?: emptyMap()
-    }
 
     Box(modifier = Modifier.padding(8.dp)) {
         CCButton(
@@ -536,29 +531,14 @@ private fun AdaptiveFilterButton(viewModel: ContactsViewModel, onSetUpSync: () -
                             availableGroups = availableGroups,
                             selectedGroup = selectedGroup,
                             onGroupSelected = { viewModel.updateSelectedGroup(it) },
-                            onUpdateAddressBookAppearance = { book, color, iconName ->
-                                viewModel.updateAddressBookAppearance(book, color, iconName)
-                            },
-                            onUpdateAddressBookOrder = { viewModel.updateAddressBookOrder(it) },
                             onCreateAddressBook = { name, color, forceLocal, iconName ->
                                 viewModel.createAddressBook(name, color, forceLocal, iconName)
                             },
-                            onRenameAddressBook = { book, newName ->
-                                viewModel.renameAddressBook(book, newName)
-                            },
-                            onDeleteAddressBook = { viewModel.deleteAddressBook(it) },
-                            onUploadLocalAddressBook = { book, newName ->
-                                viewModel.uploadLocalAddressBook(book, newName)
-                            },
-                            onSetUpSync = onSetUpSync,
-                            onToggleAddressBookVisibility = {
-                                viewModel.toggleAddressBookVisibility(it)
-                            },
+                            onManageAddressBooks = onManageAddressBooks,
                             onUpdateGroupOrder = { viewModel.updateGroupOrder(it) },
                             onRenameGroup = { oldName, newName ->
                                 viewModel.renameGroup(oldName, newName)
                             },
-                            contactCountByAddressBook = contactCountByAddressBook,
                         )
                     }
                 }

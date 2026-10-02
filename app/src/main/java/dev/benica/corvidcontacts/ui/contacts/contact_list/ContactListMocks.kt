@@ -101,8 +101,6 @@ internal val mockListActions = ContactListActions(
     onSearchQueryChange = {},
     onGroupSelected = {},
     onSelectAddressBook = {},
-    onUpdateAddressBookAppearance = { _, _, _ -> },
-    onUpdateAddressBookOrder = {},
     onCreateAddressBook = { _, _, _, _ ->
         Result.success(
             AddressBookEntity(
@@ -112,18 +110,6 @@ internal val mockListActions = ContactListActions(
             )
         )
     },
-    onRenameAddressBook = { _, _ -> Result.success(Unit) },
-    onDeleteAddressBook = { Result.success(Unit) },
-    onUploadLocalAddressBook = { _, _ ->
-        Result.success(
-            AddressBookUploadResult(
-                uploadedCount = 0,
-                failedCount = 0,
-                fullyCompleted = true
-            )
-        )
-    },
-    onToggleAddressBookVisibility = {},
     onUpdateGroupOrder = {},
     onRenameGroup = { _, _ -> },
     onAddSelectedToGroup = {},
@@ -135,6 +121,7 @@ internal val mockListActions = ContactListActions(
     onContactClick = { _ -> },
     onAddContact = {},
     onSettingsClick = {},
+    onManageAddressBooks = {},
     onShareSelf = {},
     onShareSelfViaQr = {},
 )

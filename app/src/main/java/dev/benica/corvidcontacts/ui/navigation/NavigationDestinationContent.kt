@@ -2,14 +2,19 @@
 
 package dev.benica.corvidcontacts.ui.navigation
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +26,8 @@ import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import dev.benica.corvidcontacts.navigation.Destination
+import dev.benica.corvidcontacts.ui.addressbooks.AddressBookSettingsScreen
+import dev.benica.corvidcontacts.ui.addressbooks.AddressBooksScreen
 import dev.benica.corvidcontacts.ui.contacts.ContactsUiState
 import dev.benica.corvidcontacts.ui.contacts.ContactsViewModel
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
@@ -34,6 +41,7 @@ import dev.benica.corvidcontacts.ui.settings.LicensesScreen
 import dev.benica.corvidcontacts.ui.settings.SettingsScreen
 import dev.benica.corvidcontacts.ui.settings.SettingsViewModel
 import dev.benica.corvidcontacts.utils.shareVCard
+import kotlinx.coroutines.flow.map
 
 /**
  * Per-destination content shared by [PhoneNavigation] (wrapped in its own `NavEntry`, default
@@ -139,6 +147,7 @@ internal fun SettingsContent(
         viewModel = settingsViewModel,
         onBack = { backStack.removeAt(backStack.size - 1) },
         onAboutClick = { backStack.add(Destination.About) },
+        onAddressBooksClick = { backStack.add(Destination.AddressBooks) },
         showScaffold = showScaffold,
         onChromeChange = onChromeChange,
     )
@@ -298,4 +307,90 @@ internal fun MergeReviewContent(
             snackbarHostState = snackbarHostState,
         )
     }
+}
+
+/**
+ * Whether the "Show names in other apps" feature is on *and* the app still holds the permission it
+ * needs, which is when per-book sharing can take effect.
+ */
+@Composable
+private fun rememberSystemContactsActive(settingsRepository: SettingsRepository): Boolean {
+    val enabled by settingsRepository.systemContactsEnabled.collectAsState(initial = false)
+    val context = LocalContext.current
+    val granted = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.WRITE_CONTACTS
+    ) == PackageManager.PERMISSION_GRANTED
+    return enabled && granted
+}
+
+@Composable
+internal fun AddressBooksContent(
+    contactsViewModel: ContactsViewModel,
+    authRepository: AuthRepository,
+    settingsRepository: SettingsRepository,
+    backStack: NavBackStack<Destination>,
+    showScaffold: Boolean = true,
+    onChromeChange: ((ScreenChrome) -> Unit)? = null,
+) {
+    val addressBooks by contactsViewModel.allManageableAddressBooks.collectAsState()
+    val hasServerConnection by remember(authRepository) {
+        authRepository.credentials.map { it != null }
+    }.collectAsState(initial = false)
+
+    AddressBooksScreen(
+        addressBooks = addressBooks,
+        hasServerConnection = hasServerConnection,
+        systemContactsActive = rememberSystemContactsActive(settingsRepository),
+        onBookClick = { backStack.add(Destination.AddressBookSettings(it.href)) },
+        onUpdateOrder = { contactsViewModel.updateAddressBookOrder(it) },
+        onCreateAddressBook = { name, color, forceLocal, iconName ->
+            contactsViewModel.createAddressBook(name, color, forceLocal, iconName)
+        },
+        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+        showScaffold = showScaffold,
+        onChromeChange = onChromeChange,
+    )
+}
+
+@Composable
+internal fun AddressBookSettingsContent(
+    key: Destination.AddressBookSettings,
+    contactsViewModel: ContactsViewModel,
+    contactsRepository: ContactsRepository,
+    authRepository: AuthRepository,
+    settingsRepository: SettingsRepository,
+    backStack: NavBackStack<Destination>,
+    showScaffold: Boolean = true,
+    onChromeChange: ((ScreenChrome) -> Unit)? = null,
+) {
+    val addressBooks by contactsViewModel.allManageableAddressBooks.collectAsState()
+    val hasServerConnection by remember(authRepository) {
+        authRepository.credentials.map { it != null }
+    }.collectAsState(initial = false)
+    val contactCount by produceState(0, key.href) {
+        value = contactsRepository.getContactCountInAddressBook(key.href)
+    }
+
+    AddressBookSettingsScreen(
+        book = addressBooks.find { it.href == key.href },
+        contactCount = contactCount,
+        hasServerConnection = hasServerConnection,
+        systemContactsActive = rememberSystemContactsActive(settingsRepository),
+        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
+        onUpdateAppearance = { book, color, iconName ->
+            contactsViewModel.updateAddressBookAppearance(book, color, iconName)
+        },
+        onRename = { book, newName -> contactsViewModel.renameAddressBook(book, newName) },
+        onToggleVisibility = { contactsViewModel.toggleAddressBookVisibility(it) },
+        onShareWithSystemChanged = { book, share ->
+            contactsViewModel.setAddressBookSharedWithSystem(book, share)
+        },
+        onOpenSystemContactsSettings = { backStack.add(Destination.Settings) },
+        onUpload = { book, newName -> contactsViewModel.uploadLocalAddressBook(book, newName) },
+        onSetUpSync = { backStack.add(Destination.Login()) },
+        onDelete = { contactsViewModel.deleteAddressBook(it) },
+        showScaffold = showScaffold,
+        onChromeChange = onChromeChange,
+    )
 }

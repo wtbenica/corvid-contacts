@@ -277,11 +277,8 @@
     <string name="settings_address_book_unnamed">Libreta sin nombre</string>
     <string name="local_address_book_name">Mis contactos</string>
     <string name="settings_address_book_add">Agregar libreta</string>
-    <string name="settings_address_book_more_options">Más opciones</string>
     <string name="settings_address_book_rename">Renombrar</string>
     <string name="settings_address_book_delete">Eliminar</string>
-    <string name="settings_address_book_show">Mostrar</string>
-    <string name="settings_address_book_hide">Ocultar</string>
     <string name="settings_address_book_hidden_label">Oculto</string>
     <string name="settings_address_book_create">Crear</string>
     <string name="settings_address_book_create_dialog_title">Nueva libreta</string>
@@ -516,6 +513,13 @@
     <string name="system_contacts_level_full_description">Además correos, direcciones, perfiles sociales, sitios web, cumpleaños, grupos, empresa, cargo, apodo y relaciones</string>
     <string name="system_contacts_level_everything">Todo</string>
     <string name="system_contacts_level_everything_description">Además notas</string>
-    <string name="system_contacts_books_hint">Elige qué libretas de direcciones compartir. No se comparte nada hasta que elijas al menos una.</string>
+    <string name="address_book_shared_label">Compartida con otras apps</string>
+    <string name="address_book_setting_visibility">Mostrar en la lista de contactos</string>
+    <string name="address_book_setting_visibility_description">Las libretas ocultas permanecen en tu dispositivo pero no aparecen en la lista de contactos.</string>
+    <string name="address_book_setting_share">Compartir con otras apps</string>
+    <string name="address_book_setting_share_description">Permite que apps como Mensajes y la app de teléfono muestren nombres de estos contactos. Lo que se comparte se define en Ajustes, en «Mostrar nombres en otras apps».</string>
+    <string name="address_book_setting_share_off_hint">Activa «Mostrar nombres en otras apps» en Ajustes para compartir esta libreta.</string>
+    <string name="settings_address_books_description">Aspecto, visibilidad y uso compartido de cada libreta de direcciones</string>
+    <string name="system_contacts_books_hint">Qué libretas se comparten se define en la página de cada libreta. No se comparte nada hasta que lo actives en al menos una.</string>
     <string name="system_contacts_add_account_unsupported">Actívalo en los ajustes de Corvid Contacts.</string>
 </resources>

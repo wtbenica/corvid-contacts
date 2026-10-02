@@ -36,21 +36,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
-import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.extensions.surface
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
-import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.AddressBookAppearanceDialog
-import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.ConfirmAddressBookDeletionDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
-import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.ManageAddressBooksDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.ManageGroupsDialog
-import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.RenameAddressBookDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.RenameGroupDialog
-import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.UploadAddressBookDialog
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.currentThemeColor
@@ -73,17 +67,10 @@ fun BottomFilterSheet(
     availableGroups: Set<String>,
     selectedGroup: String?,
     onGroupSelected: (String?) -> Unit,
-    onUpdateAddressBookAppearance: (AddressBookEntity, Color, String?) -> Unit,
-    onUpdateAddressBookOrder: (List<AddressBookEntity>) -> Unit,
     onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
-    onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
-    onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
-    onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
-    onSetUpSync: () -> Unit,
-    onToggleAddressBookVisibility: (AddressBookEntity) -> Unit,
+    onManageAddressBooks: (() -> Unit)?,
     onUpdateGroupOrder: (List<String>) -> Unit,
     onRenameGroup: (String, String) -> Unit,
-    contactCountByAddressBook: Map<String?, Int>,
 ) {
     val baseColor = currentThemeColor()
 
@@ -102,20 +89,15 @@ fun BottomFilterSheet(
             availableGroups = availableGroups,
             selectedGroup = selectedGroup,
             onGroupSelected = onGroupSelected,
-            onUpdateAddressBookAppearance = onUpdateAddressBookAppearance,
-            onUpdateAddressBookOrder = onUpdateAddressBookOrder,
             onCreateAddressBook = onCreateAddressBook,
-            onRenameAddressBook = onRenameAddressBook,
-            onDeleteAddressBook = onDeleteAddressBook,
-            onUploadLocalAddressBook = onUploadLocalAddressBook,
-            onSetUpSync = {
-                setFilterState(false)
-                onSetUpSync()
+            onManageAddressBooks = onManageAddressBooks?.let { manage ->
+                {
+                    setFilterState(false)
+                    manage()
+                }
             },
-            onToggleAddressBookVisibility = onToggleAddressBookVisibility,
             onUpdateGroupOrder = onUpdateGroupOrder,
             onRenameGroup = onRenameGroup,
-            contactCountByAddressBook = contactCountByAddressBook,
             modifier = Modifier.padding(bottom = 32.dp)
 
         )
@@ -133,17 +115,10 @@ fun BottomFilterSheetContent(
     availableGroups: Set<String>,
     selectedGroup: String?,
     onGroupSelected: (String?) -> Unit,
-    onUpdateAddressBookAppearance: (AddressBookEntity, Color, String?) -> Unit,
-    onUpdateAddressBookOrder: (List<AddressBookEntity>) -> Unit,
     onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
-    onRenameAddressBook: suspend (AddressBookEntity, String) -> Result<Unit>,
-    onDeleteAddressBook: suspend (AddressBookEntity) -> Result<Unit>,
-    onUploadLocalAddressBook: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
-    onSetUpSync: () -> Unit,
-    onToggleAddressBookVisibility: (AddressBookEntity) -> Unit,
+    onManageAddressBooks: (() -> Unit)?,
     onUpdateGroupOrder: (List<String>) -> Unit,
     onRenameGroup: (String, String) -> Unit,
-    contactCountByAddressBook: Map<String?, Int>,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -151,13 +126,7 @@ fun BottomFilterSheetContent(
     val scope = rememberCoroutineScope()
     val genericErrorMessage = stringResource(R.string.settings_address_book_generic_error)
 
-    var showManageBooksDialog by remember { mutableStateOf(false) }
     var showCreateAddressBookDialog by remember { mutableStateOf(false) }
-    var addressBookToRename by remember { mutableStateOf<AddressBookEntity?>(null) }
-    var addressBookToDelete by remember { mutableStateOf<AddressBookEntity?>(null) }
-    var addressBookToUpload by remember { mutableStateOf<AddressBookEntity?>(null) }
-    var showSetUpSyncPrompt by remember { mutableStateOf(false) }
-    var selectedBookForAppearance by remember { mutableStateOf<AddressBookEntity?>(null) }
     var isSubmittingAddressBookAction by remember { mutableStateOf(false) }
     var showManageGroupsDialog by remember { mutableStateOf(false) }
     var groupToRename by remember { mutableStateOf<String?>(null) }
@@ -190,11 +159,13 @@ fun BottomFilterSheetContent(
                         vertical = 8.dp
                     )
             )
-            CCIconButton(
-                icon = Icons.Rounded.Edit,
-                contentDescription = R.string.edit_action_manage_address_books,
-                onClick = { showManageBooksDialog = true },
-            )
+            if (onManageAddressBooks != null) {
+                CCIconButton(
+                    icon = Icons.Rounded.Edit,
+                    contentDescription = R.string.edit_action_manage_address_books,
+                    onClick = onManageAddressBooks,
+                )
+            }
             CCIconButton(
                 icon = Icons.Rounded.Add,
                 contentDescription = R.string.settings_address_book_add,
@@ -260,36 +231,6 @@ fun BottomFilterSheetContent(
         }
     }
 
-    if (showManageBooksDialog) {
-        ManageAddressBooksDialog(
-            addressBooks = manageableAddressBooks,
-            onUpdateOrder = onUpdateAddressBookOrder,
-            onRequestAppearance = { selectedBookForAppearance = it },
-            onRequestRename = { addressBookToRename = it },
-            onRequestDelete = { addressBookToDelete = it },
-            onRequestUpload = { if (hasServerConnection) addressBookToUpload = it else showSetUpSyncPrompt = true },
-            onToggleVisibility = onToggleAddressBookVisibility,
-            onDismiss = { showManageBooksDialog = false }
-        )
-    }
-
-    selectedBookForAppearance?.let { book ->
-        AddressBookAppearanceDialog(
-            currentColor = Color(book.colorInt),
-            currentIconName = book.iconName
-                ?: ContactColors.guessIconNameForAddressBook(book.displayName),
-            onConfirm = { color, iconName ->
-                onUpdateAddressBookAppearance(
-                    book,
-                    color,
-                    iconName
-                )
-                selectedBookForAppearance = null
-            },
-            onDismiss = { selectedBookForAppearance = null }
-        )
-    }
-
     if (showCreateAddressBookDialog) {
         CreateAddressBookDialog(
             isSubmitting = isSubmittingAddressBookAction,
@@ -321,138 +262,6 @@ fun BottomFilterSheetContent(
                 }
             },
             onDismiss = { if (!isSubmittingAddressBookAction) showCreateAddressBookDialog = false }
-        )
-    }
-
-    addressBookToRename?.let { book ->
-        RenameAddressBookDialog(
-            oldName = book.displayName ?: stringResource(R.string.settings_address_book_unnamed),
-            isSubmitting = isSubmittingAddressBookAction,
-            onConfirm = { newName ->
-                if (!isSubmittingAddressBookAction) {
-                    isSubmittingAddressBookAction = true
-                    scope.launch {
-                        val result = onRenameAddressBook(
-                            book,
-                            newName
-                        )
-                        isSubmittingAddressBookAction = false
-                        if (result.isSuccess) {
-                            addressBookToRename = null
-                        } else {
-                            Toast
-                                .makeText(
-                                    context,
-                                    genericErrorMessage,
-                                    Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        }
-                    }
-                }
-            },
-            onDismiss = { if (!isSubmittingAddressBookAction) addressBookToRename = null }
-        )
-    }
-
-    // Uploading needs a server; with none connected, offer to set one up instead of failing.
-    if (showSetUpSyncPrompt) {
-        CCAlertDialog(
-            onDismissRequest = { showSetUpSyncPrompt = false },
-            title = R.string.settings_address_book_upload_dialog_title,
-            content = { Text(stringResource(R.string.settings_address_book_upload_needs_server)) },
-            confirmButton = R.string.list_menu_set_up_sync,
-            onConfirm = {
-                showSetUpSyncPrompt = false
-                showManageBooksDialog = false
-                onSetUpSync()
-            },
-            dismissButton = R.string.action_cancel,
-        )
-    }
-
-    addressBookToUpload?.let { book ->
-        UploadAddressBookDialog(
-            oldName = book.displayName ?: stringResource(R.string.settings_address_book_unnamed),
-            isSubmitting = isSubmittingAddressBookAction,
-            onConfirm = { newName ->
-                if (!isSubmittingAddressBookAction) {
-                    isSubmittingAddressBookAction = true
-                    scope.launch {
-                        val result = onUploadLocalAddressBook(
-                            book,
-                            newName
-                        )
-                        isSubmittingAddressBookAction = false
-                        addressBookToUpload = null
-                        result.fold(
-                            onSuccess = { outcome ->
-                                val total = outcome.uploadedCount + outcome.failedCount
-                                val message = if (outcome.fullyCompleted) {
-                                    resources.getQuantityString(
-                                        R.plurals.settings_address_book_upload_result_full,
-                                        outcome.uploadedCount,
-                                        outcome.uploadedCount
-                                    )
-                                } else {
-                                    resources.getQuantityString(
-                                        R.plurals.settings_address_book_upload_result_partial,
-                                        total,
-                                        outcome.uploadedCount,
-                                        total,
-                                        outcome.failedCount
-                                    )
-                                }
-                                Toast
-                                    .makeText(
-                                        context,
-                                        message,
-                                        Toast.LENGTH_LONG
-                                    )
-                                    .show()
-                            },
-                            onFailure = {
-                                Toast
-                                    .makeText(
-                                        context,
-                                        genericErrorMessage,
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                            }
-                        )
-                    }
-                }
-            },
-            onDismiss = { if (!isSubmittingAddressBookAction) addressBookToUpload = null }
-        )
-    }
-
-    addressBookToDelete?.let { book: AddressBookEntity ->
-        ConfirmAddressBookDeletionDialog(
-            addressBook = book,
-            contactCount = contactCountByAddressBook[book.href] ?: 0,
-            onDismissRequest = { if (!isSubmittingAddressBookAction) addressBookToDelete = null },
-            onConfirm = {
-                if (!isSubmittingAddressBookAction) {
-                    isSubmittingAddressBookAction = true
-                    scope.launch {
-                        val result = onDeleteAddressBook(book)
-                        isSubmittingAddressBookAction = false
-                        addressBookToDelete = null
-                        if (result.isFailure) {
-                            Toast
-                                .makeText(
-                                    context,
-                                    genericErrorMessage,
-                                    Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        }
-                    }
-                }
-            },
-            isSubmittingAddressBookAction = isSubmittingAddressBookAction,
         )
     }
 
@@ -535,8 +344,6 @@ private fun BottomFilterSheetPreview() {
             ),
             selectedGroup = "Work",
             onGroupSelected = { },
-            onUpdateAddressBookAppearance = { _, _, _ -> },
-            onUpdateAddressBookOrder = {},
             onCreateAddressBook = { _, _, _, _ ->
                 Result.success(
                     AddressBookEntity(
@@ -547,22 +354,9 @@ private fun BottomFilterSheetPreview() {
                     )
                 )
             },
-            onRenameAddressBook = { _, _ -> Result.success(Unit) },
-            onDeleteAddressBook = { Result.success(Unit) },
-            onSetUpSync = {},
-            onUploadLocalAddressBook = { _, _ ->
-                Result.success(
-                    AddressBookUploadResult(
-                        uploadedCount = 0,
-                        failedCount = 0,
-                        fullyCompleted = true
-                    )
-                )
-            },
-            onToggleAddressBookVisibility = {},
+            onManageAddressBooks = {},
             onUpdateGroupOrder = {},
             onRenameGroup = { _, _ -> },
-            contactCountByAddressBook = emptyMap(),
         )
     }
 }

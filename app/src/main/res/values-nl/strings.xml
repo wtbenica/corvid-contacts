@@ -265,11 +265,8 @@
     <string name="settings_address_book_unnamed">Naamloos adresboek</string>
     <string name="local_address_book_name">Mijn contacten</string>
     <string name="settings_address_book_add">Adresboek toevoegen</string>
-    <string name="settings_address_book_more_options">Meer opties</string>
     <string name="settings_address_book_rename">Hernoemen</string>
     <string name="settings_address_book_delete">Verwijderen</string>
-    <string name="settings_address_book_show">Tonen</string>
-    <string name="settings_address_book_hide">Verbergen</string>
     <string name="settings_address_book_hidden_label">Verborgen</string>
     <string name="settings_address_book_create">Aanmaken</string>
     <string name="settings_address_book_create_dialog_title">Nieuw adresboek</string>
@@ -501,6 +498,13 @@
     <string name="system_contacts_level_full_description">Ook e-mailadressen, adressen, socialemediaprofielen, websites, verjaardag, groepen, bedrijf, functie, bijnaam en relaties</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Ook notities</string>
-    <string name="system_contacts_books_hint">Kies welke adresboeken je deelt. Er wordt niets gedeeld totdat je er minstens één kiest.</string>
+    <string name="address_book_shared_label">Gedeeld met andere apps</string>
+    <string name="address_book_setting_visibility">Tonen in contactenlijst</string>
+    <string name="address_book_setting_visibility_description">Verborgen adresboeken blijven op je toestel, maar staan niet in de contactenlijst.</string>
+    <string name="address_book_setting_share">Delen met andere apps</string>
+    <string name="address_book_setting_share_description">Laat apps zoals Berichten en de Telefoon-app namen voor deze contacten tonen. Wat er gedeeld wordt, stel je in onder "Namen tonen in andere apps" in Instellingen.</string>
+    <string name="address_book_setting_share_off_hint">Zet "Namen tonen in andere apps" aan in Instellingen om dit adresboek te delen.</string>
+    <string name="settings_address_books_description">Uiterlijk, zichtbaarheid en delen voor elk adresboek</string>
+    <string name="system_contacts_books_hint">Welke adresboeken worden gedeeld, stel je in op de pagina van elk adresboek. Er wordt niets gedeeld totdat je het voor minstens één aanzet.</string>
     <string name="system_contacts_add_account_unsupported">Schakel dit in plaats daarvan in via de instellingen van Corvid Contacts.</string>
 </resources>

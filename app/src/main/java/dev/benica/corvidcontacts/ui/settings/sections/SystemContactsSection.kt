@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import dev.benica.corvidcontacts.R
-import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.ui.settings.SettingsSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
@@ -35,8 +34,9 @@ import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
  * Opt-in toggle for mirroring contacts into Android's system contacts (names and photos for
  * caller ID in Messages and the dialer). Turning it on asks for the contacts-write permission
  * first; the switch only shows as on while the permission is actually held, so revoking it in
- * system settings is reflected here. Once on, the user picks how much of each contact to share and
- * which address books to share it for; no book is shared until the user picks it.
+ * system settings is reflected here. Once on, the user picks how much of each contact to share;
+ * which address books it applies to is set per book, on each address book's own page, and no book
+ * is shared until the user picks it.
  */
 @Composable
 fun SystemContactsSection(
@@ -44,8 +44,6 @@ fun SystemContactsSection(
     onToggled: (Boolean) -> Unit,
     level: SystemContactsLevel,
     onLevelSelected: (SystemContactsLevel) -> Unit,
-    addressBooks: List<AddressBookEntity>,
-    onAddressBookToggled: (href: String, share: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     var hasPermission by remember {
@@ -110,22 +108,6 @@ fun SystemContactsSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
-            addressBooks.forEach { book ->
-                ListItem(
-                    headlineContent = {
-                        Text(book.displayName ?: stringResource(R.string.settings_address_book_unnamed))
-                    },
-                    supportingContent = if (book.isLocal) {
-                        { Text(stringResource(R.string.settings_address_book_local_badge)) }
-                    } else null,
-                    trailingContent = {
-                        Switch(
-                            checked = book.shareWithSystem,
-                            onCheckedChange = { onAddressBookToggled(book.href, it) }
-                        )
-                    },
-                )
-            }
         }
     }
 }
@@ -151,8 +133,6 @@ fun SystemContactsSectionPreview() {
             onToggled = {},
             level = SystemContactsLevel.CALLER_ID,
             onLevelSelected = {},
-            addressBooks = emptyList(),
-            onAddressBookToggled = { _, _ -> }
         )
     }
 }

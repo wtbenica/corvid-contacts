@@ -832,6 +832,13 @@ class ContactsViewModel(
         }
     }
 
+    /** Shares or stops sharing [addressBook]'s contacts with the system contacts. */
+    fun setAddressBookSharedWithSystem(addressBook: AddressBookEntity, share: Boolean) {
+        viewModelScope.launch {
+            repository.setAddressBookSharedWithSystem(addressBook.href, share)
+        }
+    }
+
     /** Toggles whether [addressBook] is shown in the main contact list. */
     fun toggleAddressBookVisibility(addressBook: AddressBookEntity) {
         viewModelScope.launch {

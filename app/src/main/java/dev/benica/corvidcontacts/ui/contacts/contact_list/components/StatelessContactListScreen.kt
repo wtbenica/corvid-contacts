@@ -235,12 +235,6 @@ fun StatelessContactListScreen(
         } ?: MaterialTheme.colorScheme.primary
     }
 
-    val contactCountByAddressBook = remember(state.uiState) {
-        (state.uiState as? ContactsUiState.Success)?.contacts
-            ?.groupBy { it.contact.addressBookHref }
-            ?.mapValues { it.value.size }
-            ?: emptyMap()
-    }
 
     val bodyContent: @Composable (PaddingValues) -> Unit = { paddingValues ->
         if (showGroupDialog) {
@@ -333,17 +327,10 @@ fun StatelessContactListScreen(
                 availableGroups = state.groupsAvailableForSelectedBooks,
                 selectedGroup = state.selectedGroup,
                 onGroupSelected = actions.onGroupSelected,
-                onUpdateAddressBookAppearance = actions.onUpdateAddressBookAppearance,
-                onUpdateAddressBookOrder = actions.onUpdateAddressBookOrder,
                 onCreateAddressBook = actions.onCreateAddressBook,
-                onRenameAddressBook = actions.onRenameAddressBook,
-                onDeleteAddressBook = actions.onDeleteAddressBook,
-                onUploadLocalAddressBook = actions.onUploadLocalAddressBook,
-                onSetUpSync = actions.onSetUpSync,
-                onToggleAddressBookVisibility = actions.onToggleAddressBookVisibility,
+                onManageAddressBooks = actions.onManageAddressBooks,
                 onUpdateGroupOrder = actions.onUpdateGroupOrder,
                 onRenameGroup = actions.onRenameGroup,
-                contactCountByAddressBook = contactCountByAddressBook,
             )
         }
 

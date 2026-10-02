@@ -277,11 +277,8 @@
     <string name="settings_address_book_unnamed">Carnet d\'adresses sans nom</string>
     <string name="local_address_book_name">Mes contacts</string>
     <string name="settings_address_book_add">Ajouter un carnet</string>
-    <string name="settings_address_book_more_options">Plus d\'options</string>
     <string name="settings_address_book_rename">Renommer</string>
     <string name="settings_address_book_delete">Supprimer</string>
-    <string name="settings_address_book_show">Afficher</string>
-    <string name="settings_address_book_hide">Masquer</string>
     <string name="settings_address_book_hidden_label">Masqué</string>
     <string name="settings_address_book_create">Créer</string>
     <string name="settings_address_book_create_dialog_title">Nouveau carnet d\'adresses</string>
@@ -516,6 +513,13 @@
     <string name="system_contacts_level_full_description">Ajoute les e-mails, adresses, profils sociaux, sites web, anniversaire, groupes, société, poste, surnom et relations</string>
     <string name="system_contacts_level_everything">Tout</string>
     <string name="system_contacts_level_everything_description">Ajoute les notes</string>
-    <string name="system_contacts_books_hint">Choisissez les carnets d\'adresses à partager. Rien n\'est partagé tant que vous n\'en choisissez pas au moins un.</string>
+    <string name="address_book_shared_label">Partagé avec d\'autres applis</string>
+    <string name="address_book_setting_visibility">Afficher dans la liste des contacts</string>
+    <string name="address_book_setting_visibility_description">Les carnets masqués restent sur votre appareil mais n\'apparaissent pas dans la liste des contacts.</string>
+    <string name="address_book_setting_share">Partager avec d\'autres applis</string>
+    <string name="address_book_setting_share_description">Permet à des applis comme Messages et Téléphone d\'afficher les noms de ces contacts. Ce qui est partagé se règle dans Réglages, sous « Afficher les noms dans d\'autres applis ».</string>
+    <string name="address_book_setting_share_off_hint">Activez « Afficher les noms dans d\'autres applis » dans les réglages pour partager ce carnet.</string>
+    <string name="settings_address_books_description">Apparence, visibilité et partage de chaque carnet d\'adresses</string>
+    <string name="system_contacts_books_hint">Les carnets partagés se choisissent sur la page de chaque carnet. Rien n\'est partagé tant que vous ne l\'activez pas pour au moins un.</string>
     <string name="system_contacts_add_account_unsupported">Activez plutôt cette option dans les réglages de Corvid Contacts.</string>
 </resources>

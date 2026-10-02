@@ -253,11 +253,8 @@
     <string name="settings_address_book_unnamed">이름 없는 주소록</string>
     <string name="local_address_book_name">내 연락처</string>
     <string name="settings_address_book_add">주소록 추가</string>
-    <string name="settings_address_book_more_options">추가 옵션</string>
     <string name="settings_address_book_rename">이름 변경</string>
     <string name="settings_address_book_delete">삭제</string>
-    <string name="settings_address_book_show">표시</string>
-    <string name="settings_address_book_hide">숨기기</string>
     <string name="settings_address_book_hidden_label">숨김</string>
     <string name="settings_address_book_create">만들기</string>
     <string name="settings_address_book_create_dialog_title">새 주소록</string>
@@ -487,6 +484,13 @@
     <string name="system_contacts_level_full_description">이메일, 주소, 소셜 프로필, 웹사이트, 생일, 그룹, 회사, 직책, 별명, 관계 추가</string>
     <string name="system_contacts_level_everything">모두</string>
     <string name="system_contacts_level_everything_description">메모 추가</string>
-    <string name="system_contacts_books_hint">공유할 주소록을 선택하세요. 하나 이상 선택하기 전에는 아무것도 공유되지 않습니다.</string>
+    <string name="address_book_shared_label">다른 앱과 공유됨</string>
+    <string name="address_book_setting_visibility">연락처 목록에 표시</string>
+    <string name="address_book_setting_visibility_description">숨긴 주소록은 기기에 남아 있지만 연락처 목록에는 표시되지 않습니다.</string>
+    <string name="address_book_setting_share">다른 앱과 공유</string>
+    <string name="address_book_setting_share_description">메시지 앱과 전화 앱 같은 앱이 이 연락처의 이름을 표시할 수 있게 합니다. 공유 내용은 설정의 "다른 앱에 이름 표시"에서 정합니다.</string>
+    <string name="address_book_setting_share_off_hint">이 주소록을 공유하려면 설정에서 "다른 앱에 이름 표시"를 켜세요.</string>
+    <string name="settings_address_books_description">각 주소록의 모양, 표시 여부, 공유 설정</string>
+    <string name="system_contacts_books_hint">공유할 주소록은 각 주소록의 페이지에서 정합니다. 하나 이상 켜기 전에는 아무것도 공유되지 않습니다.</string>
     <string name="system_contacts_add_account_unsupported">대신 Corvid Contacts 설정에서 켜 주세요.</string>
 </resources>

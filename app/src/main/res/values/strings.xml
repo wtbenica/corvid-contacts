@@ -277,11 +277,8 @@
     <string name="settings_address_book_unnamed">Unnamed Address Book</string>
     <string name="local_address_book_name">My Contacts</string>
     <string name="settings_address_book_add">Add Address Book</string>
-    <string name="settings_address_book_more_options">More Options</string>
     <string name="settings_address_book_rename">Rename</string>
     <string name="settings_address_book_delete">Delete</string>
-    <string name="settings_address_book_show">Show</string>
-    <string name="settings_address_book_hide">Hide</string>
     <string name="settings_address_book_hidden_label">Hidden</string>
     <string name="settings_address_book_create">Create</string>
     <string name="settings_address_book_create_dialog_title">New Address Book</string>
@@ -513,7 +510,14 @@
     <string name="system_contacts_level_full_description">Also emails, addresses, social profiles, websites, birthday, groups, company, job title, nickname and relationships</string>
     <string name="system_contacts_level_everything">Everything</string>
     <string name="system_contacts_level_everything_description">Also notes</string>
-    <string name="system_contacts_books_hint">Choose which address books to share. Nothing is shared until you pick at least one.</string>
+    <string name="address_book_shared_label">Shared with other apps</string>
+    <string name="address_book_setting_visibility">Show in contact list</string>
+    <string name="address_book_setting_visibility_description">Hidden books stay on your device but are left out of the contact list.</string>
+    <string name="address_book_setting_share">Share with other apps</string>
+    <string name="address_book_setting_share_description">Lets apps like Messages and the dialer show names for these contacts. What is shared is set under "Show names in other apps" in Settings.</string>
+    <string name="address_book_setting_share_off_hint">Turn on "Show names in other apps" in Settings to share this book.</string>
+    <string name="settings_address_books_description">Appearance, visibility and sharing for each address book</string>
+    <string name="system_contacts_books_hint">Which address books are shared is set on each address book\'s own page. Nothing is shared until you turn it on for at least one.</string>
     <string name="system_contacts_add_account_unsupported">Turn this on in Corvid Contacts settings instead.</string>
 </resources>
 

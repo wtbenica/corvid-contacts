@@ -81,6 +81,8 @@ fun AppNavigation(
             current is Destination.ContactDetail ||
             current is Destination.ContactEdit ||
             current is Destination.Settings ||
+            current is Destination.AddressBooks ||
+            current is Destination.AddressBookSettings ||
             current is Destination.ShareSelection ||
             current is Destination.QrDisplay ||
             current is Destination.MergeReview ||
