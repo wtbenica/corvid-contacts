@@ -98,6 +98,9 @@ fun SettingsScreen(
         onAddressLookupModeSelected = { mode -> viewModel.setAddressLookupMode(mode) },
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
         onSystemContactsToggled = { enabled -> viewModel.setSystemContactsEnabled(enabled) },
+        onAddressBookSharedWithSystemToggled = { href, share ->
+            viewModel.setAddressBookSharedWithSystem(href, share)
+        },
         onThemeModeSelected = { theme -> viewModel.setThemeMode(theme) },
         onLogout = { viewModel.logout() },
         onExport = { viewModel.getExportData() },
@@ -130,6 +133,7 @@ private fun SettingsScreen(
     onAddressLookupModeSelected: (AddressLookupMode) -> Unit,
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
     onSystemContactsToggled: (Boolean) -> Unit,
+    onAddressBookSharedWithSystemToggled: (href: String, share: Boolean) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
     onExport: suspend () -> String,
@@ -260,7 +264,9 @@ private fun SettingsScreen(
 
                 SystemContactsSection(
                     enabled = systemContactsEnabled,
-                    onToggled = onSystemContactsToggled
+                    onToggled = onSystemContactsToggled,
+                    addressBooks = addressBooks,
+                    onAddressBookToggled = onAddressBookSharedWithSystemToggled
                 )
             }
 
@@ -572,6 +578,7 @@ fun SettingsScreenPreview() {
             onAddressLookupModeSelected = {},
             onAutoLoadRemotePhotosToggled = {},
             onSystemContactsToggled = {},
+            onAddressBookSharedWithSystemToggled = { _, _ -> },
             onThemeModeSelected = {},
             onLogout = {},
             onExport = { "potato salad" },

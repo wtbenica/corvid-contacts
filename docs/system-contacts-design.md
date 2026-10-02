@@ -1,7 +1,7 @@
 # Design: Opt-in system contacts mirror
 
-Status: step 1 (Caller ID level, global toggle) is implemented and awaiting
-device testing. Steps 2 to 5 are not started.
+Status: steps 1 (Caller ID level, global toggle) and 2 (per-book sharing) are
+implemented and awaiting device testing. Steps 3 to 5 are not started.
 
 ## Goal
 
@@ -77,9 +77,13 @@ write-only approach turns out not to work reliably, fall back to requesting
 
 1. **Feature toggle** (global, default off). Turning it on requests
    `WRITE_CONTACTS`. Turning it off deletes all mirrored rows.
-2. **Which address books to share** (per book, default off). This is a new
-   field on `AddressBookEntity`, for example `shareWithSystem`, keyed by the
-   book's `href`. It is separate from `isVisible`.
+2. **Which address books to share** (per book, default off). This is the
+   `AddressBookEntity.shareWithSystem` column, added with a 20 to 21 migration. It
+   is separate from `isVisible`. With the feature on and no book shared, the
+   mirror is empty. The Settings section lists each book with its own switch once
+   the feature is on and the permission is held. Sync never resets the flag
+   (address book inserts ignore existing rows), but a book that is removed and
+   re-synced starts private again, which is the safe direction.
 3. **How much data to share** (global, one of three presets):
    - *Caller ID* (default): name, phone numbers, photo.
    - *Full contact*: also emails, addresses, social profiles, websites,
@@ -130,9 +134,14 @@ setting.
 - Map phones to `Phone`, emails to `Email`, addresses to `StructuredPostal`,
   and so on. Fields with no provider equivalent are skipped.
 - Photos: write the local photo file bytes to the `Photo` data row.
-- Each address book is one provider group (title = book name), so books remain
-  distinguishable in the Contacts app. Contact groups (vCard categories) map to
-  provider groups at the Full contact level.
+- Each shared address book is one provider group (title = book name), so books
+  remain distinguishable in the Contacts app. Contacts get a `GroupMembership`
+  row for their book's group. The book-to-group mapping lives in a
+  `system_group_mirror` table (`SystemGroupMirrorEntity`), and the group id is part
+  of each contact's hash, so a recreated group updates its contacts. Renaming a
+  book renames its group, and un-sharing a book deletes its group and its
+  contacts. Contact groups (vCard categories) map to provider groups at the Full
+  contact level, which is not built yet.
 
 ### Diff and reconcile
 
@@ -240,15 +249,14 @@ Manual checks on a real device:
 - Confirm how the Contacts app handles an edit activity declared in
   `contacts.xml`.
 - How many contacts before batching or performance needs tuning?
-- What does switching to local-only mode do to server-book contacts in Room?
-  If they are cleared, the mirror follows on the next reconcile. Confirm that
-  behavior, and that a book's share setting survives being removed and re-synced.
+- Switching to local-only mode clears server books and their contacts from Room,
+  and the mirror follows on the next reconcile. Confirm that on a device.
 
 ## Suggested order
 
 1. Account plumbing, mapping table, mapper and diff behind the global toggle, at
    the Caller ID level. (Implemented; awaiting device testing.)
-2. Per-book sharing.
+2. Per-book sharing. (Implemented; awaiting device testing.)
 3. The Full contact and Everything levels.
 4. Routing edits to Corvid.
 5. Privacy policy, settings copy, and Play declaration.

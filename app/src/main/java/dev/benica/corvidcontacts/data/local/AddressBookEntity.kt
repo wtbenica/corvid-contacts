@@ -3,6 +3,7 @@
 package dev.benica.corvidcontacts.data.local
 
 import androidx.annotation.ColorInt
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import dev.benica.corvidcontacts.data.repository.ContactsRepository.Companion.LOCAL_ADDRESS_BOOK_PREFIX
@@ -15,6 +16,12 @@ data class AddressBookEntity(
     @ColorInt val colorInt: Int,
     val sortOrder: Int = 0,
     val iconName: String? = null,
+    /**
+     * Whether this book's contacts are mirrored to the system contacts (see
+     * [dev.benica.corvidcontacts.data.system.SystemContactsMirror]). Off by default: sharing is
+     * opt-in per book, and a book that is removed and re-synced starts private again.
+     */
+    @ColumnInfo(defaultValue = "0") val shareWithSystem: Boolean = false,
 ) {
     val isLocal: Boolean
         get() = href.startsWith(LOCAL_ADDRESS_BOOK_PREFIX)

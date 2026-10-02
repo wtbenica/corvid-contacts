@@ -323,4 +323,6 @@ private class NoOpAddressBookDao : AddressBookDao {
         href: String,
         displayName: String?,
     ) = Unit
+
+    override suspend fun updateShareWithSystem(href: String, share: Boolean) = Unit
 }

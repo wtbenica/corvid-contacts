@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
+package dev.benica.corvidcontacts.data.local
+
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+/**
+ * Opens a version-19 database through every migration up to the current schema. Room validates
+ * the migrated tables against the entities on open, so a migration that doesn't match the schema
+ * fails here instead of crashing the app at launch.
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
+class AppDatabaseMigrationTest {
+
+    @Test
+    fun `migrates from version 19 keeping address books private by default`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        // The contacts table hasn't changed since version 19, so borrow its DDL from the current
+        // schema rather than hand-copying it.
+        val scratch = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        val contactsDdl = scratch.openHelper.writableDatabase
+            .query("SELECT sql FROM sqlite_master WHERE name = 'contacts'")
+            .use {
+                it.moveToFirst()
+                it.getString(0)
+            }
+        scratch.close()
+
+        val dbName = "migration-test.db"
+        val dbFile = context.getDatabasePath(dbName)
+        dbFile.parentFile?.mkdirs()
+        dbFile.delete()
+        SQLiteDatabase.openOrCreateDatabase(dbFile, null).use { db ->
+            db.execSQL(contactsDdl)
+            db.execSQL(
+                "CREATE TABLE `address_books` (`href` TEXT NOT NULL, `displayName` TEXT, " +
+                    "`isVisible` INTEGER NOT NULL, `colorInt` INTEGER NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL, `iconName` TEXT, PRIMARY KEY(`href`))"
+            )
+            db.execSQL("INSERT INTO address_books VALUES ('local://contacts', 'My Contacts', 1, 5, 0, NULL)")
+            db.version = 19
+        }
+
+        val migrated = Room
+            .databaseBuilder(context, AppDatabase::class.java, dbName)
+            .addMigrations(*AppDatabase.MIGRATIONS)
+            .allowMainThreadQueries()
+            .build()
+        try {
+            runBlocking {
+                val books = migrated.addressBookDao().getAllAddressBooks().first()
+                assertEquals(listOf("local://contacts"), books.map { it.href })
+                assertFalse(books.single().shareWithSystem)
+
+                val mirror = migrated.systemContactMirrorDao()
+                mirror.upsert(listOf(SystemContactMirrorEntity("c1", 10, "h")))
+                mirror.upsertGroups(listOf(SystemGroupMirrorEntity("local://contacts", 3, "My Contacts")))
+                assertEquals(1, mirror.getAll().size)
+                assertEquals(1, mirror.getAllGroups().size)
+            }
+        } finally {
+            migrated.close()
+            dbFile.delete()
+        }
+    }
+}

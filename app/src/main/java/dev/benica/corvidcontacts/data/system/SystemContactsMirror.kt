@@ -19,14 +19,18 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.Photo
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Data
+import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.util.Log
 import androidx.core.content.ContextCompat
 import dev.benica.corvidcontacts.R
+import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
+import dev.benica.corvidcontacts.data.local.SystemGroupMirrorEntity
 import dev.benica.corvidcontacts.data.repository.PhotoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -44,7 +48,9 @@ import java.io.ByteArrayOutputStream
  * are kept in Room (see [SystemContactMirrorEntity]) and used for later updates and deletes. A
  * mirrored row that has disappeared is detected when an update affects nothing, and re-inserted.
  *
- * Only the Caller ID level is written for now: name, phone numbers and photo.
+ * Only the Caller ID level is written for now: name, phone numbers and photo. Only address books
+ * the user has chosen to share are mirrored, each as one system group so the books stay
+ * distinguishable in the Contacts app.
  */
 class SystemContactsMirror(
     private val context: Context,
@@ -78,6 +84,7 @@ class SystemContactsMirror(
     private suspend fun ensureAccount() {
         if (accountExists()) return
         dao.deleteAll()
+        dao.deleteAllGroups()
         accountManager.addAccountExplicitly(account, null, null)
         // Contacts with no group are hidden from the Contacts list unless the account says so.
         val settings = ContentValues().apply {
@@ -89,13 +96,22 @@ class SystemContactsMirror(
         )
     }
 
-    /** Brings the system contacts in line with [sources]. Requires [hasPermission]. */
-    suspend fun reconcile(sources: List<MirrorSource>) = withContext(Dispatchers.IO) {
+    /**
+     * Brings the system contacts in line with [sources], the contacts in the shared address
+     * [books]. Requires [hasPermission].
+     */
+    suspend fun reconcile(
+        books: List<AddressBookEntity>,
+        sources: List<MirrorSource>,
+    ) = withContext(Dispatchers.IO) {
         mutex.withLock {
             ensureAccount()
 
+            val groupIds = syncGroups(books)
             val desired = sources.mapNotNull { source ->
-                MirrorPlan.toMirrorContact(source, photoStamp(source))
+                MirrorPlan
+                    .toMirrorContact(source, photoStamp(source))
+                    ?.copy(groupId = groupIds[source.addressBookHref])
             }
             val plan = MirrorPlan.diff(desired, dao.getAll())
             if (plan.isEmpty) return@withLock
@@ -113,7 +129,79 @@ class SystemContactsMirror(
                 accountManager.removeAccountExplicitly(account)
             }
             dao.deleteAll()
+            dao.deleteAllGroups()
         }
+    }
+
+    /**
+     * Makes the system groups match the shared [books] - creating, renaming and removing as
+     * needed - and returns each book's group id. A group that has vanished from the provider is
+     * detected when renaming it affects nothing, and re-created.
+     */
+    private suspend fun syncGroups(books: List<AddressBookEntity>): Map<String, Long> {
+        val existing = dao.getAllGroups().associateBy { it.bookHref }
+        val sharedHrefs = books.mapTo(HashSet()) { it.href }
+
+        val stale = existing.values.filter { it.bookHref !in sharedHrefs }
+        if (stale.isNotEmpty()) {
+            apply(
+                stale.map {
+                    ContentProviderOperation
+                        .newDelete(Groups.CONTENT_URI.asSyncAdapter())
+                        .withSelection("${Groups._ID}=?", arrayOf(it.groupId.toString()))
+                        .build()
+                }
+            )
+            dao.deleteGroups(stale.map { it.bookHref })
+        }
+
+        val result = HashMap<String, Long>()
+        for (book in books) {
+            val title = book.displayName?.takeIf { it.isNotBlank() }
+                ?: context.getString(R.string.settings_address_book_unnamed)
+            val current = existing[book.href]
+
+            if (current != null && current.title == title) {
+                result[book.href] = current.groupId
+                continue
+            }
+            if (current != null) {
+                try {
+                    apply(
+                        listOf(
+                            ContentProviderOperation
+                                .newUpdate(Groups.CONTENT_URI.asSyncAdapter())
+                                .withSelection("${Groups._ID}=?", arrayOf(current.groupId.toString()))
+                                .withValue(Groups.TITLE, title)
+                                .withExpectedCount(1)
+                                .build()
+                        )
+                    )
+                    dao.upsertGroups(listOf(current.copy(title = title)))
+                    result[book.href] = current.groupId
+                    continue
+                } catch (_: OperationApplicationException) {
+                    // The group is gone; fall through and create it again.
+                }
+            }
+
+            val results = apply(
+                listOf(
+                    ContentProviderOperation
+                        .newInsert(Groups.CONTENT_URI.asSyncAdapter())
+                        .withValue(Groups.ACCOUNT_NAME, account.name)
+                        .withValue(Groups.ACCOUNT_TYPE, account.type)
+                        .withValue(Groups.TITLE, title)
+                        .withValue(Groups.SOURCE_ID, book.href)
+                        .withValue(Groups.GROUP_VISIBLE, 1)
+                        .build()
+                )
+            )
+            val groupId = ContentUris.parseId(requireNotNull(results[0].uri))
+            dao.upsertGroups(listOf(SystemGroupMirrorEntity(book.href, groupId, title)))
+            result[book.href] = groupId
+        }
+        return result
     }
 
     private suspend fun applyDeletes(deletes: List<SystemContactMirrorEntity>) {
@@ -211,7 +299,7 @@ class SystemContactsMirror(
         return builder.build()
     }
 
-    /** The name and phone rows for [contact]; [bindRaw] attaches each to its raw contact. */
+    /** The name, group and phone rows for [contact]; [bindRaw] attaches each to its raw contact. */
     private fun dataOps(
         contact: MirrorContact,
         bindRaw: (ContentProviderOperation.Builder) -> ContentProviderOperation.Builder,
@@ -223,6 +311,12 @@ class SystemContactsMirror(
             .withValue(StructuredName.GIVEN_NAME, contact.givenName)
             .withValue(StructuredName.FAMILY_NAME, contact.familyName)
             .build()
+        contact.groupId?.let { groupId ->
+            ops += bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
+                .withValue(Data.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+                .withValue(GroupMembership.GROUP_ROW_ID, groupId)
+                .build()
+        }
         contact.phones.forEach { phone ->
             ops += bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
                 .withValue(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)

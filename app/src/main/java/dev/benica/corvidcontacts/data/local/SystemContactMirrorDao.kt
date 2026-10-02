@@ -17,6 +17,7 @@ data class MirrorSource(
     val lastName: String?,
     val phones: List<Phone>?,
     val hasPhoto: Boolean,
+    val addressBookHref: String,
 )
 
 @Dao
@@ -33,15 +34,33 @@ interface SystemContactMirrorDao {
     @Query("DELETE FROM system_contact_mirror")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM system_group_mirror")
+    suspend fun getAllGroups(): List<SystemGroupMirrorEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertGroups(groups: List<SystemGroupMirrorEntity>)
+
+    @Query("DELETE FROM system_group_mirror WHERE bookHref IN (:bookHrefs)")
+    suspend fun deleteGroups(bookHrefs: List<String>)
+
+    @Query("DELETE FROM system_group_mirror")
+    suspend fun deleteAllGroups()
+
+    /** Address books the user has chosen to share with the system contacts. */
+    @Query("SELECT * FROM address_books WHERE shareWithSystem = 1 ORDER BY sortOrder ASC")
+    fun observeSharedBooks(): Flow<List<AddressBookEntity>>
+
     /**
-     * Non-archived contacts, with only the columns the mirror needs. Photos are read from their
-     * files, so `photoUrl` is deliberately omitted.
+     * Non-archived contacts in shared address books, with only the columns the mirror needs.
+     * Photos are read from their files, so `photoUrl` is deliberately omitted.
      */
     @Query(
         """
-        SELECT id, displayName, firstName, lastName, phones, hasPhoto
-        FROM contacts
-        WHERE isArchived = 0
+        SELECT c.id, c.displayName, c.firstName, c.lastName, c.phones, c.hasPhoto,
+               c.addressBookHref AS addressBookHref
+        FROM contacts c
+        INNER JOIN address_books b ON c.addressBookHref = b.href
+        WHERE c.isArchived = 0 AND b.shareWithSystem = 1
         """
     )
     fun observeMirrorSources(): Flow<List<MirrorSource>>

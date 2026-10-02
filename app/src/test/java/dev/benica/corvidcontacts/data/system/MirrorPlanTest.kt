@@ -20,7 +20,8 @@ class MirrorPlanTest {
         lastName: String? = "Lovelace",
         phones: List<Phone>? = listOf(Phone("+15551234567", "CELL")),
         hasPhoto: Boolean = false,
-    ) = MirrorSource(id, displayName, firstName, lastName, phones, hasPhoto)
+        addressBookHref: String = "/books/main/",
+    ) = MirrorSource(id, displayName, firstName, lastName, phones, hasPhoto, addressBookHref)
 
     private fun mirrored(source: MirrorSource, photoStamp: String? = null) =
         MirrorPlan.toMirrorContact(source, photoStamp)!!
@@ -64,6 +65,28 @@ class MirrorPlanTest {
         assertNotEquals(base.hash, mirrored(source(phones = listOf(Phone("+1999", "CELL")))).hash)
         assertNotEquals(base.hash, mirrored(source(phones = listOf(Phone("+15551234567", "WORK")))).hash)
         assertNotEquals(base.hash, mirrored(source(hasPhoto = true), photoStamp = "a").hash)
+    }
+
+    @Test
+    fun `hash changes when the contact moves book or its group changes`() {
+        val base = mirrored(source())
+        assertEquals("/books/main/", base.bookHref)
+        assertNotEquals(base.hash, mirrored(source(addressBookHref = "/books/other/")).hash)
+        assertNotEquals(base.hash, base.copy(groupId = 7).hash)
+        assertNotEquals(base.copy(groupId = 7).hash, base.copy(groupId = 8).hash)
+        assertEquals(base.copy(groupId = 7).hash, base.copy(groupId = 7).hash)
+    }
+
+    @Test
+    fun `diff updates contacts whose group was recreated`() {
+        val before = mirrored(source()).copy(groupId = 7)
+        val after = before.copy(groupId = 9)
+        val plan = MirrorPlan.diff(
+            listOf(after),
+            listOf(SystemContactMirrorEntity("1", 5, before.hash))
+        )
+        assertEquals(1, plan.updates.size)
+        assertTrue(plan.inserts.isEmpty() && plan.deletes.isEmpty())
     }
 
     @Test

@@ -866,6 +866,10 @@ class ContactsRepository(
         }
     }
 
+    /** Sets whether [href]'s contacts are mirrored to the system contacts. */
+    suspend fun setAddressBookSharedWithSystem(href: String, share: Boolean) =
+        addressBookDao.updateShareWithSystem(href, share)
+
     /** Updates visibility for an address book. */
     suspend fun updateAddressBookVisibility(addressBook: AddressBookEntity) =
         addressBookDao.updateAddressBook(addressBook)

@@ -509,5 +509,6 @@
     <!-- System contacts -->
     <string name="system_contacts_title">Afficher les noms dans d\'autres applis</string>
     <string name="system_contacts_description">Ajoute les noms, numéros de téléphone et photos de vos contacts aux contacts de cet appareil, afin que Messages et l\'appli Téléphone puissent afficher qui appelle ou écrit. Toute appli ayant accès aux contacts pourra alors les voir. Corvid ne les envoie pas à Google. Cette copie est en lecture seule : modifiez vos contacts dans Corvid.</string>
+    <string name="system_contacts_books_hint">Choisissez les carnets d\'adresses à partager. Rien n\'est partagé tant que vous n\'en choisissez pas au moins un.</string>
     <string name="system_contacts_add_account_unsupported">Activez plutôt cette option dans les réglages de Corvid Contacts.</string>
 </resources>

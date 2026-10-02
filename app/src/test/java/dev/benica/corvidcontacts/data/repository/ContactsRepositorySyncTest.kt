@@ -493,6 +493,12 @@ private class FakeAddressBookDao : AddressBookDao {
         books.value = current.values.toList()
     }
 
+    override suspend fun updateShareWithSystem(href: String, share: Boolean) {
+        books.value = books.value.map {
+            if (it.href == href) it.copy(shareWithSystem = share) else it
+        }
+    }
+
     override suspend fun updateAddressBook(addressBook: AddressBookEntity) {
         books.value = books.value.map { if (it.href == addressBook.href) addressBook else it }
     }

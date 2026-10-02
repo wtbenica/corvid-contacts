@@ -128,6 +128,13 @@ class SettingsViewModel(
         }
     }
 
+    /** Shares or stops sharing one address book's contacts with the system contacts. */
+    fun setAddressBookSharedWithSystem(href: String, share: Boolean) {
+        viewModelScope.launch {
+            repository.setAddressBookSharedWithSystem(href, share)
+        }
+    }
+
     /** Sets the user's preferred theme mode. */
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {

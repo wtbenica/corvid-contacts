@@ -13,7 +13,9 @@ data class MirrorPhone(val number: String, val type: Int)
 /**
  * What the "Caller ID" sharing level writes to the system contacts for one contact: name, phone
  * numbers and photo. [photoStamp] identifies the photo file's current contents (or `null` for
- * none), so a changed photo changes [hash].
+ * none), so a changed photo changes [hash]. [bookHref] is the shared address book it belongs to,
+ * and [groupId] the system group mirroring that book, which is only known once the groups have
+ * been synced, so it is filled in afterwards.
  */
 data class MirrorContact(
     val id: ContactId,
@@ -22,6 +24,8 @@ data class MirrorContact(
     val familyName: String?,
     val phones: List<MirrorPhone>,
     val photoStamp: String?,
+    val bookHref: String,
+    val groupId: Long? = null,
 ) {
     /** Stable fingerprint of everything that gets written; unchanged contacts aren't touched. */
     val hash: String by lazy {
@@ -30,7 +34,9 @@ data class MirrorContact(
             append(givenName.orEmpty()).append('\u0000')
             append(familyName.orEmpty()).append('\u0000')
             phones.forEach { append(it.number).append('\u0001').append(it.type).append('\u0000') }
-            append(photoStamp.orEmpty())
+            append(photoStamp.orEmpty()).append('\u0000')
+            append(bookHref).append('\u0000')
+            append(groupId ?: "")
         }
         MessageDigest
             .getInstance("SHA-256")
@@ -75,6 +81,7 @@ data class MirrorPlan(
                 familyName = source.lastName?.takeIf { it.isNotBlank() },
                 phones = phones,
                 photoStamp = if (source.hasPhoto) photoStamp else null,
+                bookHref = source.addressBookHref,
             )
         }
 

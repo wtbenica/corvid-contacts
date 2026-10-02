@@ -40,4 +40,10 @@ interface AddressBookDao {
         href: String,
         displayName: String?,
     )
+
+    @Query("UPDATE address_books SET shareWithSystem = :share WHERE href = :href")
+    suspend fun updateShareWithSystem(
+        href: String,
+        share: Boolean,
+    )
 }

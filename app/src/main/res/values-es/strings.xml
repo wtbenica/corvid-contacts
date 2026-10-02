@@ -509,5 +509,6 @@
     <!-- System contacts -->
     <string name="system_contacts_title">Mostrar nombres en otras apps</string>
     <string name="system_contacts_description">Añade los nombres, números de teléfono y fotos de tus contactos a los contactos de este dispositivo, para que Mensajes y la app de teléfono puedan mostrar quién llama o escribe. Cualquier app con acceso a los contactos podrá verlos. Corvid no los envía a Google. Esta copia es de solo lectura: edita los contactos en Corvid.</string>
+    <string name="system_contacts_books_hint">Elige qué libretas de direcciones compartir. No se comparte nada hasta que elijas al menos una.</string>
     <string name="system_contacts_add_account_unsupported">Actívalo en los ajustes de Corvid Contacts.</string>
 </resources>

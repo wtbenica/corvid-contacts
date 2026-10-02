@@ -11,8 +11,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [ContactEntity::class, AddressBookEntity::class, SystemContactMirrorEntity::class],
-    version = 20,
+    entities = [
+        ContactEntity::class,
+        AddressBookEntity::class,
+        SystemContactMirrorEntity::class,
+        SystemGroupMirrorEntity::class,
+    ],
+    version = 21,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -35,6 +40,25 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Adds the per-book sharing flag (off by default) and the table that maps shared address
+         * books to their system contact groups.
+         */
+        private val MIGRATION_20_21 = object : Migration(20, 21) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `address_books` ADD COLUMN `shareWithSystem` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `system_group_mirror` (" +
+                        "`bookHref` TEXT NOT NULL, " +
+                        "`groupId` INTEGER NOT NULL, " +
+                        "`title` TEXT NOT NULL, " +
+                        "PRIMARY KEY(`bookHref`))"
+                )
+            }
+        }
+
+        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21)
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -46,7 +70,7 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         "corvid_contacts_db"
                     )
-                    .addMigrations(MIGRATION_19_20)
+                    .addMigrations(*MIGRATIONS)
                     .build()
                 INSTANCE = instance
                 instance
