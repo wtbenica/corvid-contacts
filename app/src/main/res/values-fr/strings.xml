@@ -521,5 +521,6 @@
     <string name="address_book_setting_share">Partager avec d\'autres applis</string>
     <string name="address_book_setting_share_description">Permet à des applications comme Messages et le téléphone d\'afficher les noms de ces contacts.</string>
     <string name="settings_address_books_description">Apparence, visibilité et partage de chaque carnet d\'adresses</string>
+    <string name="system_contact_edit_not_found">Ce contact est introuvable dans Corvid. Ouvrez Corvid pour le modifier.</string>
     <string name="system_contacts_add_account_unsupported">Partagez plutôt un carnet d\'adresses depuis Corvid Contacts.</string>
 </resources>

@@ -37,6 +37,8 @@ class AppContainer(context: Context) {
         vCardMapper
     )
 
+    val systemContactMirrorDao = database.systemContactMirrorDao()
+
     val systemContactsMirrorManager = SystemContactsMirrorManager(
         database.systemContactMirrorDao(),
         SystemContactsMirror(

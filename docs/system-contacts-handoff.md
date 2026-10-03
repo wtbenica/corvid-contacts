@@ -77,7 +77,7 @@ Commits on the branch, oldest first:
    then the permission prompt. Settings keeps one read-only summary row that opens the book
    list. Tried on a device and reported working.
 
-Status: you tested on a device and reported it working. The 38 unit tests pass, including
+Status: steps 1 to 3 and the per-book rework: you tested on a device and reported it working. The 38 unit tests pass, including
 migration tests that open version 19, 21 and 22 databases through every migration. The debug build
 assembles. Lint has one error left, an existing French plural string
 (`values-fr/strings.xml`, `ImpliedQuantity`), unrelated to this work.
@@ -87,20 +87,26 @@ debug builds only and is fine in release, so it was left alone.
 
 ## What remains
 
-### Step 4: route the Contacts app's edit action to Corvid
+### Step 4: route the Contacts app's edit action to Corvid (built, needs a device test)
 
-Mirrored rows are marked read-only (`RAW_CONTACT_IS_READ_ONLY`), so the Contacts app should
-hide edit and delete. Instead of just hiding it, route the edit action to Corvid:
+Implemented in the commit after `84a5905`; see "Routing edits to Corvid" in the design doc.
+`SystemContactEditActivity` is declared as `editContactActivity` and `createContactActivity`
+in `res/xml/system_contacts_structure.xml`. Edit looks up the Corvid contact from the
+raw-contact id and opens `cccontacts://contact/<id>?edit=true`; create forwards the standard
+insert intent.
 
-- Declare an edit activity for the account type in `res/xml/system_contacts_structure.xml`
-  (currently an empty `ContactsAccountType`). The manifest's existing `EDIT` filter only
-  matches vCard MIME types and does not receive this.
-- Add an activity (or a filter on `MainActivity`) that receives the provider URI, looks up the
-  raw-contact id in `system_contact_mirror` (a reverse lookup, so add a DAO query), and opens
-  the existing contact edit screen.
-- If the row cannot be resolved (stale mapping), show a message and offer to run a full reset.
-- Test how the stock and Google Contacts apps behave when an edit activity is declared. The
-  read-only flag stays as the fallback.
+What to check on a device:
+
+- Opening a mirrored contact in the stock Contacts app and in Google Contacts, then tapping
+  edit: does it open Corvid's edit screen, or does the app ignore `editContactActivity`
+  (Android's sample uses it, but current behavior is not confirmed)?
+- If it is ignored, does the read-only flag hide the edit button, and what happens with a
+  third-party contacts app that respects neither? Such edits are overwritten on the next
+  reconcile.
+- The Contacts app's "create contact" with the Corvid account selected: does it reach Corvid's
+  new-contact screen?
+- The Google Contacts app may list the account in an account picker even though it is
+  read-only; note what it shows.
 
 ### Step 5: privacy policy, settings copy, Play declaration
 

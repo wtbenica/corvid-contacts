@@ -46,6 +46,10 @@ interface SystemContactMirrorDao {
     @Query("SELECT * FROM system_contact_mirror")
     suspend fun getAll(): List<SystemContactMirrorEntity>
 
+    /** The Corvid contact that the system raw contact [rawContactId] mirrors, if any. */
+    @Query("SELECT contactId FROM system_contact_mirror WHERE rawContactId = :rawContactId")
+    suspend fun getContactIdForRawContact(rawContactId: Long): ContactId?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entries: List<SystemContactMirrorEntity>)
 

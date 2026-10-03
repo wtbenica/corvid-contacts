@@ -17,6 +17,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import dev.benica.corvidcontacts.data.system.SystemContactEditRouting
 import dev.benica.corvidcontacts.navigation.Destination
 import dev.benica.corvidcontacts.sync.BirthdayWorker
 import dev.benica.corvidcontacts.sync.SyncWorker
@@ -79,6 +80,9 @@ class MainActivity : ComponentActivity() {
             if (intent?.scheme == "cccontacts" && intent.data?.host == "contact") {
                 intent.data?.lastPathSegment
             } else null
+        // A deep link can ask for the edit screen, which is how the system Contacts app's edit
+        // action reaches a mirrored contact (see SystemContactEditActivity).
+        val openInEditMode = SystemContactEditRouting.wantsEdit(intent?.data)
 
         // Schedule essential background maintenance tasks
         SyncWorker.startPeriodicSync(applicationContext)
@@ -130,7 +134,8 @@ class MainActivity : ComponentActivity() {
                                 onContinueLocally = mainViewModel::continueWithoutAccount,
                                 initialIntentContact = initialContact,
                                 pickType = pickType,
-                                initialContactId = initialContactId
+                                initialContactId = initialContactId,
+                                openInEditMode = openInEditMode
                             )
                         }
                     }

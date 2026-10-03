@@ -506,5 +506,6 @@
     <string name="address_book_setting_share">Delen met andere apps</string>
     <string name="address_book_setting_share_description">Laat apps zoals Berichten en de telefoon-app namen voor deze contacten tonen.</string>
     <string name="settings_address_books_description">Uiterlijk, zichtbaarheid en delen voor elk adresboek</string>
+    <string name="system_contact_edit_not_found">Dit contact is niet gevonden in Corvid. Open Corvid om het te bewerken.</string>
     <string name="system_contacts_add_account_unsupported">Deel in plaats daarvan een adresboek vanuit Corvid Contacts.</string>
 </resources>

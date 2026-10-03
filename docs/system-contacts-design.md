@@ -3,7 +3,7 @@
 Status: steps 1 (Caller ID level), 2 (per-book sharing) and 3 (the three sharing
 levels) are implemented and have been tried on a device. Sharing is decided per
 address book, both whether and how much; there is no global toggle or level.
-Steps 4 and 5 are not started. How and when to offer sharing during onboarding is
+Step 4 (routing edits to Corvid) is implemented and awaiting device testing. Step 5 is not started. How and when to offer sharing during onboarding is
 still to be decided (see the handoff's open questions).
 
 ## Goal
@@ -197,21 +197,33 @@ setting.
 
 ### Routing edits to Corvid
 
-The system Contacts app's edit action can be routed to Corvid rather than being
-hidden or ignored. This is a moderate amount of work, not a hard problem. The
-edit action is declared by the account type's `contacts.xml` (an edit activity
-for the account), not by the existing vCard `EDIT` filter.
+The system Contacts app's edit and create actions for the mirrored account are
+sent to Corvid instead of being hidden or ignored.
 
-- Add an activity, or a filter on `MainActivity`, that handles the edit intent
-  for the account. It receives a provider URI.
-- Resolve the URI's raw-contact id to a Room contact using the stored mapping
-  (a reverse lookup), then open the existing edit screen for that contact.
-- If the row can't be resolved (for example the mapping is stale), show a
-  message and offer to run a reset.
+- `system_contacts_structure.xml` declares `editContactActivity` and
+  `createContactActivity` (plain, unprefixed attributes, as in Android's
+  SampleSyncAdapter) pointing at `SystemContactEditActivity`. This is the
+  documented-by-example mechanism for a custom account type; the existing vCard
+  `EDIT` filter on `MainActivity` does not receive these actions.
+- `SystemContactEditActivity` has no UI. It handles `EDIT` on
+  `vnd.android.cursor.item/raw_contact` and `INSERT` on
+  `vnd.android.cursor.item/contact`, and finishes after forwarding.
+- Edit: `SystemContactEditRouting.rawContactIdFrom` reads the id from a
+  `content://com.android.contacts/raw_contacts/<id>` URI (other URI shapes are
+  rejected), `SystemContactMirrorDao.getContactIdForRawContact` looks up the
+  Corvid contact, and the activity opens `cccontacts://contact/<id>?edit=true`.
+  `MainActivity` and `AppNavigation` treat the `edit` flag by putting the detail
+  screen under the edit screen, so closing the editor lands on the contact.
+- Create: forwarded as the standard insert intent that `MainActivity` already
+  handles, so new contacts are made in Corvid and not as orphan rows in the
+  mirror account.
+- If the row can't be resolved (for example after a reset), a toast explains
+  and Corvid opens. A reset prompt was not built, since the mirror rebuilds
+  itself on the next reconcile.
 
-This makes the read-only flag the fallback. Both should be tested, since the
-Contacts app's behavior when an edit activity is declared may vary. It is the
-last build step because it depends on the mapping and does not block caller ID.
+The read-only flag remains the fallback. Whether the stock and Google Contacts
+apps honor `editContactActivity` today is not confirmed by source and needs a
+device test.
 
 ### Privacy and Google
 
@@ -329,5 +341,5 @@ Manual checks on a real device:
 2. Per-book sharing. (Implemented and tried on a device.)
 3. The Full contact and Everything levels, chosen per book. (Implemented and tried
    on a device.)
-4. Routing edits to Corvid.
+4. Routing edits to Corvid. (Implemented; awaiting device testing.)
 5. Privacy policy, settings copy, and Play declaration.
