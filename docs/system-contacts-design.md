@@ -1,8 +1,10 @@
 # Design: Opt-in system contacts mirror
 
-Status: steps 1 (Caller ID level, global toggle), 2 (per-book sharing) and 3
-(the three sharing levels) are implemented and awaiting device testing. Steps 4
-and 5 are not started.
+Status: steps 1 (Caller ID level), 2 (per-book sharing) and 3 (the three sharing
+levels) are implemented and have been tried on a device. Sharing is decided per
+address book, both whether and how much; there is no global toggle or level.
+Steps 4 and 5 are not started. How and when to offer sharing during onboarding is
+still to be decided (see the handoff's open questions).
 
 ## Goal
 
@@ -76,24 +78,35 @@ write-only approach turns out not to work reliably, fall back to requesting
 
 ### Sharing choices
 
-1. **Feature toggle** (global, default off). Turning it on requests
-   `WRITE_CONTACTS`. Turning it off deletes all mirrored rows.
-2. **Which address books to share** (per book, default off). This is the
+There is no master switch. The mirror exists exactly while at least one address
+book is shared, and unsharing the last one removes the account and every
+mirrored row. The first time a book is shared without `WRITE_CONTACTS` granted,
+a short explanation of what sharing does comes before the system permission
+prompt.
+
+1. **Which address books to share** (per book, default off). This is the
    `AddressBookEntity.shareWithSystem` column, added with a 20 to 21 migration. It
-   is separate from `isVisible`. With the feature on and no book shared, the
-   mirror is empty. The switch lives on each address book's own settings page (see
-   "Address book pages" below), not in a list in Settings. Sync never resets the flag
-   (address book inserts ignore existing rows), but a book that is removed and
-   re-synced starts private again, which is the safe direction.
-3. **How much data to share** (global, one of three presets):
+   is separate from `isVisible`. The switch lives on each address book's own
+   settings page (see "Address book pages" below), not in a list in Settings.
+   Sync never resets the flag (address book inserts ignore existing rows), but a
+   book that is removed and re-synced starts private again, which is the safe
+   direction.
+2. **How much data to share** (per book, one of three presets):
    - *Caller ID* (default): name, phone numbers, photo.
    - *Full contact*: also emails, addresses, social profiles, websites,
      birthday, groups, organization, job title, nickname, relationships.
    - *Everything*: also notes.
 
-   The level is `SystemContactsLevel`, stored in the settings DataStore and
-   defaulting to Caller ID. Changing it rewrites the mirrored contacts, because the
-   level is part of each contact's hash.
+   The level is `SystemContactsLevel`, stored in
+   `AddressBookEntity.systemContactsLevel` (added with a 22 to 23 migration) and
+   defaulting to Caller ID. It is kept when sharing is switched off, so switching
+   back on restores the previous choice. Changing it rewrites that book's mirrored
+   contacts, because the level is part of each contact's hash. Different books can
+   be at different levels: a work book at Caller ID, a family book at Full contact.
+
+   Level was a single global setting before 22 to 23. It was made per book because
+   how sensitive the contacts are differs by book, and because a global level plus
+   a per-book switch split one decision across two screens.
 
 Notes are a separate level because they are free text where people commonly
 keep sensitive details. The levels are fixed presets. The existing share-contact
@@ -130,8 +143,8 @@ setting.
   raw-contact id and a content hash in a separate `system_contact_mirror` table
   (`SystemContactMirrorEntity`). It is not a column on `ContactEntity` because
   server sync replaces contact rows wholesale, which would wipe it. The hash
-  covers the fields at the current sharing level, so changing the level also
-  causes updates. The table was added with a 19 to 20 Room migration.
+  covers the fields at the book's current sharing level, so changing the level
+  also causes updates. The table was added with a 19 to 20 Room migration.
 - Who is mirrored: a contact with no name or no phone number is not mirrored,
   since it is no use for caller ID. Archived contacts are not mirrored either.
   A contact that stops qualifying is deleted from the mirror on the next
@@ -244,30 +257,31 @@ color or visibility.
 
 - The contact list's filter sheet has a manage button that opens an address book
   list (`Destination.AddressBooks`): reorderable, with an add button and a status
-  line per book (local, hidden, shared). Tapping a book opens its page
+  line per book (local, hidden, shared and at which level). Tapping a book opens its page
   (`Destination.AddressBookSettings(href)`). Settings has a "Manage address books"
   row that opens the same list, so the filter sheet stays the primary path and
   Settings is the secondary one.
 - A book's page holds its icon and color, name, visibility, sharing with other
-  apps, uploading a local book to a server, and deleting it. The existing dialogs
+  apps (the switch, and the level picker once it is on), uploading a local book to a server, and deleting it. The existing dialogs
   are reused from the page. The old manage-books dialog and the dialogs stacked
   in the filter sheet are gone; the filter sheet keeps filtering and the add
   button. The widget picker has no address book list, so the manage button is
   hidden there.
-- The sharing switch is disabled, with an explanation, when the master toggle is
-  off or the permission is missing, and the row leads to Settings. This keeps the
-  feature discoverable from the book page without making the setting look broken.
+- The switch reads as off while `WRITE_CONTACTS` is not held, so revoking it in
+  system settings is reflected rather than hidden. Turning it on asks again.
 - The wide-screen layout has a case for both destinations.
 
 ## Settings and copy
 
-A "System contacts" section:
+Everything is set per book, on the book's page. Settings has no controls for it,
+only a row under Address Books ("Show names in other apps") that opens the address
+book list and summarizes how many books are shared, so the feature can be found
+without being a second place to change it.
 
-- Master toggle with the explanation above.
-- Data-level picker with the three presets, below the toggle, with one line under
-  each stating exactly what it exposes.
-- A hint that which books are shared is set on each book's own page.
-- A statement that the mirror is read-only and never synced to Google by Corvid.
+- The book page's level picker has the three presets with one line under each
+  stating exactly what it exposes.
+- The first-share explanation states that the mirror is readable by any app with
+  contacts access, is read-only, and is never synced to Google by Corvid.
 
 ## Testing
 
@@ -275,7 +289,9 @@ Unit tests, in the style of `ContactsRepositoryVCardRoundTripTest`:
 
 - The mapper at each of the three levels.
 - The diff: insert, update, delete, rename, book toggled on and off, level
-  changed, feature turned off, and a row missing from the provider.
+  changed, last book unshared, and a row missing from the provider.
+- Per-book levels: contacts in two books at different levels in one pass, and a
+  book with no recorded level falling back to Caller ID.
 
 Manual checks on a real device:
 
@@ -308,9 +324,10 @@ Manual checks on a real device:
 
 ## Suggested order
 
-1. Account plumbing, mapping table, mapper and diff behind the global toggle, at
-   the Caller ID level. (Implemented; awaiting device testing.)
-2. Per-book sharing. (Implemented; awaiting device testing.)
-3. The Full contact and Everything levels. (Implemented; awaiting device testing.)
+1. Account plumbing, mapping table, mapper and diff, at the Caller ID level.
+   (Implemented and tried on a device.)
+2. Per-book sharing. (Implemented and tried on a device.)
+3. The Full contact and Everything levels, chosen per book. (Implemented and tried
+   on a device.)
 4. Routing edits to Corvid.
 5. Privacy policy, settings copy, and Play declaration.
