@@ -2,12 +2,16 @@
 
 package dev.benica.corvidcontacts.ui.addressbooks
 
+import android.Manifest
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -36,9 +41,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
@@ -58,21 +65,21 @@ import kotlinx.coroutines.launch
  *
  * @param book The book to show, or `null` once it no longer exists (for example just after it was
  * deleted), in which case [onBack] is invoked.
- * @param systemContactsActive Whether the "Show names in other apps" feature is on and permitted;
- * the sharing switch is disabled, with an explanation, when it isn't.
+ * Sharing with other apps is decided here, per book: the switch, and how much of each contact to
+ * share. The first time it is turned on, with the contacts permission not yet granted, a short
+ * explanation comes first and the permission is requested.
  */
 @Composable
 fun AddressBookSettingsScreen(
     book: AddressBookEntity?,
     contactCount: Int,
     hasServerConnection: Boolean,
-    systemContactsActive: Boolean,
     onBack: () -> Unit,
     onUpdateAppearance: (AddressBookEntity, Color, String?) -> Unit,
     onRename: suspend (AddressBookEntity, String) -> Result<Unit>,
     onToggleVisibility: (AddressBookEntity) -> Unit,
     onShareWithSystemChanged: (AddressBookEntity, Boolean) -> Unit,
-    onOpenSystemContactsSettings: () -> Unit,
+    onSystemContactsLevelChanged: (AddressBookEntity, SystemContactsLevel) -> Unit,
     onUpload: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
     onSetUpSync: () -> Unit,
     onDelete: suspend (AddressBookEntity) -> Result<Unit>,
@@ -98,6 +105,17 @@ fun AddressBookSettingsScreen(
     var showSetUpSyncPrompt by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
+    var showShareExplanation by remember { mutableStateOf(false) }
+
+    val initiallyHasPermission = rememberHasContactsWritePermission()
+    var hasPermission by remember { mutableStateOf(initiallyHasPermission) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        hasPermission = granted
+        if (granted) onShareWithSystemChanged(book, true)
+    }
+    val isShared = book.shareWithSystem && hasPermission
 
     val chromeNavigationIcon: @Composable () -> Unit = { BackNavButton(onBack) }
     if (!showScaffold) {
@@ -151,27 +169,41 @@ fun AddressBookSettingsScreen(
 
             ListItem(
                 headlineContent = { Text(stringResource(R.string.address_book_setting_share)) },
-                supportingContent = {
-                    Text(
-                        stringResource(
-                            if (systemContactsActive) {
-                                R.string.address_book_setting_share_description
-                            } else {
-                                R.string.address_book_setting_share_off_hint
-                            }
-                        )
-                    )
-                },
+                supportingContent = { Text(stringResource(R.string.address_book_setting_share_description)) },
                 trailingContent = {
                     Switch(
-                        checked = book.shareWithSystem && systemContactsActive,
-                        onCheckedChange = { onShareWithSystemChanged(book, it) },
-                        enabled = systemContactsActive,
+                        checked = isShared,
+                        onCheckedChange = { wantsOn ->
+                            when {
+                                !wantsOn -> onShareWithSystemChanged(book, false)
+                                hasPermission -> onShareWithSystemChanged(book, true)
+                                else -> showShareExplanation = true
+                            }
+                        },
                     )
                 },
-                // With the feature off the row leads to where it is switched on.
-                modifier = if (systemContactsActive) Modifier else Modifier.clickable(onClick = onOpenSystemContactsSettings),
             )
+            if (isShared) {
+                Text(
+                    text = stringResource(R.string.system_contacts_level_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                )
+                SystemContactsLevel.entries.forEach { option ->
+                    ListItem(
+                        headlineContent = { Text(stringResource(option.titleRes())) },
+                        supportingContent = { Text(stringResource(option.descriptionRes())) },
+                        leadingContent = {
+                            RadioButton(selected = option == book.systemContactsLevel, onClick = null)
+                        },
+                        modifier = Modifier.selectable(
+                            selected = option == book.systemContactsLevel,
+                            role = Role.RadioButton,
+                            onClick = { onSystemContactsLevelChanged(book, option) }
+                        ),
+                    )
+                }
+            }
 
             HorizontalDivider()
 
@@ -242,6 +274,22 @@ fun AddressBookSettingsScreen(
                 }
             },
             onDismiss = { if (!isSubmitting) showRenameDialog = false }
+        )
+    }
+
+    // First share without the contacts permission: explain what sharing does before the system
+    // permission prompt appears.
+    if (showShareExplanation) {
+        CCAlertDialog(
+            onDismissRequest = { showShareExplanation = false },
+            title = R.string.system_contacts_title,
+            content = { Text(stringResource(R.string.system_contacts_description)) },
+            confirmButton = R.string.ok,
+            onConfirm = {
+                showShareExplanation = false
+                permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+            },
+            dismissButton = R.string.action_cancel,
         )
     }
 

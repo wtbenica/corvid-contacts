@@ -38,7 +38,6 @@ class AppContainer(context: Context) {
     )
 
     val systemContactsMirrorManager = SystemContactsMirrorManager(
-        settingsRepository,
         database.systemContactMirrorDao(),
         SystemContactsMirror(
             context,

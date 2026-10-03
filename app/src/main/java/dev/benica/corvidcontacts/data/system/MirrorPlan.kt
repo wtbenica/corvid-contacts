@@ -123,6 +123,23 @@ data class MirrorPlan(
         private val HIDDEN_CATEGORIES = setOf("Archived")
 
         /**
+         * Builds the [MirrorContact] for every one of [sources] that can be mirrored, each at the
+         * level of the address book it is in ([levels], by book href). A book missing from
+         * [levels] falls back to the most private level.
+         */
+        fun toMirrorContacts(
+            sources: List<MirrorSource>,
+            levels: Map<String, SystemContactsLevel>,
+            photoStamp: (MirrorSource) -> String?,
+        ): List<MirrorContact> = sources.mapNotNull { source ->
+            toMirrorContact(
+                source,
+                photoStamp(source),
+                levels[source.addressBookHref] ?: SystemContactsLevel.CALLER_ID
+            )
+        }
+
+        /**
          * Builds the [MirrorContact] for [source] at [level], or `null` if it shouldn't be
          * mirrored: a contact with no name or no phone number is no use for caller ID, so it
          * isn't shared at all.

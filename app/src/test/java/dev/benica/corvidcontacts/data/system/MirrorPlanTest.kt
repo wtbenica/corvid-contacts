@@ -245,4 +245,40 @@ class MirrorPlanTest {
     fun `group keys distinguish books from categories`() {
         assertNotEquals(MirrorPlan.bookGroupKey("Family"), MirrorPlan.categoryGroupKey("Family"))
     }
+
+    @Test
+    fun `each contact is mirrored at the level of its own address book`() {
+        val work = source(addressBookHref = "/books/work/")
+        val family = source(addressBookHref = "/books/family/").copy(id = "other")
+
+        val contacts = MirrorPlan.toMirrorContacts(
+            sources = listOf(work, family),
+            levels = mapOf(
+                "/books/work/" to SystemContactsLevel.CALLER_ID,
+                "/books/family/" to SystemContactsLevel.EVERYTHING,
+            ),
+            photoStamp = { null },
+        ).associateBy { it.id }
+
+        val workContact = contacts.getValue(work.id)
+        assertTrue(workContact.emails.isEmpty())
+        assertNull(workContact.note)
+
+        val familyContact = contacts.getValue("other")
+        assertTrue(familyContact.emails.isNotEmpty())
+        assertEquals("Door code 1234", familyContact.note)
+    }
+
+    @Test
+    fun `a book with no recorded level is mirrored at the most private one`() {
+        val contacts = MirrorPlan.toMirrorContacts(
+            sources = listOf(source(addressBookHref = "/books/unknown/")),
+            levels = emptyMap(),
+            photoStamp = { null },
+        )
+
+        assertTrue(contacts.single().emails.isEmpty())
+        assertNull(contacts.single().note)
+    }
 }
+

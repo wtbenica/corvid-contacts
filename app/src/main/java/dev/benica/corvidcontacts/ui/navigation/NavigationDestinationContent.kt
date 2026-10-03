@@ -309,26 +309,10 @@ internal fun MergeReviewContent(
     }
 }
 
-/**
- * Whether the "Show names in other apps" feature is on *and* the app still holds the permission it
- * needs, which is when per-book sharing can take effect.
- */
-@Composable
-private fun rememberSystemContactsActive(settingsRepository: SettingsRepository): Boolean {
-    val enabled by settingsRepository.systemContactsEnabled.collectAsState(initial = false)
-    val context = LocalContext.current
-    val granted = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.WRITE_CONTACTS
-    ) == PackageManager.PERMISSION_GRANTED
-    return enabled && granted
-}
-
 @Composable
 internal fun AddressBooksContent(
     contactsViewModel: ContactsViewModel,
     authRepository: AuthRepository,
-    settingsRepository: SettingsRepository,
     backStack: NavBackStack<Destination>,
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
@@ -341,7 +325,6 @@ internal fun AddressBooksContent(
     AddressBooksScreen(
         addressBooks = addressBooks,
         hasServerConnection = hasServerConnection,
-        systemContactsActive = rememberSystemContactsActive(settingsRepository),
         onBookClick = { backStack.add(Destination.AddressBookSettings(it.href)) },
         onUpdateOrder = { contactsViewModel.updateAddressBookOrder(it) },
         onCreateAddressBook = { name, color, forceLocal, iconName ->
@@ -359,7 +342,6 @@ internal fun AddressBookSettingsContent(
     contactsViewModel: ContactsViewModel,
     contactsRepository: ContactsRepository,
     authRepository: AuthRepository,
-    settingsRepository: SettingsRepository,
     backStack: NavBackStack<Destination>,
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
@@ -376,7 +358,6 @@ internal fun AddressBookSettingsContent(
         book = addressBooks.find { it.href == key.href },
         contactCount = contactCount,
         hasServerConnection = hasServerConnection,
-        systemContactsActive = rememberSystemContactsActive(settingsRepository),
         onBack = { if (backStack.size > 1) backStack.removeAt(backStack.size - 1) },
         onUpdateAppearance = { book, color, iconName ->
             contactsViewModel.updateAddressBookAppearance(book, color, iconName)
@@ -386,7 +367,9 @@ internal fun AddressBookSettingsContent(
         onShareWithSystemChanged = { book, share ->
             contactsViewModel.setAddressBookSharedWithSystem(book, share)
         },
-        onOpenSystemContactsSettings = { backStack.add(Destination.Settings) },
+        onSystemContactsLevelChanged = { book, level ->
+            contactsViewModel.setAddressBookSystemContactsLevel(book, level)
+        },
         onUpload = { book, newName -> contactsViewModel.uploadLocalAddressBook(book, newName) },
         onSetUpSync = { backStack.add(Destination.Login()) },
         onDelete = { contactsViewModel.deleteAddressBook(it) },

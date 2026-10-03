@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
-import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.data.repository.ImportResult
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
@@ -56,12 +55,12 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.common_ui.SecondaryHeader
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
 import dev.benica.corvidcontacts.ui.settings.sections.AccountSection
+import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsWritePermission
 import dev.benica.corvidcontacts.ui.settings.sections.AddressBooksLinkSection
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.DataManagementSection
 import dev.benica.corvidcontacts.ui.settings.sections.ExternalPhotosSection
 import dev.benica.corvidcontacts.ui.settings.sections.PhoneFormattingSection
-import dev.benica.corvidcontacts.ui.settings.sections.SystemContactsSection
 import dev.benica.corvidcontacts.ui.settings.sections.ThemeSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -84,8 +83,6 @@ fun SettingsScreen(
     val alwaysAddCountryCode by viewModel.alwaysAddCountryCode.collectAsState()
     val addressLookupMode by viewModel.addressLookupMode.collectAsState()
     val autoLoadRemotePhotos by viewModel.autoLoadRemotePhotos.collectAsState()
-    val systemContactsEnabled by viewModel.systemContactsEnabled.collectAsState()
-    val systemContactsLevel by viewModel.systemContactsLevel.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val addressBooks by viewModel.addressBooks.collectAsState()
 
@@ -95,15 +92,11 @@ fun SettingsScreen(
         alwaysAddCountryCode = alwaysAddCountryCode,
         addressLookupMode = addressLookupMode,
         autoLoadRemotePhotos = autoLoadRemotePhotos,
-        systemContactsEnabled = systemContactsEnabled,
-        systemContactsLevel = systemContactsLevel,
         themeMode = themeMode,
         addressBooks = addressBooks,
         onAlwaysAddCountryCodeToggled = { alwaysAdd -> viewModel.setAlwaysAddCountryCode(alwaysAdd) },
         onAddressLookupModeSelected = { mode -> viewModel.setAddressLookupMode(mode) },
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
-        onSystemContactsToggled = { enabled -> viewModel.setSystemContactsEnabled(enabled) },
-        onSystemContactsLevelSelected = { level -> viewModel.setSystemContactsLevel(level) },
         onThemeModeSelected = { theme -> viewModel.setThemeMode(theme) },
         onLogout = { viewModel.logout() },
         onExport = { viewModel.getExportData() },
@@ -130,15 +123,11 @@ private fun SettingsScreen(
     alwaysAddCountryCode: Boolean,
     addressLookupMode: AddressLookupMode,
     autoLoadRemotePhotos: Boolean,
-    systemContactsEnabled: Boolean,
-    systemContactsLevel: SystemContactsLevel,
     themeMode: ThemeMode,
     addressBooks: List<AddressBookEntity>,
     onAlwaysAddCountryCodeToggled: (Boolean) -> Unit,
     onAddressLookupModeSelected: (AddressLookupMode) -> Unit,
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
-    onSystemContactsToggled: (Boolean) -> Unit,
-    onSystemContactsLevelSelected: (SystemContactsLevel) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
     onExport: suspend () -> String,
@@ -268,13 +257,14 @@ private fun SettingsScreen(
                     onAutoLoadRemotePhotosToggled = onAutoLoadRemotePhotosToggled
                 )
 
-                AddressBooksLinkSection(onClick = onAddressBooksClick)
-
-                SystemContactsSection(
-                    enabled = systemContactsEnabled,
-                    onToggled = onSystemContactsToggled,
-                    level = systemContactsLevel,
-                    onLevelSelected = onSystemContactsLevelSelected,
+                AddressBooksLinkSection(
+                    bookCount = addressBooks.size,
+                    sharedBookCount = if (rememberHasContactsWritePermission()) {
+                        addressBooks.count { it.shareWithSystem }
+                    } else {
+                        0
+                    },
+                    onClick = onAddressBooksClick
                 )
             }
 
@@ -579,15 +569,11 @@ fun SettingsScreenPreview() {
             alwaysAddCountryCode = true,
             addressLookupMode = AddressLookupMode.PHOTON,
             autoLoadRemotePhotos = false,
-            systemContactsEnabled = false,
-            systemContactsLevel = SystemContactsLevel.CALLER_ID,
             themeMode = ThemeMode.SYSTEM,
             addressBooks = emptyList(),
             onAlwaysAddCountryCodeToggled = { },
             onAddressLookupModeSelected = {},
             onAutoLoadRemotePhotosToggled = {},
-            onSystemContactsToggled = {},
-            onSystemContactsLevelSelected = {},
             onThemeModeSelected = {},
             onLogout = {},
             onExport = { "potato salad" },

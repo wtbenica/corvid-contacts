@@ -53,7 +53,6 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun AddressBooksScreen(
     addressBooks: List<AddressBookEntity>,
     hasServerConnection: Boolean,
-    systemContactsActive: Boolean,
     onBookClick: (AddressBookEntity) -> Unit,
     onUpdateOrder: (List<AddressBookEntity>) -> Unit,
     onCreateAddressBook: suspend (String, Color, Boolean, String?) -> Result<AddressBookEntity>,
@@ -67,6 +66,7 @@ fun AddressBooksScreen(
     val hapticFeedback = LocalHapticFeedback.current
     val genericErrorMessage = stringResource(R.string.settings_address_book_generic_error)
     val title = stringResource(R.string.settings_section_address_books)
+    val hasContactsPermission = rememberHasContactsWritePermission()
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
@@ -113,8 +113,11 @@ fun AddressBooksScreen(
                         val status = listOfNotNull(
                             if (book.isLocal) stringResource(R.string.settings_address_book_local_badge) else null,
                             if (!book.isVisible) stringResource(R.string.settings_address_book_hidden_label) else null,
-                            if (book.shareWithSystem && systemContactsActive) {
-                                stringResource(R.string.address_book_shared_label)
+                            if (book.shareWithSystem && hasContactsPermission) {
+                                stringResource(
+                                    R.string.address_book_shared_label_with_level,
+                                    stringResource(book.systemContactsLevel.titleRes())
+                                )
                             } else null,
                         )
                         ListItem(

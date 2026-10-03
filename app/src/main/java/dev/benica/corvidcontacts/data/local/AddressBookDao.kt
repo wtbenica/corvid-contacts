@@ -9,6 +9,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 
 @Dao
 interface AddressBookDao {
@@ -45,5 +46,11 @@ interface AddressBookDao {
     suspend fun updateShareWithSystem(
         href: String,
         share: Boolean,
+    )
+
+    @Query("UPDATE address_books SET systemContactsLevel = :level WHERE href = :href")
+    suspend fun updateSystemContactsLevel(
+        href: String,
+        level: SystemContactsLevel,
     )
 }

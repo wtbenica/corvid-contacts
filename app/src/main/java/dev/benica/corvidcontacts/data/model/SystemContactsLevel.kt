@@ -3,8 +3,9 @@
 package dev.benica.corvidcontacts.data.model
 
 /**
- * How much of each shared contact is mirrored to the system contacts. Each level includes
- * everything in the one before it. [CALLER_ID] is the default and the most private.
+ * How much of each shared contact is mirrored to the system contacts, chosen per address book.
+ * Each level includes everything in the one before it. [CALLER_ID] is the default and the most
+ * private.
  */
 enum class SystemContactsLevel {
     /** Name, phone numbers and photo - enough for Messages and the dialer to show who it is. */

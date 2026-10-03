@@ -17,17 +17,41 @@ import dev.benica.corvidcontacts.ui.settings.SettingsSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 
 /**
- * A link to the address book list, where each book's appearance, visibility and sharing are set.
+ * Links to the address book list, where each book's appearance, visibility and sharing are set.
  * The contact list's filter sheet is the primary way in; this is the secondary one.
+ *
+ * The second row only points at where sharing with other apps is set (per book, on each book's
+ * page) and summarizes it ([sharedBookCount] of [bookCount]); nothing is controlled from here, so
+ * there is a single place to change it.
  */
 @Composable
-fun AddressBooksLinkSection(onClick: () -> Unit) {
+fun AddressBooksLinkSection(
+    bookCount: Int,
+    sharedBookCount: Int,
+    onClick: () -> Unit,
+) {
     SettingsSection(
         title = stringResource(R.string.settings_section_address_books)
     ) {
         ListItem(
             headlineContent = { Text(stringResource(R.string.edit_action_manage_address_books)) },
             supportingContent = { Text(stringResource(R.string.settings_address_books_description)) },
+            trailingContent = {
+                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null)
+            },
+            modifier = Modifier.clickable(onClick = onClick),
+        )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.system_contacts_title)) },
+            supportingContent = {
+                Text(
+                    if (sharedBookCount == 0) {
+                        stringResource(R.string.system_contacts_summary_none)
+                    } else {
+                        stringResource(R.string.system_contacts_summary_shared, sharedBookCount, bookCount)
+                    }
+                )
+            },
             trailingContent = {
                 Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null)
             },
@@ -40,6 +64,6 @@ fun AddressBooksLinkSection(onClick: () -> Unit) {
 @Composable
 fun AddressBooksLinkSectionPreview() {
     CorvidContactsTheme {
-        AddressBooksLinkSection(onClick = {})
+        AddressBooksLinkSection(bookCount = 3, sharedBookCount = 1, onClick = {})
     }
 }

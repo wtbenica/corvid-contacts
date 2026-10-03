@@ -15,6 +15,7 @@ import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -836,6 +837,13 @@ class ContactsViewModel(
     fun setAddressBookSharedWithSystem(addressBook: AddressBookEntity, share: Boolean) {
         viewModelScope.launch {
             repository.setAddressBookSharedWithSystem(addressBook.href, share)
+        }
+    }
+
+    /** Sets how much of each contact in [addressBook] is shared with the system contacts. */
+    fun setAddressBookSystemContactsLevel(addressBook: AddressBookEntity, level: SystemContactsLevel) {
+        viewModelScope.launch {
+            repository.setAddressBookSystemContactsLevel(addressBook.href, level)
         }
     }
 

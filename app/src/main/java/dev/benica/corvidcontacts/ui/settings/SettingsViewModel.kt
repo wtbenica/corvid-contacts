@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
-import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
@@ -74,22 +73,6 @@ class SettingsViewModel(
             false
         )
 
-    /** Whether contacts are mirrored into the system contacts so other apps can show names. */
-    val systemContactsEnabled: StateFlow<Boolean> = settingsRepository.systemContactsEnabled
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            false
-        )
-
-    /** How much of each shared contact is mirrored to the system contacts. */
-    val systemContactsLevel: StateFlow<SystemContactsLevel> = settingsRepository.systemContactsLevel
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            SystemContactsLevel.CALLER_ID
-        )
-
     /** The user's preferred theme mode. */
     val themeMode: StateFlow<ThemeMode> = settingsRepository.themeMode
         .stateIn(
@@ -127,20 +110,6 @@ class SettingsViewModel(
             if (enabled) {
                 repository.downloadAllPendingRemotePhotos()
             }
-        }
-    }
-
-    /** Turns the system contacts mirror on or off (the caller has already obtained permission). */
-    fun setSystemContactsEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.saveSystemContactsEnabled(enabled)
-        }
-    }
-
-    /** Sets how much of each shared contact is mirrored to the system contacts. */
-    fun setSystemContactsLevel(level: SystemContactsLevel) {
-        viewModelScope.launch {
-            settingsRepository.saveSystemContactsLevel(level)
         }
     }
 

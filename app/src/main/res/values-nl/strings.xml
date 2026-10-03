@@ -490,7 +490,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Namen tonen in andere apps</string>
-    <string name="system_contacts_description">Kopieert je contacten naar de contacten van dit toestel, op het hieronder gekozen niveau, zodat Berichten en de Telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan zien wat je deelt. Corvid stuurt het niet naar Google. Deze kopie is alleen-lezen: bewerk contacten in Corvid.</string>
+    <string name="system_contacts_description">Kopieert de contacten van dit adresboek naar de contacten van dit apparaat, op het niveau dat je kiest, zodat Berichten en de telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan dan zien wat je deelt. Corvid stuurt het niet naar Google. Deze kopie is alleen-lezen: bewerk contacten in Corvid.</string>
     <string name="system_contacts_level_title">Wat je deelt</string>
     <string name="system_contacts_level_caller_id">Nummerweergave</string>
     <string name="system_contacts_level_caller_id_description">Naam, telefoonnummers en foto</string>
@@ -498,13 +498,13 @@
     <string name="system_contacts_level_full_description">Ook e-mailadressen, adressen, socialemediaprofielen, websites, verjaardag, groepen, bedrijf, functie, bijnaam en relaties</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Ook notities</string>
-    <string name="address_book_shared_label">Gedeeld met andere apps</string>
+    <string name="address_book_shared_label_with_level">Gedeeld met andere apps (%1$s)</string>
+    <string name="system_contacts_summary_shared">Gedeelde adresboeken: %1$d van %2$d</string>
+    <string name="system_contacts_summary_none">Kies adresboeken om te delen met Berichten en de telefoon-app. Er wordt nog niets gedeeld.</string>
     <string name="address_book_setting_visibility">Tonen in contactenlijst</string>
     <string name="address_book_setting_visibility_description">Verborgen adresboeken blijven op je toestel, maar staan niet in de contactenlijst.</string>
     <string name="address_book_setting_share">Delen met andere apps</string>
-    <string name="address_book_setting_share_description">Laat apps zoals Berichten en de Telefoon-app namen voor deze contacten tonen. Wat er gedeeld wordt, stel je in onder "Namen tonen in andere apps" in Instellingen.</string>
-    <string name="address_book_setting_share_off_hint">Zet "Namen tonen in andere apps" aan in Instellingen om dit adresboek te delen.</string>
+    <string name="address_book_setting_share_description">Laat apps zoals Berichten en de telefoon-app namen voor deze contacten tonen.</string>
     <string name="settings_address_books_description">Uiterlijk, zichtbaarheid en delen voor elk adresboek</string>
-    <string name="system_contacts_books_hint">Welke adresboeken worden gedeeld, stel je in op de pagina van elk adresboek. Er wordt niets gedeeld totdat je het voor minstens één aanzet.</string>
-    <string name="system_contacts_add_account_unsupported">Schakel dit in plaats daarvan in via de instellingen van Corvid Contacts.</string>
+    <string name="system_contacts_add_account_unsupported">Deel in plaats daarvan een adresboek vanuit Corvid Contacts.</string>
 </resources>

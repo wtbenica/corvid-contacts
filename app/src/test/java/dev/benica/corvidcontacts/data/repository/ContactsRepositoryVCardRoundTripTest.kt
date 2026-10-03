@@ -16,6 +16,7 @@ import dev.benica.corvidcontacts.data.model.Phone
 import dev.benica.corvidcontacts.data.model.Relationship
 import dev.benica.corvidcontacts.data.model.SocialProfile
 import dev.benica.corvidcontacts.data.model.StructuredAddress
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import ezvcard.Ezvcard
 import ezvcard.VCardVersion
 import kotlinx.coroutines.flow.Flow
@@ -325,4 +326,5 @@ private class NoOpAddressBookDao : AddressBookDao {
     ) = Unit
 
     override suspend fun updateShareWithSystem(href: String, share: Boolean) = Unit
+    override suspend fun updateSystemContactsLevel(href: String, level: SystemContactsLevel) = Unit
 }

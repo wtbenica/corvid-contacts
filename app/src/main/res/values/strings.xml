@@ -502,7 +502,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Show names in other apps</string>
-    <string name="system_contacts_description">Copies your contacts to this device\'s contacts, at the level you choose below, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see what you share. Corvid doesn\'t send it to Google. This copy is read-only: edit contacts in Corvid.</string>
+    <string name="system_contacts_description">Copies this address book\'s contacts to this device\'s contacts, at the level you choose, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see what you share. Corvid doesn\'t send it to Google. This copy is read-only: edit contacts in Corvid.</string>
     <string name="system_contacts_level_title">What to share</string>
     <string name="system_contacts_level_caller_id">Caller ID</string>
     <string name="system_contacts_level_caller_id_description">Name, phone numbers and photo</string>
@@ -510,14 +510,14 @@
     <string name="system_contacts_level_full_description">Also emails, addresses, social profiles, websites, birthday, groups, company, job title, nickname and relationships</string>
     <string name="system_contacts_level_everything">Everything</string>
     <string name="system_contacts_level_everything_description">Also notes</string>
-    <string name="address_book_shared_label">Shared with other apps</string>
+    <string name="address_book_shared_label_with_level">Shared with other apps (%1$s)</string>
+    <string name="system_contacts_summary_shared">Address books shared: %1$d of %2$d</string>
+    <string name="system_contacts_summary_none">Choose address books to share with Messages and the dialer. Nothing is shared yet.</string>
     <string name="address_book_setting_visibility">Show in contact list</string>
     <string name="address_book_setting_visibility_description">Hidden books stay on your device but are left out of the contact list.</string>
     <string name="address_book_setting_share">Share with other apps</string>
-    <string name="address_book_setting_share_description">Lets apps like Messages and the dialer show names for these contacts. What is shared is set under "Show names in other apps" in Settings.</string>
-    <string name="address_book_setting_share_off_hint">Turn on "Show names in other apps" in Settings to share this book.</string>
+    <string name="address_book_setting_share_description">Lets apps like Messages and the dialer show names for these contacts.</string>
     <string name="settings_address_books_description">Appearance, visibility and sharing for each address book</string>
-    <string name="system_contacts_books_hint">Which address books are shared is set on each address book\'s own page. Nothing is shared until you turn it on for at least one.</string>
-    <string name="system_contacts_add_account_unsupported">Turn this on in Corvid Contacts settings instead.</string>
+    <string name="system_contacts_add_account_unsupported">Share an address book from Corvid Contacts instead.</string>
 </resources>
 

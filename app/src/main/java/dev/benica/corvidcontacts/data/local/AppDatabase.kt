@@ -17,7 +17,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SystemContactMirrorEntity::class,
         SystemGroupMirrorEntity::class,
     ],
-    version = 22,
+    version = 23,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -80,7 +80,19 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22)
+        /**
+         * Adds the per-book sharing level, replacing the single level that used to apply to every
+         * shared book. Every book starts at the most private level.
+         */
+        private val MIGRATION_22_23 = object : Migration(22, 23) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `address_books` ADD COLUMN `systemContactsLevel` TEXT NOT NULL DEFAULT 'CALLER_ID'"
+                )
+            }
+        }
+
+        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23)
 
         @Volatile
         private var INSTANCE: AppDatabase? = null

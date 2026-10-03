@@ -490,7 +490,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Namen in anderen Apps anzeigen</string>
-    <string name="system_contacts_description">Kopiert deine Kontakte in dem unten gewählten Umfang in die Kontakte dieses Geräts, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google. Diese Kopie ist schreibgeschützt: Bearbeite Kontakte in Corvid.</string>
+    <string name="system_contacts_description">Kopiert die Kontakte dieses Adressbuchs in dem von dir gewählten Umfang in die Kontakte dieses Geräts, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google. Diese Kopie ist schreibgeschützt: Bearbeite Kontakte in Corvid.</string>
     <string name="system_contacts_level_title">Was geteilt wird</string>
     <string name="system_contacts_level_caller_id">Anrufer-ID</string>
     <string name="system_contacts_level_caller_id_description">Name, Telefonnummern und Foto</string>
@@ -498,13 +498,13 @@
     <string name="system_contacts_level_full_description">Zusätzlich E-Mails, Adressen, Social-Media-Profile, Websites, Geburtstag, Gruppen, Firma, Berufsbezeichnung, Spitzname und Beziehungen</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Zusätzlich Notizen</string>
-    <string name="address_book_shared_label">Mit anderen Apps geteilt</string>
+    <string name="address_book_shared_label_with_level">Mit anderen Apps geteilt (%1$s)</string>
+    <string name="system_contacts_summary_shared">Geteilte Adressbücher: %1$d von %2$d</string>
+    <string name="system_contacts_summary_none">Wähle Adressbücher aus, die mit Nachrichten und der Telefon-App geteilt werden. Bisher wird nichts geteilt.</string>
     <string name="address_book_setting_visibility">In der Kontaktliste anzeigen</string>
     <string name="address_book_setting_visibility_description">Ausgeblendete Bücher bleiben auf deinem Gerät, erscheinen aber nicht in der Kontaktliste.</string>
     <string name="address_book_setting_share">Mit anderen Apps teilen</string>
-    <string name="address_book_setting_share_description">Lässt Apps wie Nachrichten und die Telefon-App Namen für diese Kontakte anzeigen. Was geteilt wird, legst du in den Einstellungen unter „Namen in anderen Apps anzeigen“ fest.</string>
-    <string name="address_book_setting_share_off_hint">Aktiviere in den Einstellungen „Namen in anderen Apps anzeigen“, um dieses Buch zu teilen.</string>
+    <string name="address_book_setting_share_description">Lässt Apps wie Nachrichten und die Telefon-App Namen für diese Kontakte anzeigen.</string>
     <string name="settings_address_books_description">Aussehen, Sichtbarkeit und Teilen für jedes Adressbuch</string>
-    <string name="system_contacts_books_hint">Welche Adressbücher geteilt werden, legst du auf der Seite des jeweiligen Adressbuchs fest. Solange du es für keines aktivierst, wird nichts geteilt.</string>
-    <string name="system_contacts_add_account_unsupported">Aktiviere dies stattdessen in den Einstellungen von Corvid Contacts.</string>
+    <string name="system_contacts_add_account_unsupported">Teile stattdessen ein Adressbuch in Corvid Contacts.</string>
 </resources>

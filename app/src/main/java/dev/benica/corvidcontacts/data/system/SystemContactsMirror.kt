@@ -58,10 +58,10 @@ import java.io.ByteArrayOutputStream
  * are kept in Room (see [SystemContactMirrorEntity]) and used for later updates and deletes. A
  * mirrored row that has disappeared is detected when an update affects nothing, and re-inserted.
  *
- * How much of each contact is written depends on the [SystemContactsLevel]. Only address books the
- * user has chosen to share are mirrored, each as one system group so the books stay
- * distinguishable in the Contacts app; at the Full contact level and up, contact categories become
- * groups too.
+ * Only address books the user has chosen to share are mirrored, each as one system group so the
+ * books stay distinguishable in the Contacts app. How much of each contact is written depends on
+ * the [SystemContactsLevel] chosen for its book; at the Full contact level and up, contact
+ * categories become groups too.
  */
 class SystemContactsMirror(
     private val context: Context,
@@ -109,19 +109,20 @@ class SystemContactsMirror(
 
     /**
      * Brings the system contacts in line with [sources], the contacts in the shared address
-     * [books], written at [level]. Requires [hasPermission].
+     * [books], each written at its own book's level. Requires [hasPermission].
      */
     suspend fun reconcile(
         books: List<AddressBookEntity>,
         sources: List<MirrorSource>,
-        level: SystemContactsLevel,
     ) = withContext(Dispatchers.IO) {
         mutex.withLock {
             ensureAccount()
 
-            val contacts = sources.mapNotNull { source ->
-                MirrorPlan.toMirrorContact(source, photoStamp(source), level)
-            }
+            val contacts = MirrorPlan.toMirrorContacts(
+                sources,
+                books.associate { it.href to it.systemContactsLevel },
+                ::photoStamp
+            )
 
             // Every group the contacts need: one per shared book, plus one per category in use.
             val groups = LinkedHashMap<String, String>()

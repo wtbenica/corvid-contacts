@@ -271,7 +271,7 @@ fun PhoneNavigation(
                 key = key,
                 metadata = ListDetailSceneStrategy.detailPane()
             ) {
-                AddressBooksContent(contactsViewModel, authRepository, settingsRepository, backStack)
+                AddressBooksContent(contactsViewModel, authRepository, backStack)
             }
 
             is Destination.AddressBookSettings -> NavEntry(
@@ -283,7 +283,6 @@ fun PhoneNavigation(
                     contactsViewModel,
                     contactsRepository,
                     authRepository,
-                    settingsRepository,
                     backStack
                 )
             }

@@ -6,54 +6,41 @@ import android.util.Log
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
-import dev.benica.corvidcontacts.data.model.SystemContactsLevel
-import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 /**
  * Keeps the system contacts mirror up to date for as long as the app process lives, by watching
- * the "System contacts" setting and Room. Watching the database means every way a contact can
- * change - server sync, local edits, imports, archiving, deletes - is covered without hooking each
- * one individually.
+ * Room. Watching the database means every way a contact can change - server sync, local edits,
+ * imports, archiving, deletes - and every sharing choice (which books are shared, and at what
+ * level) is covered without hooking each one individually.
+ *
+ * There is no separate on/off setting: the mirror exists exactly while at least one address book
+ * is shared. Unsharing the last one removes it.
  */
 class SystemContactsMirrorManager(
-    private val settingsRepository: SettingsRepository,
     private val dao: SystemContactMirrorDao,
     private val mirror: SystemContactsMirror,
 ) {
     @OptIn(FlowPreview::class)
     fun start(scope: CoroutineScope) {
         scope.launch {
-            settingsRepository.systemContactsEnabled
-                .distinctUntilChanged()
-                .flatMapLatest { enabled ->
-                    // null means "feature off": remove the mirror once, then idle. With the feature on
-                    // but no address book shared, the mirror is simply empty.
-                    if (enabled) {
-                        combine(
-                            dao.observeSharedBooks(),
-                            dao.observeMirrorSources(),
-                            settingsRepository.systemContactsLevel
-                        ) { books, sources, level ->
-                            SharedSnapshot(books, sources, level)
-                        }.debounce(DEBOUNCE_MS)
-                    } else {
-                        flowOf(null)
-                    }
-                }
+            combine(
+                dao.observeSharedBooks(),
+                dao.observeMirrorSources()
+            ) { books, sources ->
+                SharedSnapshot(books, sources)
+            }
+                .debounce(DEBOUNCE_MS)
                 .collect { snapshot ->
                     try {
                         when {
-                            snapshot == null -> mirror.removeAll()
-                            mirror.hasPermission() -> mirror.reconcile(snapshot.books, snapshot.sources, snapshot.level)
+                            snapshot.books.isEmpty() -> mirror.removeAll()
+                            mirror.hasPermission() -> mirror.reconcile(snapshot.books, snapshot.sources)
                         }
                     } catch (e: CancellationException) {
                         throw e
@@ -64,11 +51,10 @@ class SystemContactsMirrorManager(
         }
     }
 
-    /** The shared address books, the contacts in them and the sharing level, as of one state. */
+    /** The shared address books, with their levels, and the contacts in them, as of one state. */
     private class SharedSnapshot(
         val books: List<AddressBookEntity>,
         val sources: List<MirrorSource>,
-        val level: SystemContactsLevel,
     )
 
     private companion object {

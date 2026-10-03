@@ -197,7 +197,6 @@ fun TabletNavigation(
                 AddressBooksContent(
                     contactsViewModel = contactsViewModel,
                     authRepository = authRepository,
-                    settingsRepository = settingsRepository,
                     backStack = backStack,
                     showScaffold = false,
                     onChromeChange = onChromeChange,
@@ -212,7 +211,6 @@ fun TabletNavigation(
                     contactsViewModel = contactsViewModel,
                     contactsRepository = contactsRepository,
                     authRepository = authRepository,
-                    settingsRepository = settingsRepository,
                     backStack = backStack,
                     showScaffold = false,
                     onChromeChange = onChromeChange,

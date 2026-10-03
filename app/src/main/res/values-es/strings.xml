@@ -505,7 +505,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Mostrar nombres en otras apps</string>
-    <string name="system_contacts_description">Copia tus contactos a los contactos de este dispositivo, con el nivel que elijas abajo, para que Mensajes y la app de teléfono muestren quién llama o escribe. Cualquier app con acceso a los contactos podrá ver lo que compartas. Corvid no lo envía a Google. Esta copia es de solo lectura: edita los contactos en Corvid.</string>
+    <string name="system_contacts_description">Copia los contactos de esta libreta a los contactos de este dispositivo, con el nivel que elijas, para que Mensajes y el teléfono puedan mostrar quién llama o escribe. Cualquier app con acceso a los contactos podrá ver lo que compartas. Corvid no lo envía a Google. Esta copia es de solo lectura: edita los contactos en Corvid.</string>
     <string name="system_contacts_level_title">Qué compartir</string>
     <string name="system_contacts_level_caller_id">Identificador de llamadas</string>
     <string name="system_contacts_level_caller_id_description">Nombre, números de teléfono y foto</string>
@@ -513,13 +513,13 @@
     <string name="system_contacts_level_full_description">Además correos, direcciones, perfiles sociales, sitios web, cumpleaños, grupos, empresa, cargo, apodo y relaciones</string>
     <string name="system_contacts_level_everything">Todo</string>
     <string name="system_contacts_level_everything_description">Además notas</string>
-    <string name="address_book_shared_label">Compartida con otras apps</string>
+    <string name="address_book_shared_label_with_level">Compartida con otras apps (%1$s)</string>
+    <string name="system_contacts_summary_shared">Libretas compartidas: %1$d de %2$d</string>
+    <string name="system_contacts_summary_none">Elige libretas para compartir con Mensajes y el teléfono. Todavía no se comparte nada.</string>
     <string name="address_book_setting_visibility">Mostrar en la lista de contactos</string>
     <string name="address_book_setting_visibility_description">Las libretas ocultas permanecen en tu dispositivo pero no aparecen en la lista de contactos.</string>
     <string name="address_book_setting_share">Compartir con otras apps</string>
-    <string name="address_book_setting_share_description">Permite que apps como Mensajes y la app de teléfono muestren nombres de estos contactos. Lo que se comparte se define en Ajustes, en «Mostrar nombres en otras apps».</string>
-    <string name="address_book_setting_share_off_hint">Activa «Mostrar nombres en otras apps» en Ajustes para compartir esta libreta.</string>
+    <string name="address_book_setting_share_description">Permite que apps como Mensajes y el teléfono muestren los nombres de estos contactos.</string>
     <string name="settings_address_books_description">Aspecto, visibilidad y uso compartido de cada libreta de direcciones</string>
-    <string name="system_contacts_books_hint">Qué libretas se comparten se define en la página de cada libreta. No se comparte nada hasta que lo actives en al menos una.</string>
-    <string name="system_contacts_add_account_unsupported">Actívalo en los ajustes de Corvid Contacts.</string>
+    <string name="system_contacts_add_account_unsupported">Comparte una libreta de direcciones desde Corvid Contacts.</string>
 </resources>

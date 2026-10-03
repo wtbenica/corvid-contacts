@@ -13,6 +13,7 @@ import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.NextcloudCredentials
 import dev.benica.corvidcontacts.data.model.Phone
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.ui.contacts.PhoneFormatter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -496,6 +497,12 @@ private class FakeAddressBookDao : AddressBookDao {
     override suspend fun updateShareWithSystem(href: String, share: Boolean) {
         books.value = books.value.map {
             if (it.href == href) it.copy(shareWithSystem = share) else it
+        }
+    }
+
+    override suspend fun updateSystemContactsLevel(href: String, level: SystemContactsLevel) {
+        books.value = books.value.map {
+            if (it.href == href) it.copy(systemContactsLevel = level) else it
         }
     }
 

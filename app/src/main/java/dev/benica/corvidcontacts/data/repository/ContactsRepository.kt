@@ -16,6 +16,7 @@ import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.NextcloudCredentials
+import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.remote.DavAddressBook
 import dev.benica.corvidcontacts.data.remote.DavParser
 import dev.benica.corvidcontacts.data.remote.NextcloudApiProvider
@@ -869,6 +870,10 @@ class ContactsRepository(
     /** Sets whether [href]'s contacts are mirrored to the system contacts. */
     suspend fun setAddressBookSharedWithSystem(href: String, share: Boolean) =
         addressBookDao.updateShareWithSystem(href, share)
+
+    /** Sets how much of each contact in [href] is mirrored to the system contacts while it is shared. */
+    suspend fun setAddressBookSystemContactsLevel(href: String, level: SystemContactsLevel) =
+        addressBookDao.updateSystemContactsLevel(href, level)
 
     /** Updates visibility for an address book. */
     suspend fun updateAddressBookVisibility(addressBook: AddressBookEntity) =

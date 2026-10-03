@@ -505,7 +505,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Afficher les noms dans d\'autres applis</string>
-    <string name="system_contacts_description">Copie vos contacts dans les contacts de cet appareil, au niveau choisi ci-dessous, afin que Messages et l\'appli Téléphone puissent afficher qui appelle ou écrit. Toute appli ayant accès aux contacts pourra voir ce que vous partagez. Corvid ne l\'envoie pas à Google. Cette copie est en lecture seule : modifiez vos contacts dans Corvid.</string>
+    <string name="system_contacts_description">Copie les contacts de ce carnet dans les contacts de cet appareil, au niveau que vous choisissez, afin que Messages et le téléphone puissent afficher qui appelle ou écrit. Toute application ayant accès aux contacts pourra voir ce que vous partagez. Corvid ne l\'envoie pas à Google. Cette copie est en lecture seule : modifiez les contacts dans Corvid.</string>
     <string name="system_contacts_level_title">Ce qui est partagé</string>
     <string name="system_contacts_level_caller_id">Identification de l\'appelant</string>
     <string name="system_contacts_level_caller_id_description">Nom, numéros de téléphone et photo</string>
@@ -513,13 +513,13 @@
     <string name="system_contacts_level_full_description">Ajoute les e-mails, adresses, profils sociaux, sites web, anniversaire, groupes, société, poste, surnom et relations</string>
     <string name="system_contacts_level_everything">Tout</string>
     <string name="system_contacts_level_everything_description">Ajoute les notes</string>
-    <string name="address_book_shared_label">Partagé avec d\'autres applis</string>
+    <string name="address_book_shared_label_with_level">Partagé avec d\'autres applications (%1$s)</string>
+    <string name="system_contacts_summary_shared">Carnets partagés : %1$d sur %2$d</string>
+    <string name="system_contacts_summary_none">Choisissez des carnets à partager avec Messages et le téléphone. Rien n\'est encore partagé.</string>
     <string name="address_book_setting_visibility">Afficher dans la liste des contacts</string>
     <string name="address_book_setting_visibility_description">Les carnets masqués restent sur votre appareil mais n\'apparaissent pas dans la liste des contacts.</string>
     <string name="address_book_setting_share">Partager avec d\'autres applis</string>
-    <string name="address_book_setting_share_description">Permet à des applis comme Messages et Téléphone d\'afficher les noms de ces contacts. Ce qui est partagé se règle dans Réglages, sous « Afficher les noms dans d\'autres applis ».</string>
-    <string name="address_book_setting_share_off_hint">Activez « Afficher les noms dans d\'autres applis » dans les réglages pour partager ce carnet.</string>
+    <string name="address_book_setting_share_description">Permet à des applications comme Messages et le téléphone d\'afficher les noms de ces contacts.</string>
     <string name="settings_address_books_description">Apparence, visibilité et partage de chaque carnet d\'adresses</string>
-    <string name="system_contacts_books_hint">Les carnets partagés se choisissent sur la page de chaque carnet. Rien n\'est partagé tant que vous ne l\'activez pas pour au moins un.</string>
-    <string name="system_contacts_add_account_unsupported">Activez plutôt cette option dans les réglages de Corvid Contacts.</string>
+    <string name="system_contacts_add_account_unsupported">Partagez plutôt un carnet d\'adresses depuis Corvid Contacts.</string>
 </resources>
