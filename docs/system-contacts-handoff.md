@@ -168,6 +168,11 @@ Some of these may already be answered by your device testing. Confirm which.
   names or numbers), so a failure is visible. To trace on a device:
   `adb logcat -s SystemContactsMirror:V`, and the provider can be inspected with
   `adb shell content query --uri content://com.android.contacts/data ...`.
+- **Verified on a device after the fix** (Pixel 9 Pro, Android 17): editing a phone number in
+  Corvid, switching a book's level from Full contact to Caller ID (extra data rows and name
+  parts removed), renaming a book (the provider group is renamed), adding a contact to a shared
+  book (appears within seconds, also in Google Contacts) and deleting it (the raw contact is
+  removed). A contact added to an unshared book is, correctly, not mirrored.
 - `RAW_CONTACT_IS_READ_ONLY` is not queryable as a column through `adb shell content query` on
   `raw_contacts` or `data`, so whether the flag took effect still has to be judged from the
   Contacts app's behavior.

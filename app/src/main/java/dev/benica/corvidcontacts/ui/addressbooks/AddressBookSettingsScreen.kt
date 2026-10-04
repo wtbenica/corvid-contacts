@@ -7,25 +7,22 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CloudUpload
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.outlined.CloudUpload
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,12 +33,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
@@ -56,6 +54,8 @@ import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.Add
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.ConfirmAddressBookDeletionDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.RenameAddressBookDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.UploadAddressBookDialog
+import dev.benica.corvidcontacts.ui.settings.SettingsLeadingIcon
+import dev.benica.corvidcontacts.ui.settings.SettingsLeadingRadioButton
 import kotlinx.coroutines.launch
 
 /**
@@ -139,22 +139,19 @@ fun AddressBookSettingsScreen(
             val bookColor = Color(book.colorInt)
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_address_book_change_appearance)) },
-                leadingContent = {
-                    Surface(shape = CircleShape, color = bookColor.copy(alpha = 0.15f)) {
-                        Icon(
-                            imageVector = ContactColors.getIconForAddressBook(book.displayName, book.iconName),
-                            contentDescription = null,
-                            tint = bookColor,
-                            modifier = Modifier.padding(12.dp)
-                        )
-                    }
+                // Shows the book's current icon and color, so the row reads as "tap to change this".
+                trailingContent = {
+                    TrailingIcon(
+                        icon = ContactColors.getIconForAddressBook(book.displayName, book.iconName),
+                        tint = bookColor,
+                    )
                 },
                 modifier = Modifier.clickable { showAppearanceDialog = true },
             )
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_address_book_rename)) },
                 supportingContent = { Text(bookName) },
-                leadingContent = { Icon(Icons.Rounded.Edit, contentDescription = null) },
+                trailingContent = { SettingsLeadingIcon(icon = Icons.Outlined.Edit) },
                 modifier = Modifier.clickable { showRenameDialog = true },
             )
             ListItem(
@@ -193,14 +190,13 @@ fun AddressBookSettingsScreen(
                     ListItem(
                         headlineContent = { Text(stringResource(option.titleRes())) },
                         supportingContent = { Text(stringResource(option.descriptionRes())) },
-                        leadingContent = {
-                            RadioButton(selected = option == book.systemContactsLevel, onClick = null)
+                        trailingContent = {
+                            SettingsLeadingRadioButton(
+                                selected = option == book.systemContactsLevel,
+                                onClick = { onSystemContactsLevelChanged(book, option) }
+                            )
                         },
-                        modifier = Modifier.selectable(
-                            selected = option == book.systemContactsLevel,
-                            role = Role.RadioButton,
-                            onClick = { onSystemContactsLevelChanged(book, option) }
-                        ),
+                        modifier = Modifier.clickable { onSystemContactsLevelChanged(book, option) },
                     )
                 }
             }
@@ -210,7 +206,7 @@ fun AddressBookSettingsScreen(
             if (book.isLocal) {
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.settings_address_book_upload)) },
-                    leadingContent = { Icon(Icons.Rounded.CloudUpload, contentDescription = null) },
+                    trailingContent = { SettingsLeadingIcon(icon = Icons.Outlined.CloudUpload) },
                     modifier = Modifier.clickable {
                         if (hasServerConnection) showUploadDialog = true else showSetUpSyncPrompt = true
                     },
@@ -223,10 +219,9 @@ fun AddressBookSettingsScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 },
-                leadingContent = {
-                    Icon(Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                trailingContent = {
+                    TrailingIcon(icon = Icons.Outlined.Delete, tint = MaterialTheme.colorScheme.error)
                 },
-                colors = ListItemDefaults.colors(),
                 modifier = Modifier.clickable { showDeleteDialog = true },
             )
         }
@@ -369,6 +364,19 @@ fun AddressBookSettingsScreen(
                 }
             },
             isSubmittingAddressBookAction = isSubmitting,
+        )
+    }
+}
+
+/** A 24 dp trailing icon with a tint, sized like [SettingsLeadingIcon] so the rows line up. */
+@Composable
+private fun TrailingIcon(icon: ImageVector, tint: Color) {
+    Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
