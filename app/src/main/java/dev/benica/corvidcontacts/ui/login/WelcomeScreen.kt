@@ -2,33 +2,32 @@
 
 package dev.benica.corvidcontacts.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoFixHigh
-import androidx.compose.material.icons.rounded.PhonelinkOff
-import androidx.compose.material.icons.rounded.Security
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.rounded.CloudSync
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.ui.EULA_URL
 import dev.benica.corvidcontacts.ui.PRIVACY_POLICY_URL
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCWidthClampedBox
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -62,25 +62,32 @@ fun WelcomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(Dimens.outerSpacing),
+                .padding(Dimens.innerSpacing),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // App Logo/Title Section
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_about_logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
                 Text(
                     text = stringResource(R.string.welcome_title),
-                    style = MaterialTheme.typography.displaySmall,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = stringResource(R.string.welcome_subtitle),
-                    style = MaterialTheme.typography.titleMedium,
+                    text = stringResource(R.string.welcome_intro),
+                    style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -88,62 +95,32 @@ fun WelcomeScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Hero Features
+            // The one real decision on this screen: where contacts live. Both choices look the
+            // same on purpose, since neither is the "right" one.
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Dimens.medSpacing),
-                verticalArrangement = Arrangement.spacedBy(32.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
             ) {
-                WelcomeFeatureItem(
-                    icon = Icons.Rounded.Security,
-                    title = stringResource(R.string.welcome_hero_own_data_title),
-                    description = stringResource(R.string.welcome_hero_own_data_desc)
+                Text(
+                    text = stringResource(R.string.welcome_choose_prompt),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
-                WelcomeFeatureItem(
-                    icon = Icons.Rounded.AutoFixHigh,
-                    title = stringResource(R.string.welcome_hero_improvements_title),
-                    description = stringResource(R.string.welcome_hero_improvements_desc)
+                WelcomeChoiceCard(
+                    icon = Icons.Rounded.PhoneAndroid,
+                    title = stringResource(R.string.welcome_action_use_locally),
+                    description = stringResource(R.string.welcome_use_locally_desc),
+                    onClick = onUseLocallyClick,
                 )
-                WelcomeFeatureItem(
-                    icon = Icons.Rounded.PhonelinkOff,
-                    title = stringResource(R.string.welcome_hero_offline_title),
-                    description = stringResource(R.string.welcome_hero_offline_desc)
+                WelcomeChoiceCard(
+                    icon = Icons.Rounded.CloudSync,
+                    title = stringResource(R.string.welcome_action_sign_in),
+                    description = stringResource(R.string.welcome_sign_in_desc),
+                    onClick = onSignInClick,
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Actions
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
-            ) {
-                Button(
-                    onClick = onSignInClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.welcome_action_sign_in),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                Button(
-                    onClick = onUseLocallyClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.welcome_action_use_locally),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.height(Dimens.smSpacing))
             LegalLinksFooter()
@@ -186,40 +163,40 @@ private fun LegalLinksFooter() {
 }
 
 @Composable
-private fun WelcomeFeatureItem(
+private fun WelcomeChoiceCard(
     icon: ImageVector,
     title: String,
     description: String,
+    onClick: () -> Unit,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(Dimens.lgSpacing),
-        verticalAlignment = Alignment.Top
+    CCCardBordered(
+        modifier = Modifier.fillMaxWidth(),
+        padding = PaddingValues(),
+        onClick = onClick
     ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.size(48.dp)
+        Row(
+            modifier = Modifier.padding(Dimens.innerSpacing),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.lgSpacing),
+            verticalAlignment = Alignment.Top
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxSize()
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
             )
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

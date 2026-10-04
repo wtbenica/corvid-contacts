@@ -123,7 +123,6 @@ fun CCAlertDialog(
         text = {
             CCCardBordered(
                 modifier = Modifier.fillMaxWidth(),
-                baseColor = baseColor,
                 content = content
             )
         },

@@ -30,19 +30,16 @@
     <string name="login_error_unknown">Error desconocido</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_title">Corvid Contacts</string>
-    <string name="welcome_subtitle">Tus contactos, privados y sincronizados.</string>
-    <string name="welcome_hero_own_data_title">Privacidad por diseño</string>
-    <string name="welcome_hero_own_data_desc">Tus contactos te pertenecen. Mantenlos localmente en tu dispositivo o sincronízalos con tu propio servidor privado. Sin rastreadores, nunca.</string>
-    <string name="welcome_hero_improvements_title">Limpio y coherente</string>
-    <string name="welcome_hero_improvements_desc">Corvid se encarga de los detalles formateando automáticamente los números de teléfono y optimizando las fotos para que tu libreta de contactos luzca impecable.</string>
-    <string name="welcome_hero_offline_title">Hecho para usar sin conexión</string>
-    <string name="welcome_hero_offline_desc">Explora y edita tus contactos en cualquier momento y lugar. Tus datos se guardan primero de forma local y la sincronización es siempre opcional.</string>
-    <string name="welcome_action_sign_in">Iniciar sesión en el servidor</string>
+    <string name="welcome_title">Te damos la bienvenida a\nCorvid Contacts</string>
+    <string name="welcome_action_sign_in">Sincronizar con un servidor Nextcloud o CardDAV</string>
+    <string name="welcome_sign_in_desc">Conéctate a un servidor que ya uses. Tus contactos permanecen en este dispositivo y se sincronizan con él.</string>
+    <string name="welcome_use_locally_desc">Los contactos se guardan solo en este dispositivo y no hace falta ninguna cuenta. No se hace copia de seguridad a menos que los exportes. Puedes configurar la sincronización más tarde en Ajustes.</string>
+    <string name="welcome_choose_prompt">¿Cómo quieres empezar?</string>
+    <string name="welcome_intro">Corvid Contacts guarda tus contactos en este dispositivo. También puedes sincronizarlos con tu propio servidor Nextcloud o CardDAV.</string>
     <string name="welcome_legal_prefix">Al continuar, aceptas nuestra</string>
     <string name="welcome_legal_and">y nuestras</string>
     <string name="common_terms_of_use">Condiciones de uso</string>
-    <string name="welcome_action_use_locally">Usar localmente (sin conexión)</string>
+    <string name="welcome_action_use_locally">Guardar los contactos en este dispositivo</string>
 
     <!-- Contact List Screen -->
     <string name="list_title_contacts">Contactos</string>

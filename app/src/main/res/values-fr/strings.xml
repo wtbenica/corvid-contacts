@@ -30,19 +30,16 @@
     <string name="login_error_unknown">Erreur inconnue</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_title">Corvid Contacts</string>
-    <string name="welcome_subtitle">Vos contacts, privés et synchronisés.</string>
-    <string name="welcome_hero_own_data_title">La vie privée dès la conception</string>
-    <string name="welcome_hero_own_data_desc">Vos contacts vous appartiennent. Gardez-les localement sur votre appareil ou synchronisez-les avec votre propre serveur privé. Aucun suivi, jamais.</string>
-    <string name="welcome_hero_improvements_title">Propre et cohérent</string>
-    <string name="welcome_hero_improvements_desc">Corvid s\'occupe des détails en formatant automatiquement les numéros de téléphone et en optimisant les photos pour que votre carnet d\'adresses reste impeccable.</string>
-    <string name="welcome_hero_offline_title">Conçu pour le mode hors ligne</string>
-    <string name="welcome_hero_offline_desc">Consultez et modifiez vos contacts n\'importe quand, n\'importe où. Vos données sont d\'abord stockées localement, et la synchronisation est toujours facultative.</string>
-    <string name="welcome_action_sign_in">Se connecter au serveur</string>
+    <string name="welcome_title">Bienvenue dans\nCorvid Contacts</string>
+    <string name="welcome_action_sign_in">Synchroniser avec un serveur Nextcloud ou CardDAV</string>
+    <string name="welcome_sign_in_desc">Connectez-vous à un serveur que vous utilisez déjà. Vos contacts restent sur cet appareil et se synchronisent avec lui.</string>
+    <string name="welcome_use_locally_desc">Les contacts sont stockés uniquement sur cet appareil, et aucun compte n\'est nécessaire. Rien n\'est sauvegardé à moins que vous ne l\'exportiez. Vous pourrez configurer la synchronisation plus tard dans les Paramètres.</string>
+    <string name="welcome_choose_prompt">Comment souhaitez-vous commencer ?</string>
+    <string name="welcome_intro">Corvid Contacts conserve vos contacts sur cet appareil. Vous pouvez aussi les synchroniser avec votre propre serveur Nextcloud ou CardDAV.</string>
     <string name="welcome_legal_prefix">En continuant, vous acceptez notre</string>
     <string name="welcome_legal_and">et nos</string>
     <string name="common_terms_of_use">Conditions d\'utilisation</string>
-    <string name="welcome_action_use_locally">Utiliser localement (hors ligne)</string>
+    <string name="welcome_action_use_locally">Garder les contacts sur cet appareil</string>
 
     <!-- Contact List Screen -->
     <string name="list_title_contacts">Contacts</string>

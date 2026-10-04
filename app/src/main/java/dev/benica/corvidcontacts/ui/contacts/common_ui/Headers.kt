@@ -221,7 +221,7 @@ private val baseColor = ContactColors.palette[colorNumber]
 @Composable
 fun HeaderPreview() {
     CorvidContactsTheme {
-        CCCardBordered(baseColor = baseColor) {
+        CCCardBordered() {
             Column(
                 modifier = Modifier.padding(Dimens.medSpacing),
                 verticalArrangement = Arrangement.spacedBy(Dimens.medSpacing)

@@ -99,7 +99,6 @@ fun ContactSection(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     CCCardBordered(
-        baseColor = baseColor,
         padding = padding
     ) {
         Column(

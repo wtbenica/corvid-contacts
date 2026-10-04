@@ -3,6 +3,7 @@
 package dev.benica.corvidcontacts.ui.contacts.common_ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,10 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
-import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 import dev.benica.corvidcontacts.ui.theme.isDarkTheme
 
 /**
@@ -30,8 +29,8 @@ import dev.benica.corvidcontacts.ui.theme.isDarkTheme
 @Composable
 fun CCCardBordered(
     modifier: Modifier = Modifier,
-    baseColor: Color = currentThemeColor(),
     padding: PaddingValues = PaddingValues(Dimens.innerSpacing),
+    onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
@@ -57,6 +56,13 @@ fun CCCardBordered(
                                 alpha = 0.3f
                             ),
                         )
+                else Modifier
+            )
+            .then(
+                if (onClick != null)
+                    Modifier.clickable(
+                        onClick = onClick
+                    )
                 else Modifier
             ),
         shape = MaterialTheme.shapes.large,
@@ -99,7 +105,6 @@ fun CCCardBordered(
 fun CCCardBorderedPreview() {
     CorvidContactsTheme {
         CCCardBordered(
-            baseColor = ContactColors.palette[5]
         ) {
             Text("This is good content")
         }
@@ -114,7 +119,6 @@ fun CCCardBorderedPreview() {
 fun CCCardBorderedDarkPreview() {
     CorvidContactsTheme {
         CCCardBordered(
-            baseColor = ContactColors.palette[5],
         ) {
             Text("This is good content")
         }

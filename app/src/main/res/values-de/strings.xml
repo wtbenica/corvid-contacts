@@ -30,19 +30,16 @@
     <string name="login_error_unknown">Unbekannter Fehler</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_title">Corvid Contacts</string>
-    <string name="welcome_subtitle">Deine Kontakte, privat und synchronisiert.</string>
-    <string name="welcome_hero_own_data_title">Von Grund auf privat</string>
-    <string name="welcome_hero_own_data_desc">Deine Kontakte gehören dir. Behalte sie lokal auf deinem Gerät oder synchronisiere sie mit deinem eigenen privaten Server. Kein Tracking, niemals.</string>
-    <string name="welcome_hero_improvements_title">Sauber &amp; einheitlich</string>
-    <string name="welcome_hero_improvements_desc">Corvid kümmert sich um die Details, indem es Telefonnummern automatisch formatiert und Fotos optimiert, damit dein Adressbuch stets gepflegt aussieht.</string>
-    <string name="welcome_hero_offline_title">Für offline gemacht</string>
-    <string name="welcome_hero_offline_desc">Durchsuche und bearbeite deine Kontakte jederzeit und überall. Deine Daten werden zuerst lokal gespeichert, und die Synchronisierung ist immer optional.</string>
-    <string name="welcome_action_sign_in">Bei Server anmelden</string>
+    <string name="welcome_title">Willkommen bei\nCorvid Contacts</string>
+    <string name="welcome_action_sign_in">Mit Nextcloud- oder CardDAV-Server synchronisieren</string>
+    <string name="welcome_sign_in_desc">Verbinde dich mit einem Server, den du bereits nutzt. Deine Kontakte bleiben auf diesem Gerät und werden mit ihm synchronisiert.</string>
+    <string name="welcome_use_locally_desc">Die Kontakte werden nur auf diesem Gerät gespeichert, und es ist kein Konto nötig. Ohne Export gibt es keine Sicherung. Die Synchronisierung kannst du später in den Einstellungen einrichten.</string>
+    <string name="welcome_choose_prompt">Wie möchtest du starten?</string>
+    <string name="welcome_intro">Corvid Contacts speichert deine Kontakte auf diesem Gerät. Du kannst sie außerdem mit deinem eigenen Nextcloud- oder CardDAV-Server synchronisieren.</string>
     <string name="welcome_legal_prefix">Indem du fortfährst, akzeptierst du unsere</string>
     <string name="welcome_legal_and">und</string>
     <string name="common_terms_of_use">Nutzungsbedingungen</string>
-    <string name="welcome_action_use_locally">Lokal verwenden (offline)</string>
+    <string name="welcome_action_use_locally">Kontakte auf diesem Gerät behalten</string>
 
     <!-- Contact List Screen -->
     <string name="list_title_contacts">Kontakte</string>

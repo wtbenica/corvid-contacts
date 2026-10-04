@@ -30,19 +30,16 @@
     <string name="login_error_unknown">Onbekende fout</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_title">Corvid Contacts</string>
-    <string name="welcome_subtitle">Jouw contacten, privé en gesynchroniseerd.</string>
-    <string name="welcome_hero_own_data_title">Privé vanaf de basis</string>
-    <string name="welcome_hero_own_data_desc">Je contacten zijn van jou. Bewaar ze lokaal op je apparaat of synchroniseer ze met je eigen privéserver. Geen tracking, nooit.</string>
-    <string name="welcome_hero_improvements_title">Netjes &amp; consistent</string>
-    <string name="welcome_hero_improvements_desc">Corvid regelt de details door telefoonnummers automatisch te formatteren en foto\'s te optimaliseren, zodat je adresboek er altijd verzorgd uitziet.</string>
-    <string name="welcome_hero_offline_title">Gemaakt voor offline</string>
-    <string name="welcome_hero_offline_desc">Blader door en bewerk je contacten wanneer en waar je maar wilt. Je gegevens worden eerst lokaal opgeslagen, en synchroniseren is altijd optioneel.</string>
-    <string name="welcome_action_sign_in">Inloggen bij server</string>
+    <string name="welcome_title">Welkom bij\nCorvid Contacts</string>
+    <string name="welcome_action_sign_in">Synchroniseren met een Nextcloud- of CardDAV-server</string>
+    <string name="welcome_sign_in_desc">Maak verbinding met een server die je al gebruikt. Je contacten blijven op dit apparaat en worden ermee gesynchroniseerd.</string>
+    <string name="welcome_use_locally_desc">Contacten worden alleen op dit apparaat opgeslagen en je hebt geen account nodig. Er wordt geen back-up gemaakt tenzij je ze exporteert. Je kunt synchronisatie later instellen in Instellingen.</string>
+    <string name="welcome_choose_prompt">Hoe wil je beginnen?</string>
+    <string name="welcome_intro">Corvid Contacts bewaart je contacten op dit apparaat. Je kunt ze ook synchroniseren met je eigen Nextcloud- of CardDAV-server.</string>
     <string name="welcome_legal_prefix">Door verder te gaan, ga je akkoord met onze</string>
     <string name="welcome_legal_and">en</string>
     <string name="common_terms_of_use">Gebruiksvoorwaarden</string>
-    <string name="welcome_action_use_locally">Lokaal gebruiken (offline)</string>
+    <string name="welcome_action_use_locally">Contacten op dit apparaat bewaren</string>
 
     <!-- Contact List Screen -->
     <string name="list_title_contacts">Contacten</string>

@@ -34,19 +34,16 @@
     <string name="login_error_unknown">Unknown error</string>
 
     <!-- Welcome Screen -->
-    <string name="welcome_title">Corvid Contacts</string>
-    <string name="welcome_subtitle">Your contacts, private and synced.</string>
-    <string name="welcome_hero_own_data_title">Private by Design</string>
-    <string name="welcome_hero_own_data_desc">Your contacts belong to you. Keep them local on your device, or sync with your own private server. No tracking, ever.</string>
-    <string name="welcome_hero_improvements_title">Clean &amp; Consistent</string>
-    <string name="welcome_hero_improvements_desc">Corvid handles the details by automatically formatting phone numbers and optimizing photos to keep your address book looking its best.</string>
-    <string name="welcome_hero_offline_title">Built for Offline</string>
-    <string name="welcome_hero_offline_desc">Browse and edit your contacts anytime, anywhere. Your data is stored locally first, and syncing is always optional.</string>
-    <string name="welcome_action_sign_in">Sign In to Server</string>
+    <string name="welcome_title">Welcome to\nCorvid Contacts</string>
+    <string name="welcome_action_sign_in">Sync with a Nextcloud or CardDAV server</string>
+    <string name="welcome_sign_in_desc">Connect to a server you already use. Your contacts stay on this device and sync with it.</string>
+    <string name="welcome_use_locally_desc">Contacts are stored only on this device, and no account is needed. Nothing is backed up unless you export it. You can set up sync later in Settings.</string>
+    <string name="welcome_choose_prompt">How would you like to start?</string>
+    <string name="welcome_intro">Corvid Contacts keeps your contacts on this device. You can also sync them with your own Nextcloud or CardDAV server.</string>
     <string name="welcome_legal_prefix">By continuing, you agree to our</string>
     <string name="welcome_legal_and">and</string>
     <string name="common_terms_of_use">Terms of Use</string>
-    <string name="welcome_action_use_locally">Use Locally (Offline)</string>
+    <string name="welcome_action_use_locally">Keep contacts on this device</string>
 
     <!-- Contact List Screen -->
     <string name="list_title_contacts">Contacts</string>
