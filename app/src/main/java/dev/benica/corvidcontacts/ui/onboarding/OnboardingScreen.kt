@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,7 +64,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScrollableColumn
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCTextButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCWidthClampedBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ContactAvatar
@@ -77,6 +75,7 @@ import dev.benica.corvidcontacts.ui.settings.sections.ThemeSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.PhonePreview
+import dev.benica.corvidcontacts.ui.theme.ThemePreview
 import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 
 private enum class MigrationDecision { KEEP, UPLOAD, DISCARD }
@@ -139,7 +138,6 @@ fun OnboardingScreen(
                         .fillMaxSize()
                         .then(if (needsOuterScroll) Modifier.verticalScroll(scrollState) else Modifier),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
                 ) {
                     when (currentUiState) {
                         OnboardingUiState.Setup -> SetupStep(
@@ -204,34 +202,19 @@ private fun SetupStep(
             .padding(Dimens.smSpacing),
         verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = Dimens.outerSpacing),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        if (hasServerConnection) {
             Text(
-                text = stringResource(R.string.onboarding_setup_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Text(
-                text = if (hasServerConnection && isSyncing) {
+                text = if (isSyncing) {
                     stringResource(R.string.onboarding_setup_description)
-                } else if (hasServerConnection) {
-                    stringResource(R.string.onboarding_setup_description_complete)
                 } else {
-                    "" // Local only - no sync status needed
+                    stringResource(R.string.onboarding_setup_description_complete)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth()
             )
         }
-
-        Spacer(Modifier.height(Dimens.medSpacing))
 
         ThemeSection(themeMode = themeMode, onThemeModeSelected = onThemeSelection)
 
@@ -653,22 +636,33 @@ private fun SelfContactSelectionStep(
     }
 }
 
-@PhonePreview
+@ThemePreview
 @Composable
 private fun SetupStepPreview() {
     CorvidContactsTheme {
-        CCScrollableColumn(
-            systemPadding = PaddingValues(vertical = Dimens.innerSpacing)
-        ) {
-            SetupStep(
-                themeMode = ThemeMode.SYSTEM,
-                initialAlwaysAdd = true,
-                initialAddressMode = AddressLookupMode.PHOTON,
-                isSyncing = true,
-                hasServerConnection = true,
-                onThemeSelection = {},
-                onComplete = { _, _ -> }
-            )
+        CCScaffold(
+            title = "Setup",
+        ) { padding ->
+            CCWidthClampedBox(modifier = Modifier.padding(padding)) {
+                val scrollState = rememberScrollState()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    SetupStep(
+                        themeMode = ThemeMode.SYSTEM,
+                        initialAlwaysAdd = true,
+                        initialAddressMode = AddressLookupMode.PHOTON,
+                        isSyncing = true,
+                        hasServerConnection = true,
+                        onThemeSelection = {},
+                        onComplete = { _, _ -> }
+                    )
+                }
+            }
         }
     }
 }

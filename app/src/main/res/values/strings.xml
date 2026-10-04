@@ -16,8 +16,8 @@
     <string name="brand_photon" translatable="false">Photon (OpenStreetMap)</string>
 
     <!-- Login Screen -->
-    <string name="login_title">Corvid Contacts</string>
-    <string name="login_subtitle">Sign in to your Nextcloud or CardDAV server</string>
+    <string name="login_title">Sign In</string>
+    <string name="login_subtitle">Enter the details for your Nextcloud or CardDAV server.</string>
     <string name="login_server_url">Server URL</string>
     <string name="login_username">Username</string>
     <string name="login_app_password">App Password</string>
@@ -26,7 +26,7 @@
     <string name="common_auto_load_remote_photos_title">Fetch &amp; Embed Remote Photos</string>
     <string name="common_auto_load_remote_photos_description">Fetch photos from external links and save them to your contacts. This avoids repeated calls to those servers — which might track you — and keeps photos available offline.</string>
     <string name="login_sync_disclosure">Corvid keeps your address book consistent by automatically standardizing phone number formats. By signing in, some contact details will be reformatted on your server, though no information will be lost.</string>
-    <string name="login_button">Login</string>
+    <string name="login_button">Sign In</string>
     <string name="login_remove">Remove</string>
     <string name="login_error_security">Security error: This server requires a secure connection (HTTPS) or the app\'s network policy blocked this cleartext (HTTP) request.</string>
     <string name="login_error_connection">Connection error: Could not connect to the server. Please check your URL and internet connection.</string>
@@ -434,7 +434,6 @@
 
     <!-- Onboarding Screen -->
     <string name="onboarding_title">Setup</string>
-    <string name="onboarding_setup_title">Personalize Corvid</string>
     <string name="onboarding_setup_description">Corvid is syncing your contacts in the background…</string>
     <string name="onboarding_setup_description_complete">Sync complete! You can continue with setup.</string>
     <string name="onboarding_setup_syncing">Finalizing sync…</string>

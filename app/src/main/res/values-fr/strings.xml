@@ -12,8 +12,8 @@
     <string name="common_back">Retour</string>
 
     <!-- Login Screen -->
-    <string name="login_title">Corvid Contacts</string>
-    <string name="login_subtitle">Connectez-vous à votre serveur Nextcloud ou CardDAV</string>
+    <string name="login_title">Connexion</string>
+    <string name="login_subtitle">Saisissez les informations de votre serveur Nextcloud ou CardDAV.</string>
     <string name="login_server_url">URL du serveur</string>
     <string name="login_username">Nom d\'utilisateur</string>
     <string name="login_app_password">Mot de passe d\'application</string>
@@ -438,7 +438,6 @@
 
     <!-- Onboarding Screen -->
     <string name="onboarding_title">Configuration</string>
-    <string name="onboarding_setup_title">Personnaliser Corvid</string>
     <string name="onboarding_setup_description">Corvid synchronise vos contacts en arrière-plan…</string>
     <string name="onboarding_setup_description_complete">Synchronisation terminée ! Vous pouvez continuer la configuration.</string>
     <string name="onboarding_setup_syncing">Finalisation de la synchronisation…</string>
