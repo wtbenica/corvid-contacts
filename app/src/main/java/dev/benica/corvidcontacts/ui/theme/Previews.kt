@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
     name = "Light Mode",
     showBackground = true,
     showSystemUi = true,
-    device = "spec:width=411dp,height=891dp"
+    device = "spec:width=1280px,height=2856px"
 )
 annotation class PhonePreview
 
@@ -24,7 +24,7 @@ annotation class PhonePreview
     showBackground = true,
     showSystemUi = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    device = "spec:width=411dp,height=891dp"
+    device = "spec:width=1280px,height=2856px"
 )
 annotation class DarkPhonePreview
 
