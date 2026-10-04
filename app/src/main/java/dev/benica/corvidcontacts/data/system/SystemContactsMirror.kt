@@ -260,6 +260,7 @@ class SystemContactsMirror(
                 .newUpdate(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
                 .withSelection("${RawContacts._ID}=?", arrayOf(rawId.toString()))
                 .withValue(RawContacts.SOURCE_ID, contact.id)
+                .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
                 .withExpectedCount(1)
                 .build()
             ops += ContentProviderOperation
@@ -333,6 +334,7 @@ class SystemContactsMirror(
             .withValue(RawContacts.ACCOUNT_NAME, account.name)
             .withValue(RawContacts.ACCOUNT_TYPE, account.type)
             .withValue(RawContacts.SOURCE_ID, contact.id)
+            .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
         if (readOnlyFlagSupported) {
             // Asks the Contacts app not to offer editing: the mirror is overwritten from Corvid.
             builder.withValue(RawContacts.RAW_CONTACT_IS_READ_ONLY, 1)

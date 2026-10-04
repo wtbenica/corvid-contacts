@@ -11,6 +11,7 @@ import dev.benica.corvidcontacts.data.model.SocialProfile
 import dev.benica.corvidcontacts.data.model.StructuredAddress
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -224,6 +225,17 @@ class MirrorPlanTest {
     }
 
     @Test
+    fun `favorites and archived are never mirrored as groups but other categories are`() {
+        val contact = mirrored(
+            source(categories = listOf("Family", "Favorites", "favorites", "ARCHIVED", "Work")),
+            level = SystemContactsLevel.FULL
+        )
+        assertEquals(listOf("Family", "Work"), contact.categories)
+        // The favorite is still carried, as the starred flag.
+        assertTrue(contact.starred)
+    }
+
+    @Test
     fun `birthdays are kept only in provider-readable forms`() {
         assertEquals("--03-12", MirrorPlan.normalizeBirthday("--03-12"))
         assertEquals("--03-12", MirrorPlan.normalizeBirthday("--0312"))
@@ -239,6 +251,22 @@ class MirrorPlanTest {
         val everything = mirrored(source(), level = SystemContactsLevel.EVERYTHING)
         assertNotEquals(caller.hash, full.hash)
         assertNotEquals(full.hash, everything.hash)
+    }
+
+    @Test
+    fun `favorites are starred at every level regardless of case`() {
+        val favorite = source(categories = listOf("favorites"))
+        SystemContactsLevel.entries.forEach { level ->
+            assertTrue(mirrored(favorite, level = level).starred)
+            assertFalse(mirrored(source(), level = level).starred)
+        }
+    }
+
+    @Test
+    fun `toggling a favorite changes the hash so the mirror updates`() {
+        val plain = mirrored(source())
+        val starred = mirrored(source(categories = listOf("Favorites")))
+        assertNotEquals(plain.hash, starred.hash)
     }
 
     @Test

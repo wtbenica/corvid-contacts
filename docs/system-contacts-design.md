@@ -253,7 +253,8 @@ device test.
 | Company and job title | no | yes | yes |
 | Nickname | no | yes | yes |
 | Relationships | no | yes | yes |
-| Category groups | no | yes | yes |
+| Starred (favorites) | yes | yes | yes |
+| Category groups (except Favorites and Archived) | no | yes | yes |
 | Notes | no | no | yes |
 
 Details: relationships stored as a contact UID are left out because they have no

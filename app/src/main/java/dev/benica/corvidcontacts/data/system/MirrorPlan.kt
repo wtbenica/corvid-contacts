@@ -6,6 +6,7 @@ import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
+import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import java.security.MessageDigest
 
 // The `type` values below are those of android.provider.ContactsContract.CommonDataKinds.*,
@@ -65,6 +66,8 @@ data class MirrorContact(
     val nickname: String? = null,
     val note: String? = null,
     val categories: List<String> = emptyList(),
+    /** Whether the contact is a favorite, written as the provider's starred flag at every level. */
+    val starred: Boolean = false,
     val photoStamp: String?,
     val bookHref: String,
     val groupIds: List<Long> = emptyList(),
@@ -92,6 +95,7 @@ data class MirrorContact(
             nickname,
             note,
             categories,
+            starred,
             photoStamp,
             bookHref,
             groupIds,
@@ -119,8 +123,13 @@ data class MirrorPlan(
         /** Key identifying the system group that mirrors the contact category [name]. */
         fun categoryGroupKey(name: String) = "category:$name"
 
-        /** Categories that are bookkeeping, not groups the user made, and so aren't mirrored. */
-        private val HIDDEN_CATEGORIES = setOf("Archived")
+        /**
+         * Categories that aren't mirrored as groups. `Archived` is bookkeeping, not a group the
+         * user made. `Favorites` is a group in Corvid and on CardDAV, but the system contacts have
+         * a dedicated starred flag for it, which is written instead (see [MirrorContact.starred]).
+         * Compared ignoring case, like the rest of the app treats favorites.
+         */
+        private val HIDDEN_CATEGORIES = setOf("archived", ContactsRepository.FAVORITE_CATEGORY.lowercase())
 
         /**
          * Builds the [MirrorContact] for every one of [sources] that can be mirrored, each at the
@@ -169,6 +178,9 @@ data class MirrorPlan(
                 familyName = source.lastName.clean(),
                 phones = phones,
                 photoStamp = if (source.hasPhoto) photoStamp else null,
+                starred = source.categories.orEmpty().any {
+                    it.trim().equals(ContactsRepository.FAVORITE_CATEGORY, ignoreCase = true)
+                },
                 bookHref = source.addressBookHref,
             )
             if (!level.includesFullContact) return base
@@ -213,7 +225,7 @@ data class MirrorPlan(
                 categories = source.categories
                     .orEmpty()
                     .mapNotNull { it.clean() }
-                    .filter { it !in HIDDEN_CATEGORIES }
+                    .filter { it.lowercase() !in HIDDEN_CATEGORIES }
                     .distinct(),
             )
             return if (level.includesNotes) full.copy(note = source.notes.clean()) else full
