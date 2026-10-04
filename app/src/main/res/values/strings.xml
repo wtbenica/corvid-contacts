@@ -73,8 +73,8 @@
     <string name="feedback_email_subject">Corvid Contacts Feedback</string>
     <string name="list_menu_show_menu">Show Menu</string>
     <string name="list_menu_set_self">Set up My Card</string>
-    <string name="list_menu_logout">Logout</string>
-    <string name="logout_confirm_title">Logout?</string>
+    <string name="list_menu_logout">Sign Out</string>
+    <string name="logout_confirm_title">Sign Out?</string>
     <string name="logout_confirm_message">This will remove your account and all local copies of your contacts from this device. Your data on the server won\'t be touched.</string>
 
     <string name="list_action_clear_selection">Clear selection</string>
@@ -393,7 +393,7 @@
     <string name="common_error_step1">Could not find your Nextcloud user profile.</string>
     <string name="common_error_step2">Could not locate your address books.</string>
     <string name="common_error_step3">Failed to download your contact lists.</string>
-    <string name="common_error_401">Session expired. Please log in again.</string>
+    <string name="common_error_401">Session expired. Please sign in again.</string>
     <string name="common_error_birthday">A contact has an invalid birthday format.</string>
     <string name="common_share_contact">Share Contact</string>
 
