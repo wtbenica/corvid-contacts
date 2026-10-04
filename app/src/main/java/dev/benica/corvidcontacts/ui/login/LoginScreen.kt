@@ -118,183 +118,183 @@ fun LoginScreen(
                     .fillMaxSize()
                     .imePadding()
                     .verticalScroll(rememberScrollState())
-                    .padding(Dimens.outerSpacing),
+                    .padding(Dimens.innerSpacing),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(Dimens.outerSpacing)
             ) {
                 Spacer(modifier = Modifier.height(Dimens.outerSpacing))
 
-            Text(
-                text = stringResource(R.string.login_subtitle),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            CCExposedDropdownMenuBox(
-                textBoxLabel = stringResource(R.string.login_server_url),
-                currentValue = serverUrl,
-                expanded = serversExpanded && savedServers.isNotEmpty(),
-                onExpandedChange = { serversExpanded = it },
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { serverUrl = it },
-                readOnly = false,
-                enabled = uiState !is LoginUiState.Loading,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Uri,
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrectEnabled = false,
-                    imeAction = ImeAction.Next,
-                ),
-            ) {
-                savedServers.forEach { url ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = url,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                CCIconButton(
-                                    icon = Icons.Rounded.Close,
-                                    contentDescription = R.string.login_remove,
-                                    onClick = {
-                                        onRemoveSavedServer(url)
-                                    }
-                                )
-                            }
-                        },
-                        onClick = {
-                            serverUrl = url
-                            serversExpanded = false
-                        }
-                    )
-                }
-            }
-
-            CCOutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = stringResource(R.string.login_username),
-                leadingIcon = {
-                    Icon(
-                        Icons.Rounded.Person,
-                        contentDescription = null
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = uiState !is LoginUiState.Loading,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrectEnabled = false,
-                    imeAction = ImeAction.Next,
-                ),
-            )
-
-            CCOutlinedTextField(
-                value = appPassword,
-                onValueChange = { appPassword = it },
-                label = stringResource(R.string.login_app_password),
-                leadingIcon = {
-                    Icon(
-                        Icons.Rounded.Lock,
-                        contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    CCIconButton(
-                        icon = if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
-                        contentDescription = if (passwordVisible) R.string.login_hide_password else R.string.login_show_password,
-                        onClick = { passwordVisible = !passwordVisible }
-                    )
-                },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = uiState !is LoginUiState.Loading,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { submit() }),
-            )
-
-            if (uiState is LoginUiState.Error) {
-                val message = if (uiState.formatArgs != null) {
-                    stringResource(
-                        uiState.resId,
-                        uiState.formatArgs
-                    )
-                } else {
-                    stringResource(uiState.resId)
-                }
                 Text(
-                    text = message,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.align(Alignment.Start)
+                    text = stringResource(R.string.login_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
 
-            Spacer(modifier = Modifier.height(Dimens.outerSpacing))
+                CCExposedDropdownMenuBox(
+                    textBoxLabel = stringResource(R.string.login_server_url),
+                    currentValue = serverUrl,
+                    expanded = serversExpanded && savedServers.isNotEmpty(),
+                    onExpandedChange = { serversExpanded = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { serverUrl = it },
+                    readOnly = false,
+                    enabled = uiState !is LoginUiState.Loading,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Uri,
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrectEnabled = false,
+                        imeAction = ImeAction.Next,
+                    ),
+                ) {
+                    savedServers.forEach { url ->
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = url,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    CCIconButton(
+                                        icon = Icons.Rounded.Close,
+                                        contentDescription = R.string.login_remove,
+                                        onClick = {
+                                            onRemoveSavedServer(url)
+                                        }
+                                    )
+                                }
+                            },
+                            onClick = {
+                                serverUrl = url
+                                serversExpanded = false
+                            }
+                        )
+                    }
+                }
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.common_auto_load_remote_photos_title)) },
-                supportingContent = { Text(stringResource(R.string.common_auto_load_remote_photos_description)) },
-                trailingContent = {
-                    Switch(
-                        checked = fetchRemotePhotos,
-                        onCheckedChange = { fetchRemotePhotos = it },
-                        enabled = uiState !is LoginUiState.Loading
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-            )
+                CCOutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = stringResource(R.string.login_username),
+                    leadingIcon = {
+                        Icon(
+                            Icons.Rounded.Person,
+                            contentDescription = null
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = uiState !is LoginUiState.Loading,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrectEnabled = false,
+                        imeAction = ImeAction.Next,
+                    ),
+                )
 
-            Spacer(modifier = Modifier.height(Dimens.lgSpacing))
+                CCOutlinedTextField(
+                    value = appPassword,
+                    onValueChange = { appPassword = it },
+                    label = stringResource(R.string.login_app_password),
+                    leadingIcon = {
+                        Icon(
+                            Icons.Rounded.Lock,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        CCIconButton(
+                            icon = if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                            contentDescription = if (passwordVisible) R.string.login_hide_password else R.string.login_show_password,
+                            onClick = { passwordVisible = !passwordVisible }
+                        )
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = uiState !is LoginUiState.Loading,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { submit() }),
+                )
 
-            Button(
-                onClick = { submit() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 52.dp),
-                enabled = uiState !is LoginUiState.Loading && serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
-            ) {
-                if (uiState is LoginUiState.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
+                if (uiState is LoginUiState.Error) {
+                    val message = if (uiState.formatArgs != null) {
+                        stringResource(
+                            uiState.resId,
+                            uiState.formatArgs
+                        )
+                    } else {
+                        stringResource(uiState.resId)
+                    }
                     Text(
-                        text = stringResource(R.string.login_button),
-                        style = MaterialTheme.typography.titleMedium
+                        text = message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Start)
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(Dimens.lgSpacing))
+                Spacer(modifier = Modifier.height(Dimens.outerSpacing))
 
-            Text(
-                text = stringResource(R.string.onboarding_setup_transparency_title),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.fillMaxWidth()
-            )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.common_auto_load_remote_photos_title)) },
+                    supportingContent = { Text(stringResource(R.string.common_auto_load_remote_photos_description)) },
+                    trailingContent = {
+                        Switch(
+                            checked = fetchRemotePhotos,
+                            onCheckedChange = { fetchRemotePhotos = it },
+                            enabled = uiState !is LoginUiState.Loading
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                )
 
-            Text(
-                text = stringResource(R.string.login_sync_disclosure),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Dimens.smSpacing)
-            )
+                Spacer(modifier = Modifier.height(Dimens.lgSpacing))
+
+                Button(
+                    onClick = { submit() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 52.dp),
+                    enabled = uiState !is LoginUiState.Loading && serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
+                ) {
+                    if (uiState is LoginUiState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.login_button),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(Dimens.lgSpacing))
+
+                Text(
+                    text = stringResource(R.string.onboarding_setup_transparency_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = stringResource(R.string.login_sync_disclosure),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Dimens.smSpacing)
+                )
             }
         }
     }
