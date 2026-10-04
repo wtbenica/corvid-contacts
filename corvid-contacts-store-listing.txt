@@ -1,0 +1,21 @@
+App name: 			Corvid Contacts
+Short description: 		No tracking, ads, or accounts. Works locally, or sync with your own server.
+Full description:
+Corvid Contacts is a contacts manager that works entirely on your device — no account, no sign-up, no login required. Add and manage contacts locally from the moment you install it.
+If you'd rather sync across devices, you can optionally connect Corvid Contacts to your own self-hosted Nextcloud (or other CardDAV) server at any time — your contacts stay on infrastructure you control, not ours. There's no requirement to ever create an account or connect a server; local-only and synced address books work side by side, and you can move contacts between them whenever you like.
+PRIVATE BY DESIGN
+• No analytics, ads, or trackers of any kind
+• No account required to use the app
+• When you do sync, your data goes only to the server you configure — never to us
+• Address autocomplete defaults to a privacy-respecting provider (OpenStreetMap/Photon), with Google Places available as an opt-in alternative, or fully disabled
+FEATURES
+• Multiple address books with custom colors and icons
+• Merge duplicate contacts, with field-by-field control over what's kept
+• Batch actions: share, archive, delete, move, and organize into groups
+• Share contacts via vCard or QR code, with control over the details you choose
+• Link contacts as relationships (spouse, parent, etc.)
+• Optional birthday reminders, generated entirely on-device
+• Dark mode
+Whether you want a simple private contacts app or a full CardDAV client synced to your own server, Corvid Contacts adapts to how much (or little) infrastructure you want to run.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula

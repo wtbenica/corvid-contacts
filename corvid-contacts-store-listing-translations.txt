@@ -1,0 +1,247 @@
+===================================================================
+LOCALE: es-419 — Spanish (Latin America)
+===================================================================
+App name: Corvid Contacts
+
+Short description: Sin rastreo, anuncios ni cuentas. Funciona local o sincroniza con tu servidor.
+
+Full description:
+Corvid Contacts es un administrador de contactos que funciona completamente en tu dispositivo, sin necesidad de cuenta, registro ni inicio de sesión. Agrega y administra tus contactos de forma local desde el momento en que lo instalas.
+
+Si prefieres sincronizar entre varios dispositivos, puedes conectar Corvid Contacts en cualquier momento a tu propio servidor Nextcloud autoalojado (u otro servidor CardDAV); tus contactos permanecen en la infraestructura que tú controlas, no en la nuestra. Nunca es obligatorio crear una cuenta ni conectar un servidor: las libretas de direcciones locales y las sincronizadas funcionan en paralelo, y puedes mover contactos entre ellas cuando quieras.
+
+PRIVACIDAD DESDE EL DISEÑO
+• Sin análisis, anuncios ni rastreadores de ningún tipo
+• No se necesita una cuenta para usar la app
+• Cuando sincronizas, tus datos van solo al servidor que configures, nunca a nosotros
+• La autocompletación de direcciones usa de forma predeterminada un proveedor que respeta tu privacidad (OpenStreetMap/Photon); Google Places está disponible como alternativa opcional, o puedes desactivarla por completo
+
+FUNCIONES
+• Varias libretas de direcciones con colores e íconos personalizados
+• Combina contactos duplicados, con control campo por campo sobre lo que se conserva
+• Acciones por lotes: compartir, archivar, eliminar, mover y organizar en grupos
+• Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
+• Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
+• Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Modo oscuro
+
+Ya sea que quieras una app de contactos simple y privada o un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la cantidad de infraestructura que quieras mantener.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: es-ES — Spanish (Spain)
+===================================================================
+App name: Corvid Contacts
+
+Short description: Sin rastreo, anuncios ni cuentas. Local o sincronizado con tu propio servidor.
+
+Full description:
+Corvid Contacts es un gestor de contactos que funciona completamente en tu dispositivo: sin cuenta, sin registro y sin inicio de sesión. Añade y gestiona tus contactos de forma local desde el momento en que lo instalas.
+
+Si prefieres sincronizar entre varios dispositivos, puedes conectar Corvid Contacts en cualquier momento a tu propio servidor Nextcloud autoalojado (u otro servidor CardDAV); tus contactos permanecen en la infraestructura que tú controlas, no en la nuestra. Nunca es obligatorio crear una cuenta ni conectar un servidor: las libretas de direcciones locales y las sincronizadas funcionan en paralelo, y puedes mover contactos entre ellas cuando quieras.
+
+PRIVACIDAD DESDE EL DISEÑO
+• Sin análisis, anuncios ni rastreadores de ningún tipo
+• No se necesita una cuenta para usar la aplicación
+• Cuando sincronizas, tus datos van solo al servidor que configures, nunca a nosotros
+• La autocompletación de direcciones usa por defecto un proveedor que respeta tu privacidad (OpenStreetMap/Photon); Google Places está disponible como alternativa opcional, o puedes desactivarla por completo
+
+FUNCIONES
+• Varias libretas de direcciones con colores e iconos personalizados
+• Fusiona contactos duplicados, con control campo por campo sobre lo que se conserva
+• Acciones por lotes: compartir, archivar, eliminar, mover y organizar en grupos
+• Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
+• Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
+• Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Modo oscuro
+
+Tanto si quieres una aplicación de contactos sencilla y privada como un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la infraestructura que quieras mantener, sea mucha o poca.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: es-US — Spanish (United States)
+===================================================================
+App name: Corvid Contacts
+
+Short description: Sin rastreo, anuncios ni cuentas. Funciona local o sincroniza con tu servidor.
+
+Full description:
+Corvid Contacts es un administrador de contactos que funciona completamente en tu dispositivo, sin necesidad de cuenta, registro ni inicio de sesión. Agrega y administra tus contactos de forma local desde el momento en que lo instalas.
+
+Si prefieres sincronizar entre varios dispositivos, puedes conectar Corvid Contacts en cualquier momento a tu propio servidor Nextcloud autoalojado (u otro servidor CardDAV); tus contactos permanecen en la infraestructura que tú controlas, no en la nuestra. Nunca es obligatorio crear una cuenta ni conectar un servidor: las libretas de direcciones locales y las sincronizadas funcionan en paralelo, y puedes mover contactos entre ellas cuando quieras.
+
+PRIVACIDAD DESDE EL DISEÑO
+• Sin análisis, anuncios ni rastreadores de ningún tipo
+• No se necesita una cuenta para usar la app
+• Cuando sincronizas, tus datos van solo al servidor que configures, nunca a nosotros
+• La autocompletación de direcciones usa de forma predeterminada un proveedor que respeta tu privacidad (OpenStreetMap/Photon); Google Places está disponible como alternativa opcional, o puedes desactivarla por completo
+
+FUNCIONES
+• Varias libretas de direcciones con colores e íconos personalizados
+• Combina contactos duplicados, con control campo por campo sobre lo que se conserva
+• Acciones por lotes: compartir, archivar, eliminar, mover y organizar en grupos
+• Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
+• Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
+• Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Modo oscuro
+
+Ya sea que quieras una app de contactos simple y privada o un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la cantidad de infraestructura que quieras mantener.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: fr-FR — French (France)
+===================================================================
+App name: Corvid Contacts
+
+Short description: Aucun suivi, pub ni compte. Local ou synchronisé avec votre serveur.
+
+Full description:
+Corvid Contacts est un gestionnaire de contacts qui fonctionne entièrement sur votre appareil — sans compte, sans inscription, sans connexion. Ajoutez et gérez vos contacts localement dès l'installation.
+
+Si vous préférez synchroniser vos contacts entre plusieurs appareils, vous pouvez à tout moment connecter Corvid Contacts à votre propre serveur Nextcloud auto-hébergé (ou tout autre serveur CardDAV) : vos contacts restent sur une infrastructure que vous contrôlez, pas la nôtre. Il n'est jamais nécessaire de créer un compte ni de connecter un serveur : les carnets d'adresses locaux et synchronisés fonctionnent côte à côte, et vous pouvez déplacer vos contacts entre eux à tout moment.
+
+PENSÉ POUR LA CONFIDENTIALITÉ
+• Aucun outil d'analyse, publicité ou traceur, quel qu'il soit
+• Aucun compte requis pour utiliser l'application
+• Lors de la synchronisation, vos données ne sont envoyées qu'au serveur que vous configurez, jamais à nous
+• La saisie semi-automatique des adresses utilise par défaut un fournisseur respectueux de la vie privée (OpenStreetMap/Photon), avec Google Places disponible en option, ou entièrement désactivable
+
+FONCTIONNALITÉS
+• Plusieurs carnets d'adresses avec couleurs et icônes personnalisées
+• Fusionnez les doublons, avec un contrôle champ par champ sur ce qui est conservé
+• Actions groupées : partager, archiver, supprimer, déplacer et organiser en groupes
+• Partagez vos contacts via vCard ou code QR, en choisissant les informations incluses
+• Associez des contacts entre eux (conjoint, parent, etc.)
+• Rappels d'anniversaire facultatifs, générés entièrement sur l'appareil
+• Mode sombre
+
+Que vous souhaitiez une application de contacts simple et privée ou un client CardDAV complet synchronisé avec votre propre serveur, Corvid Contacts s'adapte à l'infrastructure que vous voulez gérer, quelle que soit son ampleur.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: fr-CA — French (Canada)
+===================================================================
+App name: Corvid Contacts
+
+Short description: Aucun suivi, pub ni compte. Local ou synchronisé avec votre propre serveur.
+
+Full description:
+Corvid Contacts est un gestionnaire de contacts qui fonctionne entièrement sur votre appareil — sans compte, sans inscription, sans connexion. Ajoutez et gérez vos contacts localement dès l'installation.
+
+Si vous préférez synchroniser vos contacts entre plusieurs appareils, vous pouvez en tout temps connecter Corvid Contacts à votre propre serveur Nextcloud auto-hébergé (ou tout autre serveur CardDAV) : vos contacts demeurent sur une infrastructure que vous contrôlez, pas la nôtre. Il n'est jamais nécessaire de créer un compte ni de connecter un serveur : les carnets d'adresses locaux et synchronisés fonctionnent côte à côte, et vous pouvez déplacer vos contacts entre eux en tout temps.
+
+PENSÉ POUR LA CONFIDENTIALITÉ
+• Aucun outil d'analyse, publicité ou traceur, quel qu'il soit
+• Aucun compte requis pour utiliser l'application
+• Lors de la synchronisation, vos données sont envoyées uniquement au serveur que vous configurez, jamais à nous
+• La saisie semi-automatique des adresses utilise par défaut un fournisseur respectueux de la vie privée (OpenStreetMap/Photon); Google Places est disponible en option, ou peut être entièrement désactivé
+
+FONCTIONNALITÉS
+• Plusieurs carnets d'adresses avec couleurs et icônes personnalisées
+• Fusionnez les doublons, avec un contrôle champ par champ sur ce qui est conservé
+• Actions groupées : partager, archiver, supprimer, déplacer et organiser en groupes
+• Partagez vos contacts via vCard ou code QR, en choisissant les informations incluses
+• Associez des contacts entre eux (conjoint, parent, etc.)
+• Rappels d'anniversaire facultatifs, générés entièrement sur l'appareil
+• Mode sombre
+
+Que vous cherchiez une application de contacts simple et privée ou un client CardDAV complet synchronisé avec votre propre serveur, Corvid Contacts s'adapte à l'infrastructure que vous voulez gérer, peu importe son ampleur.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: de-DE — German
+===================================================================
+App name: Corvid Contacts
+
+Short description: Kein Tracking, Werbung oder Konto. Lokal oder mit deinem Server synchronisiert.
+
+Full description:
+Corvid Contacts ist eine Kontakte-App, die vollständig auf deinem Gerät läuft — kein Konto, keine Registrierung, kein Login erforderlich. Füge direkt nach der Installation lokal Kontakte hinzu und verwalte sie.
+
+Wenn du deine Kontakte geräteübergreifend synchronisieren möchtest, kannst du Corvid Contacts jederzeit optional mit deinem eigenen selbst gehosteten Nextcloud- (oder einem anderen CardDAV-) Server verbinden — deine Kontakte bleiben auf einer Infrastruktur, die du selbst kontrollierst, nicht auf unserer. Ein Konto oder ein verbundener Server ist nie erforderlich: Lokale und synchronisierte Adressbücher funktionieren gleichberechtigt nebeneinander, und du kannst Kontakte jederzeit zwischen ihnen verschieben.
+
+VON GRUND AUF PRIVAT
+• Keine Analyse-Tools, Werbung oder Tracker jeglicher Art
+• Kein Konto zur Nutzung der App erforderlich
+• Beim Synchronisieren gehen deine Daten ausschließlich an den von dir konfigurierten Server — niemals an uns
+• Die Adress-Autovervollständigung nutzt standardmäßig einen datenschutzfreundlichen Anbieter (OpenStreetMap/Photon); Google Places ist optional als Alternative verfügbar oder lässt sich vollständig deaktivieren
+
+FUNKTIONEN
+• Mehrere Adressbücher mit individuellen Farben und Symbolen
+• Doppelte Kontakte zusammenführen, mit feldweiser Kontrolle darüber, was übernommen wird
+• Sammelaktionen: teilen, archivieren, löschen, verschieben und in Gruppen organisieren
+• Kontakte per vCard oder QR-Code teilen, mit voller Kontrolle über die geteilten Angaben
+• Kontakte als Beziehungen verknüpfen (Ehepartner, Elternteil usw.)
+• Optionale Geburtstagserinnerungen, vollständig auf dem Gerät erstellt
+• Dunkelmodus
+
+Ob du eine einfache, private Kontakte-App suchst oder einen vollwertigen CardDAV-Client mit eigenem Server — Corvid Contacts passt sich der Infrastruktur an, die du betreiben möchtest, ob viel oder wenig.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: nl-NL — Dutch
+===================================================================
+App name: Corvid Contacts
+
+Short description: Geen tracking, advertenties of accounts. Lokaal of gesynchroniseerd met server.
+
+Full description:
+Corvid Contacts is een contactenbeheerder die volledig op je apparaat werkt — geen account, geen registratie, geen inloggen nodig. Voeg vanaf het moment van installeren lokaal contacten toe en beheer ze.
+
+Als je liever tussen apparaten synchroniseert, kun je Corvid Contacts op elk moment optioneel verbinden met je eigen self-hosted Nextcloud- (of andere CardDAV-)server — je contacten blijven op infrastructuur die jij beheert, niet wij. Een account aanmaken of een server koppelen is nooit verplicht: lokale en gesynchroniseerde adresboeken werken naast elkaar, en je kunt er op elk moment contacten tussen verplaatsen.
+
+PRIVÉ VANAF DE BASIS
+• Geen analytics, advertenties of trackers van welke aard dan ook
+• Geen account nodig om de app te gebruiken
+• Bij synchroniseren gaan je gegevens alleen naar de server die jij instelt — nooit naar ons
+• Adres-autoaanvulling gebruikt standaard een privacyvriendelijke provider (OpenStreetMap/Photon), met Google Places als optioneel alternatief, of volledig uit te schakelen
+
+FUNCTIES
+• Meerdere adresboeken met eigen kleuren en pictogrammen
+• Voeg dubbele contacten samen, met controle per veld over wat behouden blijft
+• Bulkacties: delen, archiveren, verwijderen, verplaatsen en organiseren in groepen
+• Deel contacten via vCard of QR-code, met controle over welke gegevens je deelt
+• Koppel contacten als relaties (partner, ouder, enz.)
+• Optionele verjaardagsherinneringen, volledig op het apparaat gegenereerd
+• Donkere modus
+
+Of je nu een eenvoudige, privé contacten-app wilt of een volwaardige CardDAV-client gesynchroniseerd met je eigen server: Corvid Contacts past zich aan de hoeveelheid infrastructuur aan die je wilt beheren.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
+
+===================================================================
+LOCALE: ko-KR — Korean
+===================================================================
+App name: Corvid Contacts
+
+Short description: 추적, 광고, 계정이 없습니다. 로컬로 사용하거나 원하는 서버와 동기화하세요.
+
+Full description:
+Corvid Contacts는 기기에서 완전히 작동하는 연락처 관리 앱입니다 — 계정, 가입, 로그인이 전혀 필요하지 않습니다. 설치하는 순간부터 로컬로 연락처를 추가하고 관리할 수 있습니다.
+
+여러 기기 간 동기화를 원한다면 언제든지 Corvid Contacts를 직접 운영하는 Nextcloud 서버(또는 다른 CardDAV 서버)에 선택적으로 연결할 수 있습니다. 연락처는 당사가 아닌 사용자가 직접 관리하는 인프라에 저장됩니다. 계정을 만들거나 서버에 연결할 필요는 전혀 없으며, 로컬 주소록과 동기화된 주소록이 나란히 작동하고 언제든지 그 사이에서 연락처를 이동할 수 있습니다.
+
+설계부터 프라이버시 중심
+• 어떤 형태의 분석 도구, 광고, 추적기도 없음
+• 앱을 사용하는 데 계정이 필요하지 않음
+• 동기화 시 데이터는 설정한 서버로만 전송되며, 절대 저희에게 전송되지 않음
+• 주소 자동 완성은 기본적으로 프라이버시를 존중하는 제공업체(OpenStreetMap/Photon)를 사용하며, Google Places를 선택적 대안으로 사용하거나 완전히 비활성화할 수 있음
+
+주요 기능
+• 사용자 지정 색상과 아이콘을 가진 여러 개의 주소록
+• 중복된 연락처를 병합하며, 유지할 항목을 필드별로 직접 선택
+• 일괄 작업: 공유, 보관, 삭제, 이동 및 그룹으로 정리
+• vCard 또는 QR 코드로 연락처 공유, 포함할 항목을 직접 선택
+• 연락처를 관계로 연결(배우자, 부모 등)
+• 기기에서만 생성되는 선택적 생일 알림
+• 다크 모드
+
+간단하고 프라이빗한 연락처 앱을 원하든, 직접 운영하는 서버와 동기화되는 완전한 CardDAV 클라이언트를 원하든, Corvid Contacts는 사용자가 원하는 만큼의 인프라에 맞춰 사용할 수 있습니다.
+
+Terms of Use (EULA): https://benica.dev/projects/corvid-contacts/eula
