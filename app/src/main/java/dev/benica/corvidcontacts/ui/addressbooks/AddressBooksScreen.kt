@@ -40,6 +40,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
+import dev.benica.corvidcontacts.ui.theme.Dimens
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -99,6 +100,8 @@ fun AddressBooksScreen(
     val body: @Composable (PaddingValues) -> Unit = { padding ->
         LazyColumn(
             state = lazyListState,
+            // The same inset the app Settings page gets from its sections, without section headers.
+            contentPadding = PaddingValues(horizontal = Dimens.lgSpacing, vertical = Dimens.lgSpacing),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)

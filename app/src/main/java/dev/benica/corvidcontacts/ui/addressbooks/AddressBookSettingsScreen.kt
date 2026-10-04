@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +57,7 @@ import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.Ren
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.UploadAddressBookDialog
 import dev.benica.corvidcontacts.ui.settings.SettingsLeadingIcon
 import dev.benica.corvidcontacts.ui.settings.SettingsLeadingRadioButton
+import dev.benica.corvidcontacts.ui.theme.Dimens
 import kotlinx.coroutines.launch
 
 /**
@@ -135,6 +137,8 @@ fun AddressBookSettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(padding)
+                // The same inset the app Settings page gets from its sections, without section headers.
+                .padding(horizontal = Dimens.lgSpacing, vertical = Dimens.lgSpacing)
         ) {
             val bookColor = Color(book.colorInt)
             ListItem(
@@ -180,25 +184,31 @@ fun AddressBookSettingsScreen(
                     )
                 },
             )
-            if (isShared) {
-                Text(
-                    text = stringResource(R.string.system_contacts_level_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            // Always shown and only dimmed while the book isn't shared, so the page doesn't change
+            // shape when sharing is switched on or off.
+            val levelAlpha = if (isShared) 1f else DISABLED_ALPHA
+            Text(
+                text = stringResource(R.string.system_contacts_level_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .alpha(levelAlpha)
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            )
+            SystemContactsLevel.entries.forEach { option ->
+                ListItem(
+                    headlineContent = { Text(stringResource(option.titleRes())) },
+                    supportingContent = { Text(stringResource(option.descriptionRes())) },
+                    trailingContent = {
+                        SettingsLeadingRadioButton(
+                            selected = option == book.systemContactsLevel,
+                            onClick = { onSystemContactsLevelChanged(book, option) },
+                            enabled = isShared,
+                        )
+                    },
+                    modifier = Modifier
+                        .alpha(levelAlpha)
+                        .clickable(enabled = isShared) { onSystemContactsLevelChanged(book, option) },
                 )
-                SystemContactsLevel.entries.forEach { option ->
-                    ListItem(
-                        headlineContent = { Text(stringResource(option.titleRes())) },
-                        supportingContent = { Text(stringResource(option.descriptionRes())) },
-                        trailingContent = {
-                            SettingsLeadingRadioButton(
-                                selected = option == book.systemContactsLevel,
-                                onClick = { onSystemContactsLevelChanged(book, option) }
-                            )
-                        },
-                        modifier = Modifier.clickable { onSystemContactsLevelChanged(book, option) },
-                    )
-                }
             }
 
             HorizontalDivider()
@@ -367,6 +377,9 @@ fun AddressBookSettingsScreen(
         )
     }
 }
+
+/** Material's opacity for disabled content. */
+private const val DISABLED_ALPHA = 0.38f
 
 /** A 24 dp trailing icon with a tint, sized like [SettingsLeadingIcon] so the rows line up. */
 @Composable
