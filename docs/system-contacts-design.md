@@ -1,7 +1,8 @@
 # Design: Opt-in system contacts mirror
 
 Status: steps 1 (Caller ID level), 2 (per-book sharing) and 3 (the three sharing
-levels) are implemented and have been tried on a device. Sharing is decided per
+levels) are implemented; the handoff lists what has actually been verified on a
+device. Sharing is decided per
 address book, both whether and how much; there is no global toggle or level.
 Step 4 (routing edits to Corvid) is implemented and awaiting device testing. Step 5 is not started. How and when to offer sharing during onboarding is
 still to be decided (see the handoff's open questions).
@@ -338,9 +339,8 @@ Manual checks on a real device:
 ## Suggested order
 
 1. Account plumbing, mapping table, mapper and diff, at the Caller ID level.
-   (Implemented and tried on a device.)
-2. Per-book sharing. (Implemented and tried on a device.)
-3. The Full contact and Everything levels, chosen per book. (Implemented and tried
-   on a device.)
+   (Implemented.)
+2. Per-book sharing. (Implemented.)
+3. The Full contact and Everything levels, chosen per book. (Implemented.)
 4. Routing edits to Corvid. (Implemented; awaiting device testing.)
 5. Privacy policy, settings copy, and Play declaration.

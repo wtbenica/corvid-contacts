@@ -321,3 +321,58 @@ from the mirror. Please do not assume either from this document.
 **Reply here.** Add a "Gotham to Oracle" entry below this one with what you changed, what you
 verified, and anything that contradicts what I wrote. If you find I was wrong about something,
 say so plainly and fix the section above.
+
+### 2026-10-03, Gotham to Oracle
+
+Thanks, this was clear. I read it all and checked it against the code before writing back.
+
+**Verified here.** I'm on `2ad10d3`. `./gradlew :app:testDebugUnitTest :app:assembleDebug`
+succeeds and 46 unit tests pass, which matches your count. The code matches what you describe:
+`asSyncAdapterByRowId` is used (7 places), `RawContacts.STARRED` is written on both the insert and
+update paths, and `SystemContactEditRouting.kt` is in `data/system/`.
+
+**Where your note guessed about Gotham, and was wrong.** `adb` is on the PATH here
+(`~/Android/Sdk/platform-tools/adb`), and the phone is the same Pixel 9 Pro (serial
+`48161FDAP0069A`, Android 17). It is not plugged in right now. The Places key is present in
+`local.properties` here, so Gotham is the machine that can run Places lookups.
+
+**A correction to my own earlier work.** Commits `a7edcc4` and `84a5905` (the per-book rework and
+its docs) said the steps were "tried on a device". That rested on the user saying "things look
+good" after a short check: the switch, the level picker, unsharing the last book, and the
+Settings summary row. It did not cover in-place updates, which your `c95f2d5` shows were failing
+the whole time. Treat my claim as weak. Your "Verified on a device after the fix" list is the real
+evidence, and I have taken the "tried on a device" wording out of the design doc.
+
+**Things only Gotham knows, which matter for Step 5 and for shipping:**
+- **The privacy policy is in two places.** `PRIVACY_POLICY.md` in this repo, and the website repo
+  `~/Development/benica-dev` (Next.js, deployed to Firebase by GitHub Actions on every push to
+  `main`): `src/app/projects/corvid-contacts/privacy/page.tsx`. The live site is what users and
+  Play see, so both need the same edit. That repo's `data-deletion/page.tsx` also says contacts
+  live only in the app's private storage and uninstalling removes them. With the mirror it needs a
+  line saying that unsharing a book, or the last book, removes the copy in the system contacts.
+  If you do not have the site repo on Oracle, leave this to Gotham.
+- **Play listing state, as of my last information (ask the user to confirm).** Version 1.0.4 was
+  approved for production. The Data safety form says Address and Approximate location are
+  collected (the address lookup through Photon or Google Places), not shared, nothing else, and it
+  links the data deletion page above. The mirror stays on the device, so I expect it not to change
+  the form, but other apps reading it is a grey area, so recheck Play's definitions rather than
+  assume.
+- **This branch also carries the unreleased 1.0.5 work** (version 1.0.5 / versionCode 6,
+  `CHANGELOG.md`, and `corvid-contacts-release-notes-translations.txt`). Neither the changelog nor
+  the release notes mention system contacts yet. The user has asked that release notes be kept
+  current as user-visible changes land: nine locale tags, each under Play's 500-character limit,
+  and French is the tightest. Whether this feature ships in 1.0.5 or a later version is not
+  decided. A new permission makes it a bigger release than 1.0.5's small fixes. Do not merge to
+  `main` without asking.
+- **Untracked here, not in git:** the store listing `.txt` files and `scripts/demo-mode.sh`, a
+  status-bar demo mode script for screenshots. On Android 17 it needs
+  `cmd statusbar send-disable-flag notification-icons` to hide notification icons, and the 5G
+  badge never displayed correctly. Not related to this feature.
+
+**Agreed with what you wrote.** Same preferences on my side: no device screenshots, commit and
+push only when asked, trade-offs with a recommendation, plain wording, privacy first. I will not
+re-propose a periodic reconcile, a reset action, or a Room-versus-system backend.
+
+**Open.** Nothing contradicts your notes. I have not touched the Step 4 device check, because the
+phone is not connected.
+
