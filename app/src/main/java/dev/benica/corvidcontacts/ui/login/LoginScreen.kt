@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,6 +35,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -43,9 +47,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -100,6 +107,44 @@ fun LoginScreen(
 
     CCScaffold(
         modifier = modifier,
+        bottomBar = {
+            // Pinned above the keyboard instead of at the end of the scrolling content, so the
+            // button is still reachable after a password manager fills the fields and leaves the
+            // keyboard open. imePadding goes before navigationBarsPadding so the navigation bar
+            // isn't counted twice while the keyboard is showing.
+            Surface(color = MaterialTheme.colorScheme.surface) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .imePadding()
+                        .navigationBarsPadding(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        onClick = { submit() },
+                        modifier = Modifier
+                            .widthIn(max = 600.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = Dimens.innerSpacing, vertical = Dimens.smSpacing)
+                            .heightIn(min = 52.dp),
+                        enabled = uiState !is LoginUiState.Loading && serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
+                    ) {
+                        if (uiState is LoginUiState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.login_button),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                }
+            }
+        },
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(R.string.login_title)) },
@@ -116,7 +161,6 @@ fun LoginScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .padding(Dimens.innerSpacing),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -184,7 +228,9 @@ fun LoginScreen(
                             contentDescription = null
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics { contentType = ContentType.Username },
                     singleLine = true,
                     enabled = uiState !is LoginUiState.Loading,
                     keyboardOptions = KeyboardOptions(
@@ -212,7 +258,9 @@ fun LoginScreen(
                         )
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics { contentType = ContentType.Password },
                     singleLine = true,
                     enabled = uiState !is LoginUiState.Loading,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -254,30 +302,7 @@ fun LoginScreen(
                         .clip(MaterialTheme.shapes.medium)
                 )
 
-                Spacer(modifier = Modifier.height(Dimens.lgSpacing))
-
-                Button(
-                    onClick = { submit() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp),
-                    enabled = uiState !is LoginUiState.Loading && serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
-                ) {
-                    if (uiState is LoginUiState.Loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.login_button),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(Dimens.lgSpacing))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Text(
                     text = stringResource(R.string.onboarding_setup_transparency_title),
