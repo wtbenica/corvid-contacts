@@ -157,6 +157,21 @@ Some of these may already be answered by your device testing. Confirm which.
    (duplicates with the mirror, read-only handling, what "source of truth" means). Decide
    whether either belongs in the roadmap.
 
+## Lessons from device debugging
+
+- **In-place updates failed silently until this was traced.** Updates and deletes addressed
+  rows with the account as query parameters on the sync-adapter URI, and the provider rejected
+  the batch with `Invalid token account_name`. Inserts were fine, so sharing, unsharing and
+  resharing worked while edits in Corvid never reached the system contacts. Fixed by addressing
+  updates and deletes by row id only (`asSyncAdapterByRowId`). Reconcile now logs under the tag
+  `SystemContactsMirror` (snapshot, plan sizes, and per-write results, with contact ids but no
+  names or numbers), so a failure is visible. To trace on a device:
+  `adb logcat -s SystemContactsMirror:V`, and the provider can be inspected with
+  `adb shell content query --uri content://com.android.contacts/data ...`.
+- `RAW_CONTACT_IS_READ_ONLY` is not queryable as a column through `adb shell content query` on
+  `raw_contacts` or `data`, so whether the flag took effect still has to be judged from the
+  Contacts app's behavior.
+
 ## Environment notes
 
 - **Places API key.** `local.properties` is gitignored. Without `GOOGLE_PLACES_API_KEY` in it

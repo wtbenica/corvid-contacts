@@ -137,7 +137,13 @@ class SystemContactsMirror(
                     contact.categories.map { MirrorPlan.categoryGroupKey(it) }
                 contact.copy(groupIds = keys.mapNotNull { groupIds[it] })
             }
-            val plan = MirrorPlan.diff(desired, dao.getAll())
+            val mapped = dao.getAll()
+            val plan = MirrorPlan.diff(desired, mapped)
+            Log.i(
+                TAG,
+                "reconcile: desired=${desired.size} mapped=${mapped.size} inserts=${plan.inserts.size} " +
+                    "updates=${plan.updates.size} deletes=${plan.deletes.size}"
+            )
             if (plan.isEmpty) return@withLock
 
             applyDeletes(plan.deletes)
@@ -174,7 +180,7 @@ class SystemContactsMirror(
             apply(
                 stale.map {
                     ContentProviderOperation
-                        .newDelete(Groups.CONTENT_URI.asSyncAdapter())
+                        .newDelete(Groups.CONTENT_URI.asSyncAdapterByRowId())
                         .withSelection("${Groups._ID}=?", arrayOf(it.groupId.toString()))
                         .build()
                 }
@@ -195,7 +201,7 @@ class SystemContactsMirror(
                     apply(
                         listOf(
                             ContentProviderOperation
-                                .newUpdate(Groups.CONTENT_URI.asSyncAdapter())
+                                .newUpdate(Groups.CONTENT_URI.asSyncAdapterByRowId())
                                 .withSelection("${Groups._ID}=?", arrayOf(current.groupId.toString()))
                                 .withValue(Groups.TITLE, title)
                                 .withExpectedCount(1)
@@ -233,11 +239,12 @@ class SystemContactsMirror(
         deletes.chunked(DELETE_BATCH).forEach { chunk ->
             val ops = chunk.map {
                 ContentProviderOperation
-                    .newDelete(RawContacts.CONTENT_URI.asSyncAdapter())
+                    .newDelete(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
                     .withSelection("${RawContacts._ID}=?", arrayOf(it.rawContactId.toString()))
                     .build()
             }
-            apply(ops)
+            val results = apply(ops)
+            Log.i(TAG, "deleted raw ids ${chunk.map { it.rawContactId }} counts=${results.map { it.count }}")
             dao.delete(chunk.map { it.contactId })
         }
     }
@@ -250,22 +257,30 @@ class SystemContactsMirror(
             // Touching the raw contact with an expected count of 1 fails the whole batch if the row
             // is gone, instead of attaching new data rows to a stale id.
             ops += ContentProviderOperation
-                .newUpdate(RawContacts.CONTENT_URI.asSyncAdapter())
+                .newUpdate(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
                 .withSelection("${RawContacts._ID}=?", arrayOf(rawId.toString()))
                 .withValue(RawContacts.SOURCE_ID, contact.id)
                 .withExpectedCount(1)
                 .build()
             ops += ContentProviderOperation
-                .newDelete(Data.CONTENT_URI.asSyncAdapter())
+                .newDelete(Data.CONTENT_URI.asSyncAdapterByRowId())
                 .withSelection("${Data.RAW_CONTACT_ID}=?", arrayOf(rawId.toString()))
                 .build()
             ops += dataOps(contact) { builder -> builder.withValue(Data.RAW_CONTACT_ID, rawId) }
 
             try {
-                apply(ops)
+                val results = apply(ops)
+                // Counts: [0] raw contact touched (expected 1), [1] data rows deleted, then one
+                // result per inserted row (no count).
+                Log.i(
+                    TAG,
+                    "update contact=${contact.id} raw=$rawId touched=${results.getOrNull(0)?.count} " +
+                        "deletedRows=${results.getOrNull(1)?.count} inserted=${results.size - 2}"
+                )
                 writePhoto(contact, rawId)
                 dao.upsert(listOf(SystemContactMirrorEntity(contact.id, rawId, contact.hash)))
-            } catch (_: OperationApplicationException) {
+            } catch (e: OperationApplicationException) {
+                Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
                 missing += contact
             }
         }
@@ -306,6 +321,7 @@ class SystemContactsMirror(
                 val rawId = ContentUris.parseId(requireNotNull(results[rawIndexes[i]].uri))
                 SystemContactMirrorEntity(contact.id, rawId, contact.hash)
             }
+            Log.i(TAG, "inserted ${entries.size} contacts, raw ids ${entries.map { it.rawContactId }}")
             dao.upsert(entries)
             chunk.forEachIndexed { i, contact -> writePhoto(contact, entries[i].rawContactId) }
         }
@@ -478,6 +494,18 @@ class SystemContactsMirror(
         }
     }
 
+    /**
+     * Marks the call as coming from the account's sync adapter, so changes aren't flagged dirty and
+     * deletes remove the row instead of just marking it deleted. Updates and deletes address rows by
+     * id and must not carry the account as query parameters: the provider turns those into an
+     * `account_name` filter on the raw contacts table, which has no such column, and rejects the
+     * whole batch with "Invalid token account_name".
+     */
+    private fun Uri.asSyncAdapterByRowId(): Uri = buildUpon()
+        .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+        .build()
+
+    /** As [asSyncAdapterByRowId], plus the account, for inserts that name no account in their values. */
     private fun Uri.asSyncAdapter(): Uri = buildUpon()
         .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
         .appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)

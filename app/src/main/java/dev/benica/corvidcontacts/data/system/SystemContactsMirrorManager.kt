@@ -37,6 +37,11 @@ class SystemContactsMirrorManager(
             }
                 .debounce(DEBOUNCE_MS)
                 .collect { snapshot ->
+                    Log.i(
+                        TAG,
+                        "snapshot: sharedBooks=${snapshot.books.size} sources=${snapshot.sources.size} " +
+                            "permission=${mirror.hasPermission()}"
+                    )
                     try {
                         when {
                             snapshot.books.isEmpty() -> mirror.removeAll()
