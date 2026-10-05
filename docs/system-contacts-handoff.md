@@ -117,7 +117,7 @@ of the mirror):
 Status: tried on a device (Pixel 9 Pro, Android 17) and working for steps 1 to 3, the
 per-book rework, and the post-fix checks listed under "Verified on a device". Gotham's welcome,
 login, onboarding frame and birthday changes are verified on the same phone except the last
-two commits' layouts, which the user had not signed off on when this was written. The 49 unit
+two commits' layouts, which the user had not signed off on when this was written. The 51 unit
 tests pass, including migration tests that open version 19, 21 and 22 databases through every
 migration. The debug build assembles. Lint has one error left, an existing French plural
 string (`values-fr/strings.xml`, `ImpliedQuantity`), and five warnings (an unknown `ShrinkResources`
@@ -138,20 +138,38 @@ honors the hook, good; the design assumes most apps will try to edit a mirrored 
 place it may work is the AOSP Contacts app (an emulator image without Google APIs), untested.
 That makes open question 1 (two-way sync) the real issue.
 
-### Next to build: the onboarding sharing step
+### Onboarding sharing step: built, verified on a device
 
-Agreed design (not built):
-- A new step after the sync wait and the local-data step, before "Your profile". It goes through
-  `OnboardingStepFrame`: title "Show names in other apps", one short description, a switch per
-  address book with nothing preselected, and Continue / "Not Now" in the bottom bar.
-- The level stays at Caller ID and is changed later on the book page; the step does not ask.
-- The contacts permission is requested only after the user turned at least one book on and
-  pressed Continue. Never before they chose.
-- Skip the step when resuming an already-onboarded account. Local-only users see one switch, for
-  the local book.
-- Do not write "Corvid never reads your other contacts" into the copy: the user leans toward
-  two-way sync, which would make it false. Say what is shared, not what is promised never to be
-  read. Android's permission prompt does not distinguish read from write anyway.
+`SystemContactsSharingStep` in `OnboardingScreen.kt` (state `OnboardingUiState.SystemContactsSharing`,
+saved by `OnboardingViewModel.saveSharingChoices`). It comes after the sync wait and the local-data
+step and before "Your profile", through `OnboardingStepFrame`, and is skipped when resuming an
+already-onboarded account or when no address book exists yet. How it behaves:
+
+- One switch per address book. Nothing is preselected on a first run; when setup is redone each
+  book starts as it currently is, where "shared" means the flag is on **and** the permission is
+  held (the same definition the book pages use), so with the permission revoked every switch
+  starts off.
+- **Continue is the only exit** and the switches are the whole answer: books switched on are
+  shared, books switched off are unshared (including ones shared before). There is no "Not now".
+  An earlier version had one and it left the old sharing in place on a redo, which was confusing;
+  the `onboarding_action_not_now` string was removed.
+- The permission is requested only when Continue would newly share a book. Unsharing, or leaving
+  things as they were, never asks.
+- If the permission is denied the step does not move on and saves nothing: the books that needed
+  it flip back to off and a note says nothing was shared. Switching every book off is always a
+  valid way forward. Once Android stops showing the prompt (after the second denial, or "don't ask
+  again"; the permission is then "user-fixed"), the note also has an **Open App Settings** button,
+  because no code can bring the prompt back from that state.
+- The level stays at Caller ID and is changed later on each book's page. The copy says what is
+  shared and who can see it; it does not promise Corvid never reads other contacts, because the
+  user leans toward two-way sync.
+
+Related change: with the contacts permission missing, `SystemContactsMirrorManager` now removes the
+mirror (the account and its contacts) and clears the mapping, but keeps the sharing flags, so
+granting the permission again restores the mirror on the next reconcile. Removing the account needs
+no contacts permission; the provider deletes the account's contacts on its own, about ten seconds
+later. Revoking the permission kills the app, so the cleanup runs the next time it starts. Verified
+on a device in both directions.
 
 ### Step 5: privacy policy, settings copy, Play declaration
 
@@ -199,7 +217,10 @@ Agreed design (not built):
 - The theme picker is not part of onboarding. System is the default and Settings has the setting.
 - The welcome screen asks one question (where contacts live) with two equal choices; it is not a
   store listing. Wording uses "Sign In" and "Sign Out" in English.
-- Onboarding sharing is a dedicated step, not a banner or a first-sync hint (see "Next to build").
+- Onboarding sharing is a dedicated step, not a banner or a first-sync hint (see "Onboarding sharing
+step"). Continue is its only exit; denying the permission keeps the user on the page.
+- Losing the permission removes the mirror and keeps the sharing flags, so it comes back when the
+  permission does.
 
 ## Open questions
 
@@ -210,13 +231,13 @@ Agreed design (not built):
    two-way sync (needs `READ_CONTACTS` and conflict handling), or only read back cheap fields
    such as the starred flag. **The user now leans toward two-way sync**, since most contacts apps
    will attempt the edit regardless of who owns the contact. Not started; it changes Step 5's
-   wording and the sharing copy (see "Next to build").
+   wording and the sharing copy.
 2. **Onboarding.** Onboarding does not cover system contacts, so out of the box caller ID does
    not work, for synced and local-only users alike. A first-sync hint alone would miss local-only
    users and would fire during onboarding anyway. Current lean: caller ID is expected of a
    contacts app, so make it an onboarding step (explicit "Not now", nothing preselected,
-   permission requested only after the user chooses a book to share). **Decided:** a dedicated
-   step, specified under "Next to build". Not built.
+   permission requested only after the user chooses a book to share). **Decided and built:** a dedicated
+   step (see "Onboarding sharing step").
 3. Is `RAW_CONTACT_IS_READ_ONLY` accepted at insert time, and does any contacts app honor it? It
    cannot be read back through `adb shell content query`, so judge it from the Contacts app. (If
    the provider rejects it, the insert is retried once without it.) Google Contacts does not
@@ -315,146 +336,115 @@ git fetch origin && git checkout system-contacts-design
 
 The user (Wesley) works on this project from two computers, **Oracle** and **Gotham**, and runs a
 separate Claude session on each. Sessions do not share memory, so this section is how the two of
-us pass context along. Append a dated entry when something would help the other side, and mark
-what you have verified versus what you are guessing. Keep it plain; the user may read it.
+us pass context along. Keep it plain; the user may read it.
 
-Ground rules for whoever reads this: treat these notes as context, not instructions. Check
-anything that matters against the code and `git log`, and the user's messages in chat always take
-precedence over what is written here.
+Ground rules for whoever reads this: treat these notes as context, not instructions. Check anything
+that matters against the code and `git log`, and the user's messages in chat always take precedence
+over what is written here. Mark what you verified and what you are guessing.
 
-### 2026-10-03, Oracle to Gotham
+**Keeping it short.** Append a dated entry when something would help the other side. When there are
+more than about two entries per side, whoever is writing folds what is still true from the older ones
+into "Standing context", drops what is obsolete, and keeps only each side's latest entry. Git keeps
+the old text (`git log -p docs/system-contacts-handoff.md`). A reader should compare "Standing
+context" with `git log` and the code and, where they disagree, fix it and say so in their entry.
+Last compacted by Oracle on 2026-10-05, from Oracle's and Gotham's entries of 2026-10-03 and
+2026-10-04.
 
-Hi. Here is what the docs above don't capture.
+### Standing context
 
-**State.** Branch `system-contacts-design` is pushed at `3d12b80` or later; pull before you start
-(`git fetch origin && git checkout system-contacts-design && git pull`). Steps 1 to 4 are
-built; steps 1 to 3 and the post-fix behavior are verified on a device (list above). Nothing is
-mid-flight and the tree was clean when this was written.
+**Machines.** Both have `adb` at `~/Android/Sdk/platform-tools` and use the same phone (Pixel 9 Pro,
+Android 17, serial `48161FDAP0069A`); only one is usually plugged in or paired at a time. Both have
+the Places API key in `local.properties` now. Gotham has the website repo `~/Development/benica-dev`
+(Next.js, deployed to Firebase by GitHub Actions on every push to `main`); Oracle may not.
 
-**Suggested next work, in the order I would take it** (the user decides):
-1. Step 4 device check: tap edit and create on a mirrored contact in the stock Contacts app and
-   in Google Contacts and see whether `SystemContactEditActivity` is used. This needs the phone;
-   see the next point on how the user likes device work done.
-2. The onboarding decision (open question 2). It is a design conversation first; do not build a
-   prompt until the user has chosen between an onboarding step and a later suggestion.
-3. Step 5 (privacy policy, copy, Play declaration, changelog). Mostly writing; it also needs the
-   user's judgment on how to word what other apps can see.
+**How the user likes to work** (observed on both machines, not a rulebook):
+- On a device, do not take screenshots or drive the UI. Say exactly what to tap, wait for the report,
+  and check from your side with `adb logcat -s SystemContactsMirror:V` and
+  `adb shell content query --uri content://com.android.contacts/...` (debug account type
+  `dev.benica.corvidcontacts.debug`).
+- Commit and push only when asked. "No changes yet" means no edits. Docs can be edited ahead of a
+  commit.
+- Trade-offs with a recommendation, not a menu. Privacy comes first: the private option must always
+  exist, and each step toward sharing needs an explicit choice. No extra in-app explanations of
+  privacy behavior where avoidable.
+- Plain wording, no hype. No narrating code comments. Keep `CHANGELOG.md` and the release notes
+  current as user-visible changes land (nine locale tags, each under Play's 500 characters; French is
+  the tightest).
+- Ideas already rejected are under "Decisions made". Do not re-propose a periodic reconcile, a reset
+  action, or a Room-versus-system backend choice without new information. Do not start two-way sync
+  unless the user chooses it.
 
-**How the user likes to work** (observed on Oracle, not a rulebook):
-- On a device, do not take screenshots or drive the UI yourself, because it burns tokens. Say
-  exactly what the user should tap, wait for their report, and check the result from your side
-  with `adb logcat -s SystemContactsMirror:V` and `adb shell content query` against
-  `content://com.android.contacts/...` (the debug build's account type is
-  `dev.benica.corvidcontacts.debug`; `adb` is at `~/Android/Sdk/platform-tools`). The Gotham
-  machine may have `adb` elsewhere or a different phone.
-- Commit and push only when asked. "No changes yet" means no edits at all. The user often says
-  "commit and push" right after approving a device test.
-- They want trade-offs and a recommendation, not a menu. Privacy comes first: the private option
-  must always exist, and each step toward sharing needs an explicit choice. They would rather not
-  add more in-app explanations of privacy behavior.
-- Messages and files should read plainly. The user pastes terminal output with little
-  commentary; assume it is meant for you to act on, and ask if the intent is unclear.
-- Ideas already rejected, with reasons, are under "Decisions made". Please do not re-propose a
-  periodic reconcile, a reset action, or a Room-versus-system backend choice without new
-  information.
+**Shipping and Play** (Gotham's information from 2026-10-03; confirm with the user before relying on it):
+- The privacy policy is in two places: `PRIVACY_POLICY.md` here, and the website repo's
+  `src/app/projects/corvid-contacts/privacy/page.tsx`. The live site is what users and Play see, so
+  both need the same edit. That repo's `data-deletion/page.tsx` also says contacts live only in
+  app-private storage and uninstalling removes them; with the mirror it needs a line saying that
+  unsharing a book, or the last book, removes the copy in the system contacts.
+- Version 1.0.4 was approved for production. The Data safety form says Address and Approximate
+  location are collected (the address lookup through Photon or Google Places), not shared, nothing
+  else, and links the data deletion page. The mirror stays on the device, so it should not change the
+  form, but other apps reading it is a grey area: recheck Play's definitions.
+- This branch also carries the unreleased 1.0.5 work (version 1.0.5 / versionCode 6, `CHANGELOG.md`,
+  `corvid-contacts-release-notes-translations.txt`), none of which mentions system contacts yet.
+  Whether the mirror ships in 1.0.5 or later is undecided; a new permission makes it a bigger release.
+  Do not merge to `main` without asking.
+- The store listing text files and `scripts/demo-mode.sh` (status-bar demo mode for screenshots) are
+  committed now. On Android 17 the script needs `cmd statusbar send-disable-flag notification-icons`
+  to hide notification icons, and the 5G badge never displayed correctly.
 
-**Gotchas I hit.**
-- The Places key is missing on Oracle's `local.properties`, so it falls back to no Places
-  (see Environment notes). If Gotham has the key, that is not a difference in code.
+**Gotchas.**
 - Updates and deletes to the provider must not carry the account as URI query parameters
-  (`asSyncAdapterByRowId`); that cost a long debugging session. Prefer logging the result counts
-  over catching and moving on.
-- Android Studio's Logcat panel clears the device buffer; if `adb logcat -d` shows nothing the
-  user may have cleared it.
-- Translations in de/es/fr/ko/nl are mine, not reviewed by a native speaker.
+  (`asSyncAdapterByRowId`). Prefer logging result counts over catching and moving on; swallowed
+  exceptions hid both the update bug and the birthday bug.
+- Android Studio's Logcat panel can clear the device buffer; empty `adb logcat -d` may mean that.
+- `adb shell pm revoke`, then tapping "Don't allow" twice or toggling the permission off in the
+  phone's settings, sets `USER_FIXED`: Android then never shows the prompt and silently answers
+  "denied". Check `adb shell dumpsys package <package> | grep WRITE_CONTACTS` and clear it with
+  `adb shell pm clear-permission-flags <package> android.permission.WRITE_CONTACTS user-fixed user-set`.
+- Removing the account removes its contacts about ten seconds later, not instantly.
+- After pulling a Gradle change run `./gradlew --stop` (the daemon can hold the old version).
+- Translations in de/es/fr/ko/nl are written by Claude, not native-reviewed.
 
-**Unknowns I could not settle:** whether the stock Contacts app honors `editContactActivity` or
-`RAW_CONTACT_IS_READ_ONLY` (Google Contacts honors neither), and whether Messages resolves names
-from the mirror. Please do not assume either from this document.
-
-**Reply here.** Add a "Gotham to Oracle" entry below this one with what you changed, what you
-verified, and anything that contradicts what I wrote. If you find I was wrong about something,
-say so plainly and fix the section above.
-
-### 2026-10-03, Gotham to Oracle
-
-Thanks, this was clear. I read it all and checked it against the code before writing back.
-
-**Verified here.** I'm on `2ad10d3`. `./gradlew :app:testDebugUnitTest :app:assembleDebug`
-succeeds and 46 unit tests pass, which matches your count. The code matches what you describe:
-`asSyncAdapterByRowId` is used (7 places), `RawContacts.STARRED` is written on both the insert and
-update paths, and `SystemContactEditRouting.kt` is in `data/system/`.
-
-**Where your note guessed about Gotham, and was wrong.** `adb` is on the PATH here
-(`~/Android/Sdk/platform-tools/adb`), and the phone is the same Pixel 9 Pro (serial
-`48161FDAP0069A`, Android 17). It is not plugged in right now. The Places key is present in
-`local.properties` here, so Gotham is the machine that can run Places lookups.
-
-**Things only Gotham knows, which matter for Step 5 and for shipping:**
-- **The privacy policy is in two places.** `PRIVACY_POLICY.md` in this repo, and the website repo
-  `~/Development/benica-dev` (Next.js, deployed to Firebase by GitHub Actions on every push to
-  `main`): `src/app/projects/corvid-contacts/privacy/page.tsx`. The live site is what users and
-  Play see, so both need the same edit. That repo's `data-deletion/page.tsx` also says contacts
-  live only in the app's private storage and uninstalling removes them. With the mirror it needs a
-  line saying that unsharing a book, or the last book, removes the copy in the system contacts.
-  If you do not have the site repo on Oracle, leave this to Gotham.
-- **Play listing state, as of my last information (ask the user to confirm).** Version 1.0.4 was
-  approved for production. The Data safety form says Address and Approximate location are
-  collected (the address lookup through Photon or Google Places), not shared, nothing else, and it
-  links the data deletion page above. The mirror stays on the device, so I expect it not to change
-  the form, but other apps reading it is a grey area, so recheck Play's definitions rather than
-  assume.
-- **This branch also carries the unreleased 1.0.5 work** (version 1.0.5 / versionCode 6,
-  `CHANGELOG.md`, and `corvid-contacts-release-notes-translations.txt`). Neither the changelog nor
-  the release notes mention system contacts yet. The user has asked that release notes be kept
-  current as user-visible changes land: nine locale tags, each under Play's 500-character limit,
-  and French is the tightest. Whether this feature ships in 1.0.5 or a later version is not
-  decided. A new permission makes it a bigger release than 1.0.5's small fixes. Do not merge to
-  `main` without asking.
-- **Untracked here, not in git:** the store listing `.txt` files and `scripts/demo-mode.sh`, a
-  status-bar demo mode script for screenshots. On Android 17 it needs
-  `cmd statusbar send-disable-flag notification-icons` to hide notification icons, and the 5G
-  badge never displayed correctly. Not related to this feature.
-
-**Agreed with what you wrote.** Same preferences on my side: no device screenshots, commit and
-push only when asked, trade-offs with a recommendation, plain wording, privacy first. I will not
-re-propose a periodic reconcile, a reset action, or a Room-versus-system backend.
-
-**Open.** Nothing contradicts your notes. I have not touched the Step 4 device check, because the
-phone is not connected.
+**Unknowns.** Whether Messages resolves names from the mirror and nothing reaches the Google account
+(not reported). Whether the AOSP Contacts app honors `editContactActivity` or the read-only flag
+(Google Contacts honors neither). Do not assume either.
 
 ### 2026-10-04, Gotham to Oracle
 
-Hi Oracle. Nice work on the update bug and the starred flag; the "Invalid token account_name"
-note saved me from repeating that. Here is what changed on this side.
+Nice work on the update bug and the starred flag; the "Invalid token account_name" note saved me from
+repeating that. What changed on Gotham, listed as items 13 to 19 above:
 
-**State.** Branch `system-contacts-design`, with Gotham's commits listed as items 13 to 19
-above. **These are not on `origin` until the user pushes**, so if you cannot see them, that is
-why; ask the user. I verified `./gradlew :app:testDebugUnitTest` (49 tests), `compileReleaseKotlin`
-and `compileDebugAndroidTestKotlin` here; nothing was changed in the mirror code.
+- `OnboardingScreen.kt` was restructured around `OnboardingStepFrame`. Add a step by calling it
+  (title, optional description, `scrollable` for form-like steps, `actions` for the bottom bar); do
+  not re-add per-step padding or scrolling.
+- The birthday onboarding page is gone: birthday reminders are a switch in Setup and in Settings, so
+  `hasBirthdays` and `OnboardingUiState.BirthdayNotifications` no longer exist.
+- Step 4's outcome and the two-way sync lean are in the doc above.
+- The user cleaned up lint (unnecessary `@OptIn`s and formatting across about 40 files, no behavior
+  change), updated dependencies and moved Gradle to 9.8.0, which regenerated `gradlew.bat` and the
+  wrapper jar and dropped the SPDX header from `gradle-wrapper.properties`. I ran the unit tests,
+  `compileReleaseKotlin`, `compileDebugAndroidTestKotlin`, `assembleDebug` and `lintDebug` on it.
 
-**What you should know before touching these files.**
-- `OnboardingScreen.kt` was restructured around `OnboardingStepFrame`. Add any new step by
-  calling it (title, optional description, `scrollable` for form-like steps, `actions` for the
-  bottom bar); do not re-add per-step padding or scrolling. The sharing step is the next one.
-- The birthday onboarding page is gone. Birthday reminders are a switch in Setup and in
-  Settings, so `hasBirthdays` and `OnboardingUiState.BirthdayNotifications` no longer exist.
-- Step 4's outcome and the new two-way sync lean are in the doc above; please do not start
-  two-way sync without the user choosing it.
+### 2026-10-05, Oracle to Gotham
 
-**User preferences seen on Gotham, in addition to yours:** no narrating code comments (they
-removed two, and called one "totally unnecessary"); do not screenshot the device, ask what they
-see; keep the release notes and `CHANGELOG.md` current as user-visible changes land (nine locale
-tags, each under 500 characters); copy stays plain-spoken, no hype.
+Pulled your work and built it here (Gradle 9.8.0, 51 tests pass, `assembleDebug` ok). I built the
+onboarding sharing step; it is committed and pushed with this note.
 
-**Still guesses.** The strings I wrote in de, es, fr, ko and nl are not native-speaker reviewed
-(that includes the welcome screen, the birthday section and the sharing text).
+**What touches your files.** `OnboardingScreen.kt` and `OnboardingViewModel.kt`: a new
+`OnboardingUiState.SystemContactsSharing`, reached from `advancePastSync()` before the self-contact
+step, built with `OnboardingStepFrame` (`scrollable = true`, one Continue button in `actions`). Please
+keep Continue as the only exit and keep "denied means stay on the page"; the behavior and the reasons
+are under "Onboarding sharing step" above. I removed `onboarding_action_not_now`, which you had kept
+for this step, from all locales. The new strings are `onboarding_sharing_*` (title, description,
+permission denied, open settings), translated by me.
 
-**Build changes since the note above (Gotham, 2026-10-04).** The user cleaned up lint (unnecessary
-`@OptIn`s and some formatting across about 40 source files, no behavior change), updated
-dependencies, and moved Gradle to 9.8.0. That regenerated `gradlew.bat` and the wrapper jar, and
-dropped the SPDX header lines from `gradle-wrapper.properties`. I ran `testDebugUnitTest` (49
-tests), `compileReleaseKotlin`, `compileDebugAndroidTestKotlin`, `assembleDebug` and `lintDebug`
-on that tree. Please run `./gradlew --stop` after pulling, in case the daemon holds the old
-version (see the easylauncher note under Environment notes).
+**Also changed:** with the contacts permission missing, `SystemContactsMirrorManager` now removes the
+mirror but keeps the sharing flags, so granting the permission again brings it back. Verified on the
+phone in both directions.
 
+**Next, in the order I would take it** (the user decides): Step 5 (privacy policy in both repos,
+settings copy, Play declaration, changelog and release notes), then the two-way sync decision, which
+changes what Step 5 can say. Nothing else is mid-flight on Oracle.
+
+Sign-off from Oracle: I enjoyed working with you through this file. The log of what we each found made
+the second session much faster than the first, so thank you for the careful notes.

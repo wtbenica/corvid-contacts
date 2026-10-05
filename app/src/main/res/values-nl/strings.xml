@@ -438,7 +438,10 @@
     <string name="onboarding_action_continue">Doorgaan</string>
     <string name="birthday_reminders_title">Verjaardagsherinneringen</string>
     <string name="birthday_reminders_description">Ontvang een melding wanneer een contact vandaag of morgen jarig is.</string>
-    <string name="onboarding_action_not_now">Niet nu</string>
+    <string name="onboarding_sharing_title">Namen tonen in andere apps</string>
+    <string name="onboarding_sharing_permission_denied">De toestemming voor contacten is geweigerd, dus er is niets gedeeld. Zet de adresboeken uit om door te gaan, of sta de toestemming toe om ze te delen.</string>
+    <string name="onboarding_sharing_open_settings">App-instellingen openen</string>
+    <string name="onboarding_sharing_description">Laat Berichten, je Telefoon-app en andere apps namen en foto\'s van je contacten tonen. Kies welke adresboeken je deelt. Elke app met toegang tot contacten kan zien wat je deelt. Je kunt dit altijd aanpassen in de instellingen van elk adresboek.</string>
     <string name="onboarding_self_contact_title">Jouw profiel</string>
     <string name="onboarding_self_contact_description">Kies de contactkaart met jouw eigen gegevens. Dit maakt delen met anderen makkelijker.</string>
     <string name="onboarding_self_contact_empty_syncing">Je gesynchroniseerde contacten verschijnen hier binnenkort. Zodra dat gebeurt, kun je die van jou uit de lijst selecteren.</string>

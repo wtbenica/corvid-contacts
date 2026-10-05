@@ -450,7 +450,10 @@
     <string name="onboarding_action_continue">Continue</string>
     <string name="birthday_reminders_title">Birthday Reminders</string>
     <string name="birthday_reminders_description">Get a notification when a contact has a birthday today or tomorrow.</string>
-    <string name="onboarding_action_not_now">Not Now</string>
+    <string name="onboarding_sharing_title">Show names in other apps</string>
+    <string name="onboarding_sharing_permission_denied">Contacts permission was denied, so nothing was shared. Switch the books off to continue, or allow the permission to share them.</string>
+    <string name="onboarding_sharing_open_settings">Open App Settings</string>
+    <string name="onboarding_sharing_description">Let Messages, your dialer and other apps show names and photos for your contacts. Choose which address books to share. Any app with contacts access can see what you share. You can change this at any time in each address book\'s settings.</string>
     <string name="onboarding_self_contact_title">Your Profile</string>
     <string name="onboarding_self_contact_description">Choose the contact card that contains your info. This makes it easier to share with others.</string>
     <string name="onboarding_self_contact_empty_syncing">Your synced contacts will appear here shortly. Once they do, you can select yours from the list.</string>

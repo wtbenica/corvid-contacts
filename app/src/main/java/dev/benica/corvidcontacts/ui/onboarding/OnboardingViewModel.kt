@@ -25,8 +25,8 @@ import kotlinx.coroutines.launch
 /**
  * Drives the first-run onboarding flow shown after a user's first successful login: performs an
  * initial contact sync, then walks the user through phone-formatting preference, address-lookup
- * preference, birthday notifications opt-in, and "self" contact selection, before marking setup
- * complete.
+ * preference, birthday notifications opt-in, sharing address books with the system contacts, and
+ * "self" contact selection, before marking setup complete.
  *
  * Note: completion is tracked per-account ([SettingsRepository.lastOnboardedAccountKey]), so this
  * flow plays again after logging into a *different* account, but not when logging back into the
@@ -241,11 +241,39 @@ class OnboardingViewModel(
      * to the sync junction if there's nothing local to ask about.
      */
     private suspend fun advancePastSync() {
+        // Nothing to offer sharing for until at least one address book exists.
+        if (contactsRepository.userManageableAddressBooks.first().isNotEmpty()) {
+            _uiState.value = OnboardingUiState.SystemContactsSharing
+        } else {
+            advanceToSelfContactOrComplete()
+        }
+    }
+
+    private suspend fun advanceToSelfContactOrComplete() {
         val selfContactSet = settingsRepository.selfContactId.first() != null
         if (!selfContactSet) {
             _uiState.value = OnboardingUiState.SelfContactSelection
         } else {
             completeOnboarding()
+        }
+    }
+
+    /**
+     * Makes the sharing of every address book match [selected] and moves on: books in it are
+     * shared (at the default Caller ID level, changed later on each book's page), and books not in
+     * it are unshared, including ones shared before when setup is redone. The screen only calls
+     * this once the contacts permission is held, or when nothing needs it, so there is no partial
+     * result to explain.
+     */
+    fun saveSharingChoices(selected: Set<String>) {
+        viewModelScope.launch {
+            contactsRepository.userManageableAddressBooks.first().forEach { book ->
+                val wanted = book.href in selected
+                if (wanted != book.shareWithSystem) {
+                    contactsRepository.setAddressBookSharedWithSystem(book.href, wanted)
+                }
+            }
+            advanceToSelfContactOrComplete()
         }
     }
 
@@ -352,6 +380,14 @@ sealed class OnboardingUiState {
      * [ContactsRepository.getLocalAddressBooks][dev.benica.corvidcontacts.data.repository.ContactsRepository.getLocalAddressBooks]).
      */
     data class LocalDataMigration(val localBooks: List<AddressBookEntity>) : OnboardingUiState()
+
+    /**
+     * Offering to share address books with the system contacts, so other apps can show names for
+     * calls and texts. Nothing is preselected on a first run, the switches are the whole answer
+     * (Continue is the only way out), and the permission is only requested when a book is newly
+     * shared.
+     */
+    object SystemContactsSharing : OnboardingUiState()
 
     /** Prompting the user to pick their own contact card ("My Card"). */
     object SelfContactSelection : OnboardingUiState()

@@ -4,7 +4,7 @@ Status: steps 1 (Caller ID level), 2 (per-book sharing) and 3 (the three sharing
 levels) are implemented; the handoff lists what has actually been verified on a
 device. Sharing is decided per
 address book, both whether and how much; there is no global toggle or level.
-Step 4 (routing edits to Corvid) is implemented and awaiting device testing. Step 5 is not started. How and when to offer sharing during onboarding is
+Step 4 (routing edits to Corvid) is built but Google Contacts ignores it (see the handoff), the onboarding sharing step is built, and step 5 is not started. How and when to offer sharing during onboarding is
 still to be decided (see the handoff's open questions).
 
 ## Goal
@@ -284,6 +284,16 @@ color or visibility.
 - The switch reads as off while `WRITE_CONTACTS` is not held, so revoking it in
   system settings is reflected rather than hidden. Turning it on asks again.
 - The wide-screen layout has a case for both destinations.
+
+## Onboarding
+
+A dedicated step after the sync wait and the local-data step: one switch per address book, Continue
+as the only exit, nothing preselected on a first run. Continue shares the books switched on and
+unshares the ones switched off. The contacts permission is requested only when a book is newly shared
+and, if denied, the step stays with the books off and a note, so a book is never left quietly
+unshared. Once Android stops offering the prompt, the note links to the app's settings. The level
+stays at Caller ID. Losing the permission later removes the mirror and keeps the flags, so it returns
+when the permission does.
 
 ## Settings and copy
 

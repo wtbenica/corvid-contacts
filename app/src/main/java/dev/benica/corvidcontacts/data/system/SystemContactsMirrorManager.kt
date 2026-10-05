@@ -21,7 +21,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * level) is covered without hooking each one individually.
  *
  * There is no separate on/off setting: the mirror exists exactly while at least one address book
- * is shared. Unsharing the last one removes it.
+ * is shared and the contacts permission is held. Unsharing the last book, or losing the
+ * permission, removes it.
  */
 class SystemContactsMirrorManager(
     private val dao: SystemContactMirrorDao,
@@ -45,8 +46,12 @@ class SystemContactsMirrorManager(
                     )
                     try {
                         when {
-                            snapshot.books.isEmpty() -> mirror.removeAll()
-                            mirror.hasPermission() -> mirror.reconcile(
+                            // Removing the account needs no contacts permission and takes every
+                            // mirrored contact with it, so a revoked permission doesn't leave the
+                            // copy behind. The sharing flags are kept, so granting the permission
+                            // again brings the mirror back on the next reconcile.
+                            snapshot.books.isEmpty() || !mirror.hasPermission() -> mirror.removeAll()
+                            else -> mirror.reconcile(
                                 snapshot.books,
                                 snapshot.sources
                             )

@@ -424,7 +424,10 @@
     <string name="onboarding_action_continue">계속</string>
     <string name="birthday_reminders_title">생일 알림</string>
     <string name="birthday_reminders_description">연락처의 생일이 오늘이거나 내일이면 알림을 받습니다.</string>
-    <string name="onboarding_action_not_now">나중에</string>
+    <string name="onboarding_sharing_title">다른 앱에 이름 표시</string>
+    <string name="onboarding_sharing_permission_denied">연락처 권한이 거부되어 아무것도 공유되지 않았습니다. 계속하려면 주소록을 끄거나, 공유하려면 권한을 허용하세요.</string>
+    <string name="onboarding_sharing_open_settings">앱 설정 열기</string>
+    <string name="onboarding_sharing_description">메시지 앱, 전화 앱 및 다른 앱이 연락처의 이름과 사진을 표시할 수 있게 합니다. 공유할 주소록을 선택하세요. 연락처 접근 권한이 있는 모든 앱이 공유한 정보를 볼 수 있습니다. 각 주소록의 설정에서 언제든지 변경할 수 있습니다.</string>
     <string name="onboarding_self_contact_title">내 프로필</string>
     <string name="onboarding_self_contact_description">본인의 정보가 담긴 연락처 카드를 선택하세요. 다른 사람과 공유하기가 더 쉬워집니다.</string>
     <string name="onboarding_self_contact_empty_syncing">동기화된 연락처가 곧 여기에 표시됩니다. 표시되면 목록에서 본인의 연락처를 선택할 수 있습니다.</string>

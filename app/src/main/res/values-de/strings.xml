@@ -438,7 +438,10 @@
     <string name="onboarding_action_continue">Weiter</string>
     <string name="birthday_reminders_title">Geburtstagserinnerungen</string>
     <string name="birthday_reminders_description">Erhalte eine Benachrichtigung, wenn ein Kontakt heute oder morgen Geburtstag hat.</string>
-    <string name="onboarding_action_not_now">Nicht jetzt</string>
+    <string name="onboarding_sharing_title">Namen in anderen Apps anzeigen</string>
+    <string name="onboarding_sharing_permission_denied">Die Berechtigung für Kontakte wurde abgelehnt, daher wurde nichts geteilt. Schalte die Bücher aus, um fortzufahren, oder erlaube die Berechtigung, um sie zu teilen.</string>
+    <string name="onboarding_sharing_open_settings">App-Einstellungen öffnen</string>
+    <string name="onboarding_sharing_description">Lass Nachrichten, deine Telefon-App und andere Apps Namen und Fotos deiner Kontakte anzeigen. Wähle, welche Adressbücher geteilt werden. Jede App mit Kontaktzugriff kann sehen, was du teilst. Du kannst das jederzeit in den Einstellungen des jeweiligen Adressbuchs ändern.</string>
     <string name="onboarding_self_contact_title">Dein Profil</string>
     <string name="onboarding_self_contact_description">Wähle die Kontaktkarte mit deinen eigenen Informationen aus. Das erleichtert das Teilen mit anderen.</string>
     <string name="onboarding_self_contact_empty_syncing">Deine synchronisierten Kontakte werden in Kürze hier angezeigt. Sobald das passiert, kannst du deinen eigenen aus der Liste auswählen.</string>

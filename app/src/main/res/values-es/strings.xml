@@ -454,7 +454,10 @@
     <string name="onboarding_action_continue">Continuar</string>
     <string name="birthday_reminders_title">Recordatorios de cumpleaños</string>
     <string name="birthday_reminders_description">Recibe una notificación cuando un contacto cumpla años hoy o mañana.</string>
-    <string name="onboarding_action_not_now">Ahora no</string>
+    <string name="onboarding_sharing_title">Mostrar nombres en otras apps</string>
+    <string name="onboarding_sharing_permission_denied">Se denegó el permiso de contactos, así que no se compartió nada. Desactiva las libretas para continuar, o permite el permiso para compartirlas.</string>
+    <string name="onboarding_sharing_open_settings">Abrir ajustes de la app</string>
+    <string name="onboarding_sharing_description">Permite que Mensajes, tu app de teléfono y otras apps muestren los nombres y fotos de tus contactos. Elige qué libretas de direcciones compartir. Cualquier app con acceso a los contactos puede ver lo que compartes. Puedes cambiarlo en cualquier momento en los ajustes de cada libreta.</string>
     <string name="onboarding_self_contact_title">Tu perfil</string>
     <string name="onboarding_self_contact_description">Elige la tarjeta de contacto que contenga tu información. Esto facilita compartir tus datos con otros.</string>
     <string name="onboarding_self_contact_empty_syncing">Tus contactos sincronizados aparecerán aquí en breve. Una vez que lo hagan, podrás seleccionar el tuyo de la lista.</string>

@@ -2,6 +2,15 @@
 
 package dev.benica.corvidcontacts.ui.onboarding
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +41,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,18 +54,21 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.extensions.surfaceVariant
+import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsWritePermission
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
@@ -92,10 +105,10 @@ fun OnboardingScreen(
     val contacts by viewModel.contacts.collectAsState()
     val currentBirthdayNotificationsEnabled by viewModel.currentBirthdayNotificationsEnabled.collectAsState()
     val isMigratingLocalData by viewModel.isMigratingLocalData.collectAsState()
+    val addressBooks by viewModel.addressBooks.collectAsState()
 
     // Rendered standalone because it has its own scaffold.
     if (uiState is OnboardingUiState.CreatingSelfContact) {
-        val addressBooks by viewModel.addressBooks.collectAsState()
         val allGroups by viewModel.allGroups.collectAsState()
 
         ContactEditScreen(
@@ -129,6 +142,11 @@ fun OnboardingScreen(
                 isSubmitting = isMigratingLocalData,
                 hasServerConnection = hasServerConnection,
                 onSelection = viewModel::resolveLocalDataMigration
+            )
+
+            OnboardingUiState.SystemContactsSharing -> SystemContactsSharingStep(
+                addressBooks = addressBooks,
+                onSave = viewModel::saveSharingChoices
             )
 
             OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
@@ -477,6 +495,135 @@ private fun LocalDataMigrationStep(
             }
         }
     }
+}
+
+/**
+ * Offers to share address books with the system contacts so other apps (Messages, the dialer) can
+ * show names for calls and texts. The switches are the whole answer and Continue is the only way
+ * out: on a first run nothing is preselected, and when setup is redone each book starts as it
+ * currently is (shared only if its flag is on and the permission is held).
+ *
+ * Sharing a book needs the contacts permission, so Continue asks for it when it would newly share
+ * one. If it is denied the step does not move on: the books that needed it are switched back off
+ * and a note says why, so nothing is left quietly unshared. Turning everything off is always a
+ * valid way forward and never asks. The level stays at Caller ID and is changed later on each
+ * book's page.
+ */
+@Composable
+private fun SystemContactsSharingStep(
+    addressBooks: List<AddressBookEntity>,
+    onSave: (selected: Set<String>) -> Unit,
+) {
+    val context = LocalContext.current
+    val hasPermission = rememberHasContactsWritePermission()
+    // A book is only really shared while the permission is held too, so with it revoked every
+    // switch starts off, matching what the address book pages and Settings show.
+    var selected by remember {
+        mutableStateOf(addressBooks.filter { it.shareWithSystem && hasPermission }.map { it.href }.toSet())
+    }
+    var permissionDenied by remember { mutableStateOf(false) }
+    // After a second denial (or "don't ask again") Android no longer shows the prompt, so the only
+    // way to allow it is the app's own settings.
+    var canAskAgain by remember { mutableStateOf(true) }
+
+    fun needsPermission(books: Set<String>) = addressBooks.any {
+        it.href in books && !(it.shareWithSystem && hasPermission)
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            onSave(selected)
+        } else {
+            permissionDenied = true
+            canAskAgain = context.findActivity()?.let {
+                ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.WRITE_CONTACTS)
+            } ?: false
+            // Back to a clean page: the books that needed the permission are off again.
+            selected = addressBooks
+                .filter { it.href in selected && it.shareWithSystem && hasPermission }
+                .map { it.href }
+                .toSet()
+        }
+    }
+
+    OnboardingStepFrame(
+        title = stringResource(R.string.onboarding_sharing_title),
+        description = stringResource(R.string.onboarding_sharing_description),
+        scrollable = true,
+        actions = {
+            CCButton(
+                text = R.string.onboarding_action_continue,
+                onClick = {
+                    if (needsPermission(selected)) {
+                        permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+                    } else {
+                        onSave(selected)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) {
+        if (permissionDenied) {
+            Surface(
+                color = MaterialTheme.colorScheme.errorContainer,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimens.lgSpacing)
+            ) {
+                Column(
+                    modifier = Modifier.padding(Dimens.medSpacing),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
+                ) {
+                    Text(
+                        text = stringResource(R.string.onboarding_sharing_permission_denied),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    if (!canAskAgain) {
+                        CCTextButton(
+                            text = R.string.onboarding_sharing_open_settings,
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.fromParts("package", context.packageName, null)
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        addressBooks.forEach { book ->
+            val isOn = book.href in selected
+            val toggle = {
+                permissionDenied = false
+                selected = if (isOn) selected - book.href else selected + book.href
+            }
+            ListItem(
+                headlineContent = {
+                    Text(book.displayName ?: stringResource(R.string.settings_address_book_unnamed))
+                },
+                supportingContent = if (book.isLocal) {
+                    { Text(stringResource(R.string.settings_address_book_local_badge)) }
+                } else null,
+                trailingContent = { Switch(checked = isOn, onCheckedChange = { toggle() }) },
+                modifier = Modifier.clickable(onClick = toggle),
+            )
+        }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 @Composable
