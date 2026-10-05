@@ -190,8 +190,8 @@ on a device in both directions.
 ### Smaller items
 
 - **Translations.** The de, es, fr, ko and nl strings for this feature, including the per-book
-  wording and `system_contact_edit_not_found`, were written by Claude and need a native-speaker
-  check.
+  wording, the hidden-contact strings and the privacy text, were written by Claude and need a
+  native-speaker check.
 - **Unshared books are easy to miss.** During testing a contact was added to an unshared book and
   was (correctly) not mirrored, but it was not obvious why. Consider making a book's shared or
   private state clearer in the book list and in the contact list.
@@ -199,6 +199,18 @@ on a device in both directions.
   birthday stored as `--01-15` syncs and displays but never triggers a reminder.
 - **Performance.** Unknown how many contacts before batching needs tuning (batches are 50
   contacts for inserts, 200 for deletes).
+- **Background read-back (optional, not planned for 1.0.5).** Edits made in other apps while Corvid
+  is in the background are only read back when the app next comes to the front (the phone holds
+  back the change notices from a backgrounded app). A WorkManager job with a content-URI trigger on
+  the raw contacts could do it sooner, but it would wake the app for every contact change on the
+  phone, from any account.
+- **Review all tests and audit coverage gaps (do this last, before release).** A thorough pass over
+  every test: is it still meaningful, brittle, duplicated or slow? Then an audit of what is not
+  covered. Known gaps going in: `SystemContactsReader` (the provider queries and the photo token),
+  the absorb path inside `SystemContactsMirror` (only the pure merge and plan are unit tested),
+  the manager's observer and permission handling, the hidden-contact notice and menu UI (only
+  `SystemVisibility` is tested), the onboarding sharing step, and the photo round trip. Most of
+  these were only checked by hand on a device.
 
 ## Decisions made
 
