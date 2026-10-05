@@ -137,6 +137,49 @@ class SystemEditMergeTest {
     }
 
     @Test
+    fun `an edited number keeps the label it had`() {
+        val labelled = entity().copy(phones = listOf(Phone("+1 617-555-0155", "CELL,VOICE", region = "US")))
+        val written = base().copy(phones = listOf(MirrorPhone("+1 617-555-0155", MirrorPlan.TYPE_MOBILE)))
+        val theirs = written.copy(phones = listOf(MirrorPhone("+16175550199", MirrorPlan.TYPE_MOBILE)))
+
+        val result = SystemEditMerge.apply(labelled, SystemEditMerge.merge(written, theirs, written))
+
+        assertEquals(listOf(Phone("+16175550199", "CELL,VOICE")), result.phones)
+    }
+
+    @Test
+    fun `a number that other maps to is labelled Other, and reads back as the same type`() {
+        val other = entity().copy(phones = emptyList())
+        val written = base().copy(phones = emptyList())
+        val theirs = written.copy(phones = listOf(MirrorPhone("+16175550199", MirrorPlan.TYPE_OTHER)))
+
+        val result = SystemEditMerge.apply(other, SystemEditMerge.merge(written, theirs, written))
+
+        assertEquals(listOf(Phone("+16175550199", "OTHER")), result.phones)
+        assertEquals(MirrorPlan.TYPE_OTHER, MirrorPlan.phoneType("OTHER"))
+    }
+
+    @Test
+    fun `replacing one number of two keeps the other as it was`() {
+        val two = entity().copy(
+            phones = listOf(Phone("+1 111-111-1111", "WORK", region = "US"), Phone("+1 222-222-2222", "HOME", region = "US"))
+        )
+        val written = base().copy(
+            phones = listOf(MirrorPhone("+1 111-111-1111", MirrorPlan.TYPE_WORK), MirrorPhone("+1 222-222-2222", MirrorPlan.TYPE_HOME))
+        )
+        val theirs = written.copy(
+            phones = listOf(MirrorPhone("+1 222-222-2222", MirrorPlan.TYPE_HOME), MirrorPhone("+1 333-333-3333", MirrorPlan.TYPE_WORK))
+        )
+
+        val result = SystemEditMerge.apply(two, SystemEditMerge.merge(written, theirs, written))
+
+        assertEquals(
+            listOf(Phone("+1 222-222-2222", "HOME", region = "US"), Phone("+1 333-333-3333", "WORK")),
+            result.phones
+        )
+    }
+
+    @Test
     fun `a removed email is removed from the contact`() {
         val theirs = base().copy(emails = emptyList())
 

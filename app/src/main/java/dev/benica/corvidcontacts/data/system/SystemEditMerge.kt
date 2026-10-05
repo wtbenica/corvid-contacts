@@ -179,63 +179,91 @@ object SystemEditMerge {
         return result
     }
 
-    private fun mergePhones(current: List<Phone>?, theirs: List<MirrorPhone>): List<Phone> {
-        val remaining = current.orEmpty().toMutableList()
-        return theirs.map { phone ->
-            val i = remaining.indexOfFirst {
-                phoneKey(it.value) == phoneKey(phone.number) && MirrorPlan.phoneType(it.type) == phone.type
-            }
-            if (i >= 0) remaining.removeAt(i) else Phone(phone.number.trim(), MirrorPlan.phoneTypeName(phone.type))
+    /**
+     * Lines [theirs] up with [current], in the order of [theirs]. An entry that matches one in
+     * [current] ([isSame]) is that one, untouched. One that doesn't takes the type of an unmatched
+     * entry of the same kind ([isSameKind]), so editing a number keeps its label, and is otherwise
+     * built from scratch by [fresh].
+     */
+    private fun <E : Any, S> alignWithCurrent(
+        current: List<E>,
+        theirs: List<S>,
+        isSame: (E, S) -> Boolean,
+        isSameKind: (E, S) -> Boolean,
+        fresh: (S, E?) -> E,
+    ): List<E> {
+        val remaining = current.toMutableList()
+        val result = arrayOfNulls<Any>(theirs.size)
+        theirs.forEachIndexed { index, item ->
+            val i = remaining.indexOfFirst { isSame(it, item) }
+            if (i >= 0) result[index] = remaining.removeAt(i)
         }
+        theirs.forEachIndexed { index, item ->
+            if (result[index] != null) return@forEachIndexed
+            val i = remaining.indexOfFirst { isSameKind(it, item) }
+            result[index] = fresh(item, if (i >= 0) remaining.removeAt(i) else null)
+        }
+        @Suppress("UNCHECKED_CAST")
+        return result.map { it as E }
     }
 
-    private fun mergeEmails(current: List<Email>?, theirs: List<MirrorEmail>): List<Email> {
-        val remaining = current.orEmpty().toMutableList()
-        return theirs.map { email ->
-            val i = remaining.indexOfFirst {
+    private fun mergePhones(current: List<Phone>?, theirs: List<MirrorPhone>): List<Phone> =
+        alignWithCurrent(
+            current.orEmpty(),
+            theirs,
+            isSame = { it, phone ->
+                phoneKey(it.value) == phoneKey(phone.number) && MirrorPlan.phoneType(it.type) == phone.type
+            },
+            isSameKind = { it, phone -> MirrorPlan.phoneType(it.type) == phone.type },
+            fresh = { phone, old -> Phone(phone.number.trim(), old?.type ?: MirrorPlan.phoneTypeName(phone.type)) },
+        )
+
+    private fun mergeEmails(current: List<Email>?, theirs: List<MirrorEmail>): List<Email> =
+        alignWithCurrent(
+            current.orEmpty(),
+            theirs,
+            isSame = { it, email ->
                 it.value.trim().equals(email.address.trim(), ignoreCase = true) &&
                         MirrorPlan.emailType(it.type) == email.type
-            }
-            if (i >= 0) remaining.removeAt(i) else Email(email.address.trim(), MirrorPlan.emailTypeName(email.type))
-        }
-    }
+            },
+            isSameKind = { it, email -> MirrorPlan.emailType(it.type) == email.type },
+            fresh = { email, old -> Email(email.address.trim(), old?.type ?: MirrorPlan.emailTypeName(email.type)) },
+        )
 
     private fun mergeAddresses(
         current: List<StructuredAddress>?,
         theirs: List<MirrorAddress>,
-    ): List<StructuredAddress> {
-        val remaining = current.orEmpty().toMutableList()
-        return theirs.map { address ->
-            val i = remaining.indexOfFirst {
-                listOf(it.street, it.poBox, it.city, it.state, it.postalCode, it.country).map { part -> part.norm() } ==
-                        listOf(address.street, address.poBox, address.city, address.region, address.postcode, address.country)
-                            .map { part -> part.norm() } &&
-                        MirrorPlan.addressType(it.type) == address.type
-            }
-            if (i >= 0) {
-                remaining.removeAt(i)
-            } else {
-                val structured = listOf(
-                    address.street,
-                    address.poBox,
-                    address.city,
-                    address.region,
-                    address.postcode,
-                    address.country
-                ).any { it.norm() != null }
-                StructuredAddress(
-                    type = MirrorPlan.addressTypeName(address.type),
-                    // An address typed as one line has no parts, so it is kept whole as the street.
-                    street = if (structured) address.street.norm() else address.formatted.norm(),
-                    city = address.city.norm(),
-                    state = address.region.norm(),
-                    postalCode = address.postcode.norm(),
-                    country = address.country.norm(),
-                    poBox = address.poBox.norm()
-                )
-            }
-        }
-    }
+    ): List<StructuredAddress> = alignWithCurrent(
+        current.orEmpty(),
+        theirs,
+        isSame = { it, address ->
+            listOf(it.street, it.poBox, it.city, it.state, it.postalCode, it.country).map { part -> part.norm() } ==
+                    listOf(address.street, address.poBox, address.city, address.region, address.postcode, address.country)
+                        .map { part -> part.norm() } &&
+                    MirrorPlan.addressType(it.type) == address.type
+        },
+        isSameKind = { it, address -> MirrorPlan.addressType(it.type) == address.type },
+        fresh = { address, old ->
+            val structured = listOf(
+                address.street,
+                address.poBox,
+                address.city,
+                address.region,
+                address.postcode,
+                address.country
+            ).any { it.norm() != null }
+            StructuredAddress(
+                type = old?.type ?: MirrorPlan.addressTypeName(address.type),
+                // An address typed as one line has no parts, so it is kept whole as the street.
+                street = if (structured) address.street.norm() else address.formatted.norm(),
+                city = address.city.norm(),
+                state = address.region.norm(),
+                postalCode = address.postcode.norm(),
+                country = address.country.norm(),
+                poBox = address.poBox.norm()
+            )
+        },
+    )
 
     private fun ContactEntity.withLinks(theirs: MirrorContact): ContactEntity {
         val urls = (theirs.websites + theirs.profileLinks).mapNotNull { it.norm() }.distinct()

@@ -350,21 +350,24 @@ data class MirrorPlan(
             TYPE_WORK -> "WORK"
             PHONE_TYPE_FAX_WORK, PHONE_TYPE_FAX_HOME, PHONE_TYPE_OTHER_FAX -> "FAX"
             PHONE_TYPE_MAIN -> "MAIN"
+            TYPE_OTHER -> "OTHER"
             else -> null
         }
 
-        /** The vCard EMAIL type for an `Email.TYPE_*` value, or `null` for other. */
+        /** The vCard EMAIL type for an `Email.TYPE_*` value, or `null` when there is no matching one. */
         internal fun emailTypeName(type: Int): String? = when (type) {
             EMAIL_TYPE_HOME -> "HOME"
             EMAIL_TYPE_WORK -> "WORK"
             EMAIL_TYPE_MOBILE -> "CELL"
+            EMAIL_TYPE_OTHER -> "OTHER"
             else -> null
         }
 
-        /** The vCard ADR type for a `StructuredPostal.TYPE_*` value, or `null` for other. */
+        /** The vCard ADR type for a `StructuredPostal.TYPE_*` value, or `null` when there is no matching one. */
         internal fun addressTypeName(type: Int): String? = when (type) {
             POSTAL_TYPE_HOME -> "HOME"
             POSTAL_TYPE_WORK -> "WORK"
+            POSTAL_TYPE_OTHER -> "OTHER"
             else -> null
         }
 
