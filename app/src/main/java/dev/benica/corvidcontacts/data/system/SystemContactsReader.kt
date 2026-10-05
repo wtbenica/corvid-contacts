@@ -50,18 +50,48 @@ class SystemContactsReader(
 
     private val resolver get() = context.contentResolver
 
+    /** Whether any raw contact in the account is dirty or deleted. Cheap enough to run on every change. */
+    fun hasChanges(): Boolean = queryChanged(arrayOf(RawContacts._ID)) { it.count > 0 } ?: false
+
+    /**
+     * The version of every raw contact in the account. A rewrite that names the version it read only
+     * applies if nothing has changed the contact since.
+     */
+    fun versions(): Map<Long, Long> {
+        val result = HashMap<Long, Long>()
+        resolver.query(
+            RawContacts.CONTENT_URI,
+            arrayOf(RawContacts._ID, RawContacts.VERSION),
+            "${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
+            arrayOf(account.name, account.type),
+            null
+        )?.use { while (it.moveToNext()) result[it.getLong(0)] = it.getLong(1) }
+        return result
+    }
+
+    /** The current version of [rawContactId], or `null` if it no longer exists. */
+    fun version(rawContactId: Long): Long? = resolver.query(
+        RawContacts.CONTENT_URI,
+        arrayOf(RawContacts.VERSION),
+        "${RawContacts._ID}=?",
+        arrayOf(rawContactId.toString()),
+        null
+    )?.use { if (it.moveToFirst()) it.getLong(0) else null }
+
+    private fun <R> queryChanged(projection: Array<String>, read: (Cursor) -> R): R? = resolver.query(
+        RawContacts.CONTENT_URI,
+        projection,
+        "${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=? AND " +
+            "(${RawContacts.DIRTY}=1 OR ${RawContacts.DELETED}=1)",
+        arrayOf(account.name, account.type),
+        null
+    )?.use(read)
+
     /** Every raw contact in the account that is dirty or deleted. */
     fun readChanges(): List<Change> {
         val deleted = HashSet<Long>()
         val edited = ArrayList<Long>()
-        resolver.query(
-            RawContacts.CONTENT_URI,
-            arrayOf(RawContacts._ID, RawContacts.DELETED),
-            "${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=? AND " +
-                "(${RawContacts.DIRTY}=1 OR ${RawContacts.DELETED}=1)",
-            arrayOf(account.name, account.type),
-            null
-        )?.use { cursor ->
+        queryChanged(arrayOf(RawContacts._ID, RawContacts.DELETED)) { cursor ->
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(0)
                 if (cursor.getInt(1) == 1) deleted += id else edited += id
@@ -207,7 +237,7 @@ class SystemContactsReader(
                 }
 
                 Event.CONTENT_ITEM_TYPE -> if (int(3) == Event.TYPE_BIRTHDAY && birthday == null) {
-                    birthday = MirrorPlan.normalizeBirthday(text(2))
+                    birthday = text(2)
                 }
 
                 Organization.CONTENT_ITEM_TYPE -> if (organization == null) {

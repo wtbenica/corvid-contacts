@@ -262,6 +262,30 @@ class SystemEditMergeTest {
     }
 
     @Test
+    fun `a birthday in a form we don't understand is left as it was`() {
+        val written = base().copy(birthday = "1990-01-05")
+        listOf("1990-1-5", "5 January 1990", "1990-01-05T00:00:00Z").forEach { raw ->
+            val merge = SystemEditMerge.merge(written, written.copy(birthday = raw), written)
+
+            assertTrue(raw, merge.isEmpty)
+            assertEquals(raw, "1990-01-05", merge.theirs.birthday)
+        }
+    }
+
+    @Test
+    fun `a birthday in another form we do understand is read, and a missing one is cleared`() {
+        val written = base().copy(birthday = "1990-01-05")
+
+        val changed = SystemEditMerge.merge(written, written.copy(birthday = "--0115"), written)
+        val cleared = SystemEditMerge.merge(written, written.copy(birthday = null), written)
+
+        assertEquals(setOf(MirrorField.BIRTHDAY), changed.taken)
+        assertEquals("--01-15", changed.theirs.birthday)
+        assertEquals(setOf(MirrorField.BIRTHDAY), cleared.taken)
+        assertNull(cleared.theirs.birthday)
+    }
+
+    @Test
     fun `a photo changed only in the system contacts is taken, and removing it clears the contact's photo`() {
         val written = base().copy(photoStamp = "1-100", systemPhoto = "aaa")
         val replaced = written.copy(systemPhoto = "bbb")

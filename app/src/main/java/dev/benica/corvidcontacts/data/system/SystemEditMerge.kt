@@ -53,7 +53,9 @@ data class SystemMerge(
  * Corvid's value wins and the system copy is rewritten from it.
  */
 object SystemEditMerge {
-    fun merge(base: MirrorContact, theirs: MirrorContact, ours: MirrorContact?): SystemMerge {
+    fun merge(base: MirrorContact, read: MirrorContact, ours: MirrorContact?): SystemMerge {
+        // A birthday in a form we don't understand is left as it was, never read as removed.
+        val theirs = read.copy(birthday = read.birthday?.let { MirrorPlan.normalizeBirthday(it) ?: base.birthday })
         if (ours == null) return SystemMerge(emptySet(), base, theirs)
         val taken = MirrorField.entries
             .filter { it.isMirroredAt(base.level) }

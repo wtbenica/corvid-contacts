@@ -94,6 +94,9 @@ class SystemContactsMirror(
         Manifest.permission.READ_CONTACTS
     ) == PackageManager.PERMISSION_GRANTED
 
+    /** Whether another app has edited or deleted a mirrored contact since the last reconcile. */
+    fun hasSystemChanges(): Boolean = canRead() && reader.hasChanges()
+
     private fun accountExists(): Boolean =
         accountManager.getAccountsByType(account.type).any { it.name == account.name }
 
@@ -128,6 +131,8 @@ class SystemContactsMirror(
         mutex.withLock {
             ensureAccount()
 
+            // Read before the edits, so a contact changed after this point fails its guarded rewrite.
+            val versions = if (canRead()) reader.versions() else emptyMap()
             val absorbed = absorbSystemEdits(sources)
             val current = if (absorbed.roomChanged) dao.getMirrorSources() else sources
 
@@ -162,7 +167,7 @@ class SystemContactsMirror(
             if (plan.isEmpty) return@withLock
 
             applyDeletes(plan.deletes)
-            applyUpdates(plan.updates)
+            applyUpdates(plan.updates, versions)
             applyInserts(plan.inserts)
         }
     }
@@ -347,24 +352,38 @@ class SystemContactsMirror(
         }
     }
 
-    private suspend fun applyUpdates(updates: List<Pair<MirrorContact, SystemContactMirrorEntity>>) {
+    /**
+     * Rewrites each contact from Corvid's copy. [versions] holds each raw contact's version from
+     * before the edits were read: a contact that has changed since is skipped, and the next pass
+     * reads that edit instead of overwriting it.
+     */
+    private suspend fun applyUpdates(
+        updates: List<Pair<MirrorContact, SystemContactMirrorEntity>>,
+        versions: Map<Long, Long>,
+    ) {
         val missing = ArrayList<MirrorContact>()
         for ((contact, entry) in updates) {
             val rawId = entry.rawContactId
+            val expectedVersion = versions[rawId]
             val ops = ArrayList<ContentProviderOperation>()
             // Touching the raw contact with an expected count of 1 fails the whole batch if the row
-            // is gone, instead of attaching new data rows to a stale id.
+            // is gone or has changed, instead of attaching new data rows to a stale id.
             ops += ContentProviderOperation
                 .newUpdate(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
-                .withSelection("${RawContacts._ID}=?", arrayOf(rawId.toString()))
+                .withSelection(
+                    if (expectedVersion != null) "${RawContacts._ID}=? AND ${RawContacts.VERSION}=?" else "${RawContacts._ID}=?",
+                    listOfNotNull(rawId.toString(), expectedVersion?.toString()).toTypedArray()
+                )
                 .withValue(RawContacts.SOURCE_ID, contact.id)
                 .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
                 .withValue(RawContacts.DIRTY, 0)
                 .withExpectedCount(1)
                 .build()
+            // Only the kinds of row Corvid writes; anniversaries, IM and custom rows added by another
+            // app are left alone.
             ops += ContentProviderOperation
                 .newDelete(Data.CONTENT_URI.asSyncAdapterByRowId())
-                .withSelection("${Data.RAW_CONTACT_ID}=?", arrayOf(rawId.toString()))
+                .withSelection(MANAGED_ROWS_SELECTION, arrayOf(rawId.toString()) + MANAGED_ROWS_ARGS)
                 .build()
             ops += dataOps(contact) { builder -> builder.withValue(Data.RAW_CONTACT_ID, rawId) }
 
@@ -380,8 +399,13 @@ class SystemContactsMirror(
                 val photoToken = writePhoto(contact, rawId)
                 dao.upsert(listOf(entry(contact, rawId, photoToken)))
             } catch (e: OperationApplicationException) {
-                Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
-                missing += contact
+                val current = reader.version(rawId)
+                if (expectedVersion != null && current != null && current != expectedVersion) {
+                    Log.i(TAG, "update contact=${contact.id} raw=$rawId changed meanwhile, will read it next")
+                } else {
+                    Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
+                    missing += contact
+                }
             }
         }
         if (missing.isNotEmpty()) {
@@ -618,5 +642,26 @@ class SystemContactsMirror(
         const val DELETE_BATCH = 200
         const val PHOTO_PASS_THROUGH_BYTES = 256 * 1024
         const val PHOTO_MAX_DIMENSION = 720
+
+        private val MANAGED_MIME_TYPES = arrayOf(
+            StructuredName.CONTENT_ITEM_TYPE,
+            GroupMembership.CONTENT_ITEM_TYPE,
+            Phone.CONTENT_ITEM_TYPE,
+            Email.CONTENT_ITEM_TYPE,
+            StructuredPostal.CONTENT_ITEM_TYPE,
+            Website.CONTENT_ITEM_TYPE,
+            Relation.CONTENT_ITEM_TYPE,
+            Organization.CONTENT_ITEM_TYPE,
+            Nickname.CONTENT_ITEM_TYPE,
+            Note.CONTENT_ITEM_TYPE,
+            Photo.CONTENT_ITEM_TYPE,
+        )
+
+        /** Corvid's rows for one raw contact: the kinds it writes, and birthdays among the events. */
+        val MANAGED_ROWS_SELECTION =
+            "${Data.RAW_CONTACT_ID}=? AND (${Data.MIMETYPE} IN (${MANAGED_MIME_TYPES.joinToString(",") { "?" }}) " +
+                "OR (${Data.MIMETYPE}=? AND ${Data.DATA2}=?))"
+        val MANAGED_ROWS_ARGS =
+            MANAGED_MIME_TYPES + Event.CONTENT_ITEM_TYPE + Event.TYPE_BIRTHDAY.toString()
     }
 }

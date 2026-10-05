@@ -314,36 +314,32 @@ fun AddressBookSettingsScreen(
         )
     }
 
-    if (showHiddenDialog) {
-        if (hiddenContacts.isEmpty()) {
-            showHiddenDialog = false
-        } else {
-            CCAlertDialog(
-                onDismissRequest = { showHiddenDialog = false },
-                title = R.string.address_book_setting_hidden,
-                content = {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Text(stringResource(R.string.address_book_hidden_dialog_message))
-                        hiddenContacts.forEach { contact ->
-                            ListItem(
-                                headlineContent = { Text(contact.name) },
-                                trailingContent = {
-                                    TextButton(onClick = { onShowInSystem(listOf(contact.id)) }) {
-                                        Text(stringResource(R.string.detail_hidden_from_system_show))
-                                    }
-                                },
-                            )
-                        }
+    if (showHiddenDialog && hiddenContacts.isNotEmpty()) {
+        CCAlertDialog(
+            onDismissRequest = { showHiddenDialog = false },
+            title = R.string.address_book_setting_hidden,
+            content = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text(stringResource(R.string.address_book_hidden_dialog_message))
+                    hiddenContacts.forEach { contact ->
+                        ListItem(
+                            headlineContent = { Text(contact.name) },
+                            trailingContent = {
+                                TextButton(onClick = { onShowInSystem(listOf(contact.id)) }) {
+                                    Text(stringResource(R.string.detail_hidden_from_system_show))
+                                }
+                            },
+                        )
                     }
-                },
-                confirmButton = R.string.address_book_hidden_show_all,
-                onConfirm = {
-                    onShowInSystem(hiddenContacts.map { it.id })
-                    showHiddenDialog = false
-                },
-                dismissButton = R.string.common_done,
-            )
-        }
+                }
+            },
+            confirmButton = R.string.address_book_hidden_show_all,
+            onConfirm = {
+                onShowInSystem(hiddenContacts.map { it.id })
+                showHiddenDialog = false
+            },
+            dismissButton = R.string.common_done,
+        )
     }
 
     // Uploading needs a server; with none connected, offer to set one up instead of failing.

@@ -41,6 +41,9 @@ data class MirrorSource(
     val addressBookHref: String,
 )
 
+private const val SHARED_BOOKS_QUERY =
+    "SELECT * FROM address_books WHERE shareWithSystem = 1 ORDER BY sortOrder ASC"
+
 /**
  * Non-archived contacts in shared address books, with only the columns the mirror needs. Photos
  * are read from their files, so `photoUrl` is deliberately omitted.
@@ -131,8 +134,12 @@ interface SystemContactMirrorDao {
     suspend fun deleteAllGroups()
 
     /** Address books the user has chosen to share with the system contacts. */
-    @Query("SELECT * FROM address_books WHERE shareWithSystem = 1 ORDER BY sortOrder ASC")
+    @Query(SHARED_BOOKS_QUERY)
     fun observeSharedBooks(): Flow<List<AddressBookEntity>>
+
+    /** The same books as [observeSharedBooks], read once. */
+    @Query(SHARED_BOOKS_QUERY)
+    suspend fun getSharedBooks(): List<AddressBookEntity>
 
     @Query(MIRROR_SOURCES_QUERY)
     fun observeMirrorSources(): Flow<List<MirrorSource>>

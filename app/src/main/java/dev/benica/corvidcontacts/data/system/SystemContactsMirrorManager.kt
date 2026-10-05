@@ -17,6 +17,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -53,7 +54,7 @@ class SystemContactsMirrorManager(
     private fun observeSystemContacts() {
         if (observing) return
         try {
-            // Also fires for the mirror's own writes; the reconcile that follows finds nothing to do.
+            // Also fires for the mirror's own writes; the check that follows finds nothing to do.
             context.contentResolver.registerContentObserver(
                 ContactsContract.RawContacts.CONTENT_URI,
                 true,
@@ -69,45 +70,65 @@ class SystemContactsMirrorManager(
         }
     }
 
-    @OptIn(FlowPreview::class)
     fun start(scope: CoroutineScope) {
-        scope.launch {
-            combine(
-                dao.observeSharedBooks(),
-                dao.observeMirrorSources(),
-                dao.observeHiddenIds(),
-                systemChanges
-            ) { books, sources, _, _ ->
-                SharedSnapshot(books, sources)
+        scope.launch { reconcileOnRoomChanges() }
+        scope.launch { reconcileOnSystemChanges() }
+    }
+
+    /** Keeps the mirror in line with Corvid's own data; also the first pass after the app starts. */
+    @OptIn(FlowPreview::class)
+    private suspend fun reconcileOnRoomChanges() {
+        combine(
+            dao.observeSharedBooks(),
+            dao.observeMirrorSources(),
+            dao.observeHiddenIds()
+        ) { books, sources, _ ->
+            SharedSnapshot(books, sources)
+        }
+            .debounce(DEBOUNCE_MS.milliseconds)
+            .collect { snapshot ->
+                Log.i(
+                    TAG,
+                    "snapshot: sharedBooks=${snapshot.books.size} sources=${snapshot.sources.size} " +
+                            "permission=${mirror.hasPermission()}"
+                )
+                update(snapshot)
             }
-                .debounce(DEBOUNCE_MS.milliseconds)
-                .collect { snapshot ->
-                    Log.i(
-                        TAG,
-                        "snapshot: sharedBooks=${snapshot.books.size} sources=${snapshot.sources.size} " +
-                                "permission=${mirror.hasPermission()}"
-                    )
-                    try {
-                        when {
-                            // Removing the account needs no contacts permission and takes every
-                            // mirrored contact with it, so a revoked permission doesn't leave the
-                            // copy behind. The sharing flags are kept, so granting the permission
-                            // again brings the mirror back on the next reconcile.
-                            snapshot.books.isEmpty() || !mirror.hasPermission() -> mirror.removeAll()
-                            else -> {
-                                observeSystemContacts()
-                                mirror.reconcile(
-                                    snapshot.books,
-                                    snapshot.sources
-                                )
-                            }
-                        }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        Log.w(TAG, "System contacts mirror update failed", e)
-                    }
+    }
+
+    /**
+     * Picks up edits made in other apps. The phone reports changes to every contact on it, so this
+     * only does the full pass when a mirrored contact is actually edited or deleted.
+     */
+    @OptIn(FlowPreview::class)
+    private suspend fun reconcileOnSystemChanges() {
+        systemChanges
+            .drop(1)
+            .debounce(DEBOUNCE_MS.milliseconds)
+            .collect {
+                if (mirror.hasSystemChanges()) {
+                    update(SharedSnapshot(dao.getSharedBooks(), dao.getMirrorSources()))
                 }
+            }
+    }
+
+    private suspend fun update(snapshot: SharedSnapshot) {
+        try {
+            when {
+                // Removing the account needs no contacts permission and takes every mirrored
+                // contact with it, so a revoked permission doesn't leave the copy behind. The
+                // sharing flags are kept, so granting the permission again brings the mirror back
+                // on the next reconcile.
+                snapshot.books.isEmpty() || !mirror.hasPermission() -> mirror.removeAll()
+                else -> {
+                    observeSystemContacts()
+                    mirror.reconcile(snapshot.books, snapshot.sources)
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "System contacts mirror update failed", e)
         }
     }
 
