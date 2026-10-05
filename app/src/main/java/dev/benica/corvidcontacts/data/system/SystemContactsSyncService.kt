@@ -14,8 +14,8 @@ import android.os.IBinder
 
 /**
  * Registers a sync adapter for the mirror's account type, which is what lets the account own
- * contacts in `ContactsContract`. It deliberately does nothing: the mirror is written one-way
- * from Corvid's own database by [SystemContactsMirrorManager], never pulled by the system.
+ * contacts in `ContactsContract`. It deliberately does nothing: [SystemContactsMirrorManager] keeps
+ * the contacts up to date itself.
  */
 class SystemContactsSyncService : Service() {
     private lateinit var syncAdapter: NoOpSyncAdapter

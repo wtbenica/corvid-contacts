@@ -50,18 +50,16 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 /**
- * Writes a one-way mirror of Corvid's contacts into Android's `ContactsContract` provider, under
- * Corvid's own account type, so other apps (Messages, the dialer) can show a name and photo for a
- * phone number.
+ * Keeps a copy of Corvid's contacts in Android's `ContactsContract` provider, under Corvid's own
+ * account type, so other apps (Messages, the dialer) can show a name and photo for a phone number.
  *
- * Room stays the source of truth. The raw contact ids returned when inserting are kept in Room
- * (see [SystemContactMirrorEntity]) and used for later updates and deletes. A mirrored row that
- * has disappeared is detected when an update affects nothing, and re-inserted.
+ * Room stays the source of truth. The raw contact ids from inserts are kept in Room (see
+ * [SystemContactMirrorEntity]) for later updates and deletes, and a row that has disappeared is
+ * re-inserted.
  *
- * With [Manifest.permission.READ_CONTACTS] too, a reconcile first absorbs what other apps did to the
- * mirrored contacts (see [SystemContactsReader]): an edit is merged into the Corvid contact, and a
- * delete hides the contact from the system contacts instead of deleting it anywhere else. Only then
- * is anything written, so an edit is never overwritten before it has been read.
+ * Edits made to the copy in other apps are read back first (see [SystemContactsReader]): an edit is
+ * merged into the Corvid contact, and a delete hides the contact from the copy instead of deleting
+ * it anywhere else. Only then is anything written, so an edit is never overwritten unread.
  *
  * Only address books the user has chosen to share are mirrored, each as one system group so the
  * books stay distinguishable in the Contacts app. How much of each contact is written depends on

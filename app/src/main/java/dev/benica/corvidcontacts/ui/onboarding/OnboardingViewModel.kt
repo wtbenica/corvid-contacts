@@ -156,7 +156,7 @@ class OnboardingViewModel(
                 if (isResumingAlreadyOnboardedAccount) {
                     // If resuming purely for migration, we don't start a background sync here;
                     // we'll just show the migration step immediately.
-                    advanceToMigrationOrComplete()
+                    advanceToMigrationOr { completeOnboarding() }
                 } else {
                     // Start background sync immediately for new accounts.
                     _isBackgroundSyncing.value = true
@@ -184,29 +184,19 @@ class OnboardingViewModel(
             settingsRepository.saveAddressLookupMode(addressLookupMode)
             settingsRepository.saveBirthdayNotificationsEnabled(birthdayReminders)
 
-            advanceToMigrationOrWait()
+            advanceToMigrationOr { advanceToSyncJunction() }
         }
     }
 
-    private suspend fun advanceToMigrationOrComplete() {
+    /** Shows the migration step if there are local books to decide about, and otherwise runs [next]. */
+    private suspend fun advanceToMigrationOr(next: suspend () -> Unit) {
         val credentials = authRepository.credentials.first()
         cleanupEmptyDefaultLocalBook()
         val localBooks = contactsRepository.getLocalAddressBooks()
         if (credentials != null && localBooks.isNotEmpty()) {
             _uiState.value = OnboardingUiState.LocalDataMigration(localBooks)
         } else {
-            completeOnboarding()
-        }
-    }
-
-    private suspend fun advanceToMigrationOrWait() {
-        val credentials = authRepository.credentials.first()
-        cleanupEmptyDefaultLocalBook()
-        val localBooks = contactsRepository.getLocalAddressBooks()
-        if (credentials != null && localBooks.isNotEmpty()) {
-            _uiState.value = OnboardingUiState.LocalDataMigration(localBooks)
-        } else {
-            advanceToSyncJunction()
+            next()
         }
     }
 
@@ -235,13 +225,8 @@ class OnboardingViewModel(
         advancePastSync()
     }
 
-    /**
-     * Offers to migrate any local-only address books (see
-     * [ContactsRepository.getLocalAddressBooks]) into the server just logged into. Skips straight
-     * to the sync junction if there's nothing local to ask about.
-     */
+    /** Offers sharing once at least one address book exists, and otherwise moves on. */
     private suspend fun advancePastSync() {
-        // Nothing to offer sharing for until at least one address book exists.
         if (contactsRepository.userManageableAddressBooks.first().isNotEmpty()) {
             _uiState.value = OnboardingUiState.SystemContactsSharing
         } else {
@@ -368,7 +353,7 @@ class OnboardingViewModel(
 
 /** The current step of the onboarding flow, shown in order. */
 sealed class OnboardingUiState {
-    /** Initial app-wide setup: theme, address accuracy, and phone formatting. Sync runs in background. */
+    /** App-wide setup: address lookup, phone formatting and birthday reminders. Sync runs in the background. */
     object Setup : OnboardingUiState()
 
     /** Wait screen shown only if background sync from [Setup] isn't finished yet. */

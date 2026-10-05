@@ -15,9 +15,8 @@ import dev.benica.corvidcontacts.R
 
 /**
  * Registers the account type that owns the mirrored system contacts. The account has no
- * credentials and no sign-in: it's created and removed by [SystemContactsMirror] when the user
- * toggles the feature in Corvid's settings, so adding one from Android's account settings is
- * refused.
+ * credentials and no sign-in: [SystemContactsMirror] creates it when a book is first shared and
+ * removes it when none are, so adding one from Android's account settings is refused.
  */
 class SystemContactsAuthenticatorService : Service() {
     private lateinit var authenticator: Authenticator
