@@ -16,7 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.benica.corvidcontacts.R
+import dev.benica.corvidcontacts.extensions.complementary
+import dev.benica.corvidcontacts.extensions.onSurface
+import dev.benica.corvidcontacts.extensions.surface
+import dev.benica.corvidcontacts.extensions.text
 import dev.benica.corvidcontacts.ui.theme.Dimens
+import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 
 /**
  * Says that a contact was deleted from the phone's contacts in another app and is kept out of them,
@@ -28,8 +33,11 @@ fun HiddenFromSystemCard(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // An accent drawn from the contact's color, so the card stands out without leaving the theme.
+    val accent = currentThemeColor().complementary()
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = accent.surface(),
+        contentColor = accent.onSurface(),
         shape = MaterialTheme.shapes.medium,
         modifier = modifier.fillMaxWidth()
     ) {
@@ -50,7 +58,10 @@ fun HiddenFromSystemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = onShowAgain) {
-                    Text(stringResource(R.string.detail_hidden_from_system_show))
+                    Text(
+                        text = stringResource(R.string.detail_hidden_from_system_show),
+                        color = accent.text()
+                    )
                 }
                 TextButton(onClick = onDelete) {
                     Text(
