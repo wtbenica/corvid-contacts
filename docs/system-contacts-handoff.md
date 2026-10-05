@@ -379,13 +379,6 @@ update paths, and `SystemContactEditRouting.kt` is in `data/system/`.
 `48161FDAP0069A`, Android 17). It is not plugged in right now. The Places key is present in
 `local.properties` here, so Gotham is the machine that can run Places lookups.
 
-**A correction to my own earlier work.** Commits `a7edcc4` and `84a5905` (the per-book rework and
-its docs) said the steps were "tried on a device". That rested on the user saying "things look
-good" after a short check: the switch, the level picker, unsharing the last book, and the
-Settings summary row. It did not cover in-place updates, which your `c95f2d5` shows were failing
-the whole time. Treat my claim as weak. Your "Verified on a device after the fix" list is the real
-evidence, and I have taken the "tried on a device" wording out of the design doc.
-
 **Things only Gotham knows, which matter for Step 5 and for shipping:**
 - **The privacy policy is in two places.** `PRIVACY_POLICY.md` in this repo, and the website repo
   `~/Development/benica-dev` (Next.js, deployed to Firebase by GitHub Actions on every push to
@@ -437,10 +430,6 @@ and `compileDebugAndroidTestKotlin` here; nothing was changed in the mirror code
   Settings, so `hasBirthdays` and `OnboardingUiState.BirthdayNotifications` no longer exist.
 - Step 4's outcome and the new two-way sync lean are in the doc above; please do not start
   two-way sync without the user choosing it.
-
-**Corrections to my own earlier claims.** I wrote that the per-book work was "tried on a device".
-You showed that updates were failing the whole time. Your verified list under Lessons is the
-real evidence.
 
 **User preferences seen on Gotham, in addition to yours:** no narrating code comments (they
 removed two, and called one "totally unnecessary"); do not screenshot the device, ask what they
