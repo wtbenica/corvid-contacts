@@ -120,7 +120,9 @@ login, onboarding frame and birthday changes are verified on the same phone exce
 two commits' layouts, which the user had not signed off on when this was written. The 49 unit
 tests pass, including migration tests that open version 19, 21 and 22 databases through every
 migration. The debug build assembles. Lint has one error left, an existing French plural
-string (`values-fr/strings.xml`, `ImpliedQuantity`), unrelated to this work.
+string (`values-fr/strings.xml`, `ImpliedQuantity`), and five warnings (an unknown `ShrinkResources`
+issue id in `build.gradle.kts` and three unused strings, one of which, `onboarding_action_not_now`,
+is kept for the sharing step), unrelated to this work.
 
 A jerky transition when the address book list opens from the filter sheet was seen in debug
 builds only and is fine in release, so it was left alone.
@@ -276,6 +278,10 @@ Agreed design (not built):
 - **easylauncher "Unsupported image format ... ic_launcher_foreground.webp".** This is a
   Gradle daemon problem, not a bad icon; it also reproduced on the original commit. Running
   `./gradlew --stop` and rebuilding fixed it.
+- **Gradle is 9.8.0 and several dependencies moved** (androidx core-ktx 1.19.1, navigation3 1.2.0,
+  work 2.12.0, libphonenumber 9.0.40, **Places SDK 5.3.0 to 6.0.2**). The first build on a machine
+  downloads Gradle 9.8.0. Places 6 is a major version: it compiles and the tests pass, but Google
+  Places address lookup (the opt-in mode) has not been tried on a device since the bump.
 - **Room schema is not exported** (`exportSchema = false`) and there is no fallback
   migration, so every schema change needs a hand-written migration and a case in
   `AppDatabaseMigrationTest`.
@@ -438,4 +444,12 @@ tags, each under 500 characters); copy stays plain-spoken, no hype.
 
 **Still guesses.** The strings I wrote in de, es, fr, ko and nl are not native-speaker reviewed
 (that includes the welcome screen, the birthday section and the sharing text).
+
+**Build changes since the note above (Gotham, 2026-10-04).** The user cleaned up lint (unnecessary
+`@OptIn`s and some formatting across about 40 source files, no behavior change), updated
+dependencies, and moved Gradle to 9.8.0. That regenerated `gradlew.bat` and the wrapper jar, and
+dropped the SPDX header lines from `gradle-wrapper.properties`. I ran `testDebugUnitTest` (49
+tests), `compileReleaseKotlin`, `compileDebugAndroidTestKotlin`, `assembleDebug` and `lintDebug`
+on that tree. Please run `./gradlew --stop` after pulling, in case the daemon holds the old
+version (see the easylauncher note under Environment notes).
 
