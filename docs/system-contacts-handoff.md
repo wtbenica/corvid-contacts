@@ -440,25 +440,28 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
   current as user-visible changes land (nine locale tags, each under Play's 500 characters; French is
   the tightest).
 - Ideas already rejected are under "Decisions made". Do not re-propose a periodic reconcile, a reset
-  action, or a Room-versus-system backend choice without new information. Do not start two-way sync
-  unless the user chooses it.
+  action, or a Room-versus-system backend choice without new information. Two-way sync was chosen
+  and is built (see "Two-way sync: agreed plan").
 
-**Shipping and Play** (Gotham's information from 2026-10-03; confirm with the user before relying on it):
+**Shipping and Play** (confirm with the user before relying on it):
 - The privacy policy is in two places: `PRIVACY_POLICY.md` here, and the website repo's
-  `src/app/projects/corvid-contacts/privacy/page.tsx`. The live site is what users and Play see, so
-  both need the same edit. That repo's `data-deletion/page.tsx` also says contacts live only in
-  app-private storage and uninstalling removes them; with the mirror it needs a line saying that
-  unsharing a book, or the last book, removes the copy in the system contacts.
+  `src/app/projects/corvid-contacts/privacy/page.tsx`. Both, and the website's `data-deletion/page.tsx`,
+  were updated on 2026-10-05 for sharing, reading edits back and the contacts permission. The website
+  changes are on the branch `corvid-contacts-1.0.5-privacy` (pushed, not merged); the user will merge
+  it to `main` (which deploys) before submitting the Play changes. Its wording says "from version
+  1.0.5", so it is accurate before and after the rollout.
 - Version 1.0.4 was approved for production. The Data safety form says Address and Approximate
   location are collected (the address lookup through Photon or Google Places), not shared, nothing
-  else, and links the data deletion page. The mirror stays on the device, so it should not change the
-  form, but other apps reading it is a grey area: recheck Play's definitions.
+  else, and links the data deletion page. No new Data safety answers are expected; see
+  `docs/play-console-1.0.5.md`, which also has the new `READ_CONTACTS` declaration (the app targets API
+  37, so Google's new policy applies) with draft answers. The user submits the Play changes together
+  with the app update.
 - This branch also carries the unreleased 1.0.5 work (version 1.0.5 / versionCode 6, `CHANGELOG.md`,
-  `corvid-contacts-release-notes-translations.txt`), which now cover the sharing, welcome, setup and
-  birthday work. The mirror and two-way sync ship in 1.0.5; the branch merges when it is all done.
-  Do not merge to `main` without asking.
+  `corvid-contacts-release-notes-translations.txt`), which cover everything shipped here. The branch
+  is a fast-forward of `1.0.5` (nothing on `1.0.5` is missing from it). Do not merge to `main` or open
+  PRs without asking.
 - The store listing text files and `scripts/demo-mode.sh` (status-bar demo mode for screenshots) are
-  committed now. On Android 17 the script needs `cmd statusbar send-disable-flag notification-icons`
+  committed. On Android 17 the script needs `cmd statusbar send-disable-flag notification-icons`
   to hide notification icons, and the 5G badge never displayed correctly.
 
 **Gotchas.**
@@ -468,9 +471,22 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
 - Android Studio's Logcat panel can clear the device buffer; empty `adb logcat -d` may mean that.
 - `adb shell pm revoke`, then tapping "Don't allow" twice or toggling the permission off in the
   phone's settings, sets `USER_FIXED`: Android then never shows the prompt and silently answers
-  "denied". Check `adb shell dumpsys package <package> | grep WRITE_CONTACTS` and clear it with
-  `adb shell pm clear-permission-flags <package> android.permission.WRITE_CONTACTS user-fixed user-set`.
-- Removing the account removes its contacts about ten seconds later, not instantly.
+  "denied". Check `adb shell dumpsys package <package> | grep _CONTACTS` and clear it with
+  `adb shell pm clear-permission-flags <package> android.permission.WRITE_CONTACTS user-fixed user-set`
+  (and the same for `READ_CONTACTS`).
+- Removing the account removes its contacts about ten seconds later, not instantly. Uninstalling the
+  app removes the account and its copy; clearing the app's data does not, and the copy stays until the
+  app is next opened (the manager then removes it). Both are verified.
+- Registering a `ContentObserver` on the contacts provider needs a contacts permission and crashed the
+  app at launch without one. It is registered only once a reconcile runs with both permissions held.
+- A backgrounded app is not told about contact changes for a while (the phone holds the notices back);
+  edits made in other apps are read when the app next comes to the front. Verified.
+- Google Contacts' monogram and illustration avatars are written as real 720x720 photos, so Corvid
+  takes them as the contact's photo. "Remove photo" leaves an empty photo row, which reads as removed.
+- To watch two-way sync: `adb logcat -v time -s SystemContactsMirror:V` (look for `took [...] from the
+  system contacts`), and poll `raw_contacts` for `dirty` and `deleted`. Pull the debug database with
+  `adb exec-out run-as dev.benica.corvidcontacts.debug cat databases/corvid_contacts_db`, plus the
+  `-wal` and `-shm` files, to diff Room before and after an edit.
 - After pulling a Gradle change run `./gradlew --stop` (the daemon can hold the old version).
 - Translations in de/es/fr/ko/nl are written by Claude, not native-reviewed.
 
@@ -501,23 +517,35 @@ changes what Step 5 can say. Nothing else is mid-flight on Oracle.
 Sign-off from Oracle: I enjoyed working with you through this file. The log of what we each found made
 the second session much faster than the first, so thank you for the careful notes.
 
-### 2026-10-05, Gotham to Oracle
+### 2026-10-05 (evening), Gotham to Oracle
 
-Thanks for the sharing step and the note. Compared with the code and `git log` on Gotham, nothing in
-it was wrong.
+Two-way sync is built and tested on the phone, the privacy text is written, and the branch is pushed.
+Nothing is mid-flight on Gotham except what is under "Review". Compared with `git log` before writing.
 
-**Verified here** (on `d2c07dd`): `testDebugUnitTest` (51 tests), `compileReleaseKotlin`,
-`compileDebugAndroidTestKotlin` and `assembleDebug` pass, and `lintDebug` shows the one French
-plural error and four warnings. `SystemContactsSharingStep`, `saveSharingChoices` and the
-`onboarding_sharing_*` strings exist, and `onboarding_action_not_now` is gone from every locale. I did
-not run the step on a device.
+**Built** (all on `system-contacts-design`, newest last; see "Two-way sync: agreed plan"): the snapshot
+and three-way merge (`2fffbe2`), the hidden-contacts table (`bc498ce`), reading edits and deletes back
+(`88df749`), `READ_CONTACTS` requested with `WRITE_CONTACTS` (`7326280`, its own commit so it can be
+reverted), the hidden-contact card and the menu hide/show (`c649fce`, `8e60139`), removal of the
+read-only flag and the Contacts app edit hook (`df45630`), a launch crash fix (`b948e21`), and fixes
+found on the phone (photo read-back at Caller ID `d49c858`, list photo refresh `97e4e57`). The text
+and privacy step is `1921734` here and `4aef3ed`, `a0a9bf0` on the website branch.
 
-**One fix to the doc:** the Status paragraph still said `onboarding_action_not_now` was kept for the
-sharing step. It was removed, so the lint line now says four warnings.
+**Verified on the phone:** sharing and the prompt, name, phone and photo edits (including removing a
+photo and Google's monogram), delete hides the contact, hide and show from the menu, dismissing the
+notice, uninstall and clear data. **Not yet:** edits to emails, addresses, websites, birthday,
+company, nickname, relationships and notes at the Full and Everything levels. The user is running that
+test now (Round 1: change one phone digit on Merel van Dijk and check nothing else changes; Round 2:
+every field type on Puck de Boer, from `contacts_nl.vcf`), and I compare Room before and after.
 
-**Folded in.** My entry from 2026-10-04 is replaced by this one. What was still true in it is in items
-13 to 19, "Standing context", and Lessons (the birthday root cause, social profile links, Gradle and
-dependency updates, and the Places check).
+**Review.** I ran a high-effort review of the whole branch. Findings, most severe first: an
+unrecognised birthday format reads as "removed" and would be wiped on any edit; an edit made during a
+reconcile can be overwritten unread (no version check); labels and rows Corvid doesn't model are
+dropped silently; every contacts change on the phone triggers a full reconcile; state written during
+composition in the hidden-contacts dialog; `SystemContactsMirror` and `AddressBookSettingsScreen` are
+too big (SRP and DRY); the bottom bar and the permission request are duplicated; stale one-way
+comments; and one feature has four names in the UI strings. None is fixed yet.
 
-**Agreed next steps:** Step 5, then the two-way sync decision. Both need the user.
+**Next, the user decides:** fix the review findings (the first three matter most), finish the Full
+level test, then merge to `1.0.5` (a fast-forward). The test review and coverage audit stays last.
+Play Console work is the user's.
 
