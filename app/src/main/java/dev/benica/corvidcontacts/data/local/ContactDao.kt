@@ -13,13 +13,15 @@ import kotlinx.coroutines.flow.Flow
 interface ContactDao {
     /**
      * Fetches all visible contacts. 
-     * Note: Omit photoUrl to avoid SQLiteBlobTooBigException in lists.
+     * Note: photoUrl is only kept when it is a short `file:` URI, which changes whenever the photo
+     * does, so a list row notices a new photo. Embedded `data:` photos can be large enough for
+     * SQLiteBlobTooBigException, so they are omitted.
      */
     @androidx.room.Transaction
     @Query(
         """
         SELECT id, displayName, firstName, lastName, middleName, prefix, suffix, 
-               emails, phones, NULL as photoUrl, hasPhoto, etag, 
+               emails, phones, CASE WHEN photoUrl LIKE 'file:%' THEN photoUrl END AS photoUrl, hasPhoto, etag, 
                addressBookHref, contactHref, colorInt, isArchived, categories, 
                company, jobTitle, birthday, nickname, notes, websites, socialProfiles,
                relationships, structuredAddresses 
@@ -33,13 +35,15 @@ interface ContactDao {
 
     /**
      * Fetches all archived contacts.
-     * Note: Omit photoUrl to avoid SQLiteBlobTooBigException in lists.
+     * Note: photoUrl is only kept when it is a short `file:` URI, which changes whenever the photo
+     * does, so a list row notices a new photo. Embedded `data:` photos can be large enough for
+     * SQLiteBlobTooBigException, so they are omitted.
      */
     @androidx.room.Transaction
     @Query(
         """
         SELECT id, displayName, firstName, lastName, middleName, prefix, suffix, 
-               emails, phones, NULL as photoUrl, hasPhoto, etag, 
+               emails, phones, CASE WHEN photoUrl LIKE 'file:%' THEN photoUrl END AS photoUrl, hasPhoto, etag, 
                addressBookHref, contactHref, colorInt, isArchived, categories, 
                company, jobTitle, birthday, nickname, notes, websites, socialProfiles,
                relationships, structuredAddresses
