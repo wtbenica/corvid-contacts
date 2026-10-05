@@ -327,6 +327,7 @@ fun PhoneNavigation(
                 } ?: false
 
                 val hiddenFromSystem by contactsViewModel.hiddenFromSystemContacts.collectAsState()
+                val addressLookupEnabled by contactsViewModel.addressLookupEnabled.collectAsState()
 
                 ContactDetailScreen(
                     contactWithBook = contactWithBook,
@@ -336,6 +337,9 @@ fun PhoneNavigation(
                     onShowInSystem = { contactsViewModel.showInSystemContacts(listOf(key.contactId)) },
                     onHideFromSystem = { contactsViewModel.hideFromSystemContacts(key.contactId) },
                     onDismissHiddenNotice = { contactsViewModel.dismissHiddenNotice(key.contactId) },
+                    addressLookupEnabled = addressLookupEnabled,
+                    findAddressMatches = contactsViewModel::findAddressMatches,
+                    onUseAddressMatch = contactsViewModel::useAddressMatch,
                     onToggleFavorite = {
                         contact?.let { contactsViewModel.toggleFavorite(it) } ?: true
                     },

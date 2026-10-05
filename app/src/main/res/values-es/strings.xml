@@ -528,4 +528,9 @@
     <string name="detail_menu_hide_from_system">Ocultar en los contactos del teléfono</string>
     <string name="detail_menu_show_in_system">Mostrar en los contactos del teléfono</string>
     <string name="detail_hidden_from_system_dismiss">Descartar aviso</string>
+    <string name="detail_action_fill_in_address">Completar los datos de la dirección</string>
+    <string name="fill_in_address_title">Completar los datos de la dirección</string>
+    <string name="fill_in_address_message">Elige la coincidencia de «%1$s» para completar calle, ciudad, estado y código postal. Esto envía la dirección a tu servicio de búsqueda de direcciones.</string>
+    <string name="fill_in_address_searching">Buscando coincidencias…</string>
+    <string name="fill_in_address_none">No se encontraron coincidencias. La dirección se queda como está.</string>
 </resources>

@@ -104,7 +104,8 @@ class WidgetConfigurationActivity : ComponentActivity() {
                                 app.container.contactsRepository,
                                 app.container.settingsRepository,
                                 app.container.authRepository,
-                                app.container.systemContactVisibility
+                                app.container.systemContactVisibility,
+                                app.container.geocoderRepository
                             ) as T
                         }
                     }

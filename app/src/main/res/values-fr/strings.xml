@@ -528,4 +528,9 @@
     <string name="detail_menu_hide_from_system">Masquer dans les contacts du téléphone</string>
     <string name="detail_menu_show_in_system">Afficher dans les contacts du téléphone</string>
     <string name="detail_hidden_from_system_dismiss">Fermer l\'avis</string>
+    <string name="detail_action_fill_in_address">Compléter les détails de l\'adresse</string>
+    <string name="fill_in_address_title">Compléter les détails de l\'adresse</string>
+    <string name="fill_in_address_message">Choisissez la correspondance pour « %1$s » afin de renseigner la rue, la ville, la région et le code postal. Cela envoie l\'adresse à votre service de recherche d\'adresses.</string>
+    <string name="fill_in_address_searching">Recherche de correspondances…</string>
+    <string name="fill_in_address_none">Aucune correspondance trouvée. L\'adresse reste telle quelle.</string>
 </resources>

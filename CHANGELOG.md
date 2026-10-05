@@ -19,6 +19,9 @@ on Google Play is a summary of the user-visible items below.
   contacts it shares: edits you make to them in other apps, up to the level you chose (including a
   new or removed photo), are saved back to the Corvid contact and sync to your server, and deleting
   one there hides it from your phone's contacts instead of deleting it from Corvid or the server.
+- An address that another app saved as one line can be filled in from address lookup: choose "Fill in
+  address details" on the address, pick a match, and it is split into street, city, state, postal
+  code and country. It only appears when address lookup is on, and nothing is sent until you choose it.
 - A contact hidden from your phone's contacts shows a notice you can dismiss, with Show again and
   Delete from Corvid. Any contact in a shared book has Hide from / Show in phone contacts in its
   menu, and the address book's page lists the contacts that are hidden.

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Notes
+import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Directions
@@ -65,6 +66,7 @@ fun ContactDetailContent(
     onShowQr: () -> Unit,
     onShare: (ContactEntity) -> Unit,
     onDownloadPhoto: (ContactEntity) -> Unit,
+    onFillInAddress: ((StructuredAddress) -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -86,7 +88,7 @@ fun ContactDetailContent(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing)
                     ) {
-                        ContactMethodsSection(contact, context)
+                        ContactMethodsSection(contact, context, onFillInAddress)
                     }
 
                     Column(
@@ -98,7 +100,7 @@ fun ContactDetailContent(
                     }
                 }
             } else {
-                ContactMethodsSection(contact, context)
+                ContactMethodsSection(contact, context, onFillInAddress)
                 NetworksSection(contact, context)
                 OtherInfoSection(contact, relatives, onNavigateToContact)
             }
@@ -115,6 +117,7 @@ fun ContactDetailContent(
 private fun ContactMethodsSection(
     contact: ContactEntity,
     context: Context,
+    onFillInAddress: ((StructuredAddress) -> Unit)?,
 ) {
     val emails = contact.emails ?: emptyList()
     val phones = contact.phones ?: emptyList()
@@ -192,6 +195,15 @@ private fun ContactMethodsSection(
                     context.startActivity(intent)
                 }
             ),
+            // Only offered for an address that is all in one line, and only if lookup is on.
+            secondaryAction = onFillInAddress?.let { fillIn ->
+                ActionItem(
+                    icon = Icons.Outlined.AutoFixHigh,
+                    contentDescription = R.string.detail_action_fill_in_address,
+                    action = fillIn,
+                    showAction = { it.isStreetOnly() },
+                )
+            },
             isMultiline = true
         )
     } else null

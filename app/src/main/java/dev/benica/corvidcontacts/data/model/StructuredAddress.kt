@@ -57,6 +57,15 @@ data class StructuredAddress(
                 extended.isNullOrBlank()
     }
 
+    /** Whether the whole address is in the street field, as when another app saved it as one line. */
+    fun isStreetOnly(): Boolean = !street.isNullOrBlank() &&
+            city.isNullOrBlank() &&
+            state.isNullOrBlank() &&
+            postalCode.isNullOrBlank() &&
+            country.isNullOrBlank() &&
+            poBox.isNullOrBlank() &&
+            extended.isNullOrBlank()
+
     /**
      * Returns a single-line string for simplified searching/legacy support.
      */

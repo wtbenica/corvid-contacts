@@ -58,7 +58,8 @@ fun AppNavigation(
                     contactsRepository,
                     settingsRepository,
                     authRepository,
-                    systemContactVisibility
+                    systemContactVisibility,
+                    geocoderRepository
                 ) as T
             }
         }

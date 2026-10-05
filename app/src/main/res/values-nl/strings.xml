@@ -513,4 +513,9 @@
     <string name="detail_menu_hide_from_system">Verbergen in de contacten van de telefoon</string>
     <string name="detail_menu_show_in_system">Tonen in de contacten van de telefoon</string>
     <string name="detail_hidden_from_system_dismiss">Melding sluiten</string>
+    <string name="detail_action_fill_in_address">Adresgegevens aanvullen</string>
+    <string name="fill_in_address_title">Adresgegevens aanvullen</string>
+    <string name="fill_in_address_message">Kies de overeenkomst voor \"%1$s\" om straat, plaats, provincie en postcode aan te vullen. Hierbij wordt het adres naar je adreszoekservice gestuurd.</string>
+    <string name="fill_in_address_searching">Zoeken naar overeenkomsten…</string>
+    <string name="fill_in_address_none">Geen overeenkomsten gevonden. Het adres blijft zoals het is.</string>
 </resources>
