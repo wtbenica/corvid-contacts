@@ -280,6 +280,20 @@ class SystemEditMergeTest {
     }
 
     @Test
+    fun `a photo is read back at every level, including Caller ID`() {
+        SystemContactsLevel.entries.forEach { level ->
+            val written = base(level)
+            val theirs = written.copy(systemPhoto = "bbb")
+
+            assertEquals(
+                level.name,
+                setOf(MirrorField.PHOTO),
+                SystemEditMerge.merge(written, theirs, written).taken
+            )
+        }
+    }
+
+    @Test
     fun `a photo changed in Corvid since it was written is not replaced`() {
         val written = base().copy(photoStamp = "1-100", systemPhoto = "aaa")
         val theirs = written.copy(systemPhoto = "bbb")

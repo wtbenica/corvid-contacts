@@ -29,7 +29,7 @@ enum class MirrorField {
 
     /** Whether this part is written to the system contacts at [level]. */
     fun isMirroredAt(level: SystemContactsLevel): Boolean = when (this) {
-        NAME, PHONES -> true
+        NAME, PHONES, PHOTO -> true
         NOTE -> level.includesNotes
         else -> level.includesFullContact
     }
