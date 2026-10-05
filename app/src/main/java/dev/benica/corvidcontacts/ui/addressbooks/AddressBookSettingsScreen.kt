@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -221,7 +222,7 @@ fun AddressBookSettingsScreen(
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.address_book_setting_hidden)) },
                     supportingContent = { Text(stringResource(R.string.address_book_setting_hidden_description)) },
-                    trailingContent = { Text(hiddenContacts.size.toString()) },
+                    trailingContent = { TrailingText(hiddenContacts.size.toString()) },
                     modifier = Modifier.clickable { showHiddenDialog = true },
                 )
             }
@@ -427,6 +428,17 @@ fun AddressBookSettingsScreen(
 
 /** Material's opacity for disabled content. */
 private const val DISABLED_ALPHA = 0.38f
+
+/** A value at the end of a row, in the same box as the row's other trailing controls. */
+@Composable
+private fun TrailingText(text: String) {
+    Box(
+        modifier = Modifier.defaultMinSize(minWidth = 24.dp, minHeight = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = text, style = MaterialTheme.typography.titleMedium)
+    }
+}
 
 /** A 24 dp trailing icon with a tint, sized like [SettingsLeadingIcon] so the rows line up. */
 @Composable
