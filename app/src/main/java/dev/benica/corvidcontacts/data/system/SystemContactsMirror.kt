@@ -35,7 +35,9 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
+import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.local.MirrorSource
+import dev.benica.corvidcontacts.data.local.SystemContactHiddenEntity
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
 import dev.benica.corvidcontacts.data.local.SystemGroupMirrorEntity
@@ -52,10 +54,14 @@ import java.io.ByteArrayOutputStream
  * Corvid's own account type, so other apps (Messages, the dialer) can show a name and photo for a
  * phone number.
  *
- * Room stays the source of truth; nothing is ever read back from the system contacts. This class
- * only holds [Manifest.permission.WRITE_CONTACTS]: the raw contact ids returned when inserting
- * are kept in Room (see [SystemContactMirrorEntity]) and used for later updates and deletes. A
- * mirrored row that has disappeared is detected when an update affects nothing, and re-inserted.
+ * Room stays the source of truth. The raw contact ids returned when inserting are kept in Room
+ * (see [SystemContactMirrorEntity]) and used for later updates and deletes. A mirrored row that
+ * has disappeared is detected when an update affects nothing, and re-inserted.
+ *
+ * With [Manifest.permission.READ_CONTACTS] too, a reconcile first absorbs what other apps did to the
+ * mirrored contacts (see [SystemContactsReader]): an edit is merged into the Corvid contact, and a
+ * delete hides the contact from the system contacts instead of deleting it anywhere else. Only then
+ * is anything written, so an edit is never overwritten before it has been read.
  *
  * Only address books the user has chosen to share are mirrored, each as one system group so the
  * books stay distinguishable in the Contacts app. How much of each contact is written depends on
@@ -66,6 +72,7 @@ class SystemContactsMirror(
     private val context: Context,
     private val dao: SystemContactMirrorDao,
     private val photoManager: PhotoManager,
+    private val editor: SystemContactsEditor,
 ) {
     private val mutex = Mutex()
     private val accountManager = AccountManager.get(context)
@@ -74,6 +81,8 @@ class SystemContactsMirror(
         context.getString(R.string.system_contacts_account_type)
     )
 
+    private val reader = SystemContactsReader(context, account)
+
     /** Whether the raw-contact read-only flag is accepted by this device's provider. */
     @Volatile
     private var readOnlyFlagSupported = true
@@ -81,6 +90,12 @@ class SystemContactsMirror(
     fun hasPermission(): Boolean = ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.WRITE_CONTACTS
+    ) == PackageManager.PERMISSION_GRANTED
+
+    /** Whether edits made in other apps can be read back. Without it the mirror only writes. */
+    fun canRead(): Boolean = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.READ_CONTACTS
     ) == PackageManager.PERMISSION_GRANTED
 
     private fun accountExists(): Boolean =
@@ -117,9 +132,12 @@ class SystemContactsMirror(
         mutex.withLock {
             ensureAccount()
 
+            val absorbed = absorbSystemEdits(sources)
+            val current = if (absorbed.roomChanged) dao.getMirrorSources() else sources
+
             dao.pruneHidden()
             val contacts = MirrorPlan.toMirrorContacts(
-                sources,
+                current,
                 books.associate { it.href to it.systemContactsLevel },
                 ::photoStamp,
                 dao.getHiddenIds().toSet()
@@ -139,7 +157,7 @@ class SystemContactsMirror(
                 contact.copy(groupIds = keys.mapNotNull { groupIds[it] })
             }
             val mapped = dao.getAll()
-            val plan = MirrorPlan.diff(desired, mapped)
+            val plan = MirrorPlan.diff(desired, mapped).excluding(absorbed.blocked)
             Log.i(
                 TAG,
                 "reconcile: desired=${desired.size} mapped=${mapped.size} inserts=${plan.inserts.size} " +
@@ -151,6 +169,89 @@ class SystemContactsMirror(
             applyUpdates(plan.updates)
             applyInserts(plan.inserts)
         }
+    }
+
+    /** What absorbing the edits made in other apps changed, and which contacts must not be written yet. */
+    private class Absorbed(val roomChanged: Boolean, val blocked: Set<ContactId>)
+
+    private enum class EditOutcome { APPLIED, REWRITE, RETRY }
+
+    /**
+     * Reads what other apps did to the mirrored contacts and applies it. A contact whose edit could
+     * not be saved is [Absorbed.blocked], so the write that follows leaves it dirty to be tried again
+     * instead of overwriting the edit.
+     */
+    private suspend fun absorbSystemEdits(sources: List<MirrorSource>): Absorbed {
+        val none = Absorbed(false, emptySet())
+        if (!canRead()) return none
+        val changes = reader.readChanges()
+        if (changes.isEmpty()) return none
+
+        val byRaw = dao.getAll().associateBy { it.rawContactId }
+        val sourcesById = sources.associateBy { it.id }
+        var roomChanged = false
+        val blocked = HashSet<ContactId>()
+        val rewrite = ArrayList<ContactId>()
+        for (change in changes) {
+            val entry = byRaw[change.rawContactId] ?: continue
+            when (change) {
+                is SystemContactsReader.Deleted -> {
+                    Log.i(TAG, "contact=${entry.contactId} raw=${entry.rawContactId} deleted elsewhere, hiding")
+                    dao.hide(listOf(SystemContactHiddenEntity(entry.contactId)))
+                    applyDeletes(listOf(entry))
+                }
+
+                is SystemContactsReader.Edited -> when (absorbEdit(entry, change, sourcesById[entry.contactId])) {
+                    EditOutcome.APPLIED -> {
+                        roomChanged = true
+                        rewrite += entry.contactId
+                    }
+
+                    EditOutcome.REWRITE -> rewrite += entry.contactId
+                    EditOutcome.RETRY -> blocked += entry.contactId
+                }
+            }
+        }
+        dao.markStale(rewrite)
+        return Absorbed(roomChanged, blocked)
+    }
+
+    private suspend fun absorbEdit(
+        entry: SystemContactMirrorEntity,
+        change: SystemContactsReader.Edited,
+        source: MirrorSource?,
+    ): EditOutcome {
+        val base = MirrorPlan.readSnapshot(entry.snapshot)
+        if (base == null || source == null) return EditOutcome.REWRITE
+
+        val ours = MirrorPlan.toMirrorContact(source, photoStamp(source), base.level)
+        val merge = SystemEditMerge.merge(base, change.contact, ours)
+        if (merge.isEmpty) return EditOutcome.REWRITE
+
+        val entity = editor.get(entry.contactId)
+        if (entity == null || !entity.isEditable()) return EditOutcome.REWRITE
+
+        val photoUrl = if (MirrorField.PHOTO in merge.taken) savePhoto(entity.id, change.rawContactId) else null
+        return editor.save(SystemEditMerge.apply(entity, merge, photoUrl)).fold(
+            onSuccess = {
+                Log.i(TAG, "contact=${entry.contactId} took ${merge.taken} from the system contacts")
+                EditOutcome.APPLIED
+            },
+            onFailure = {
+                Log.w(TAG, "contact=${entry.contactId} edit not saved, will retry", it)
+                EditOutcome.RETRY
+            }
+        )
+    }
+
+    /** Stores the contact's photo from the system contacts, or removes it if there is none. */
+    private fun savePhoto(contactId: ContactId, rawId: Long): String? {
+        val bytes = reader.photoBytes(rawId)
+        if (bytes == null) {
+            photoManager.getPhotoFile(contactId).delete()
+            return null
+        }
+        return photoManager.savePhotoToFile(contactId, bytes)
     }
 
     private fun bookTitle(book: AddressBookEntity): String =
@@ -280,8 +381,8 @@ class SystemContactsMirror(
                     "update contact=${contact.id} raw=$rawId touched=${results.getOrNull(0)?.count} " +
                         "deletedRows=${results.getOrNull(1)?.count} inserted=${results.size - 2}"
                 )
-                writePhoto(contact, rawId)
-                dao.upsert(listOf(entry(contact, rawId)))
+                val photoToken = writePhoto(contact, rawId)
+                dao.upsert(listOf(entry(contact, rawId, photoToken)))
             } catch (e: OperationApplicationException) {
                 Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
                 missing += contact
@@ -326,12 +427,21 @@ class SystemContactsMirror(
             }
             Log.i(TAG, "inserted ${entries.size} contacts, raw ids ${entries.map { it.rawContactId }}")
             dao.upsert(entries)
-            chunk.forEachIndexed { i, contact -> writePhoto(contact, entries[i].rawContactId) }
+            chunk.forEachIndexed { i, contact ->
+                writePhoto(contact, entries[i].rawContactId)?.let { token ->
+                    dao.upsert(listOf(entry(contact, entries[i].rawContactId, token)))
+                }
+            }
         }
     }
 
-    private fun entry(contact: MirrorContact, rawId: Long) =
-        SystemContactMirrorEntity(contact.id, rawId, contact.hash, MirrorPlan.snapshotOf(contact))
+    private fun entry(contact: MirrorContact, rawId: Long, photoToken: String? = null) =
+        SystemContactMirrorEntity(
+            contact.id,
+            rawId,
+            contact.hash,
+            MirrorPlan.snapshotOf(contact.copy(systemPhoto = photoToken))
+        )
 
     private fun rawContactInsert(contact: MirrorContact): ContentProviderOperation {
         val builder = ContentProviderOperation
@@ -445,12 +555,13 @@ class SystemContactsMirror(
     /**
      * Writes [contact]'s photo as its own small batch, since photo bytes can approach the binder
      * transaction limit. A failure here leaves the contact without a photo rather than failing the
-     * whole reconcile.
+     * whole reconcile. Returns how the provider now holds the photo (see
+     * [SystemContactsReader.photoToken]), or `null` if none was written or it can't be read back.
      */
-    private fun writePhoto(contact: MirrorContact, rawId: Long) {
-        if (contact.photoStamp == null) return
-        val bytes = photoBytes(contact.id) ?: return
-        try {
+    private fun writePhoto(contact: MirrorContact, rawId: Long): String? {
+        if (contact.photoStamp == null) return null
+        val bytes = photoBytes(contact.id) ?: return null
+        return try {
             apply(
                 listOf(
                     ContentProviderOperation
@@ -461,8 +572,10 @@ class SystemContactsMirror(
                         .build()
                 )
             )
+            if (canRead()) reader.photoToken(rawId) else null
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't mirror photo for contact ${contact.id}", e)
+            null
         }
     }
 

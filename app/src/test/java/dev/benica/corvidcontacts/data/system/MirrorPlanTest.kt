@@ -337,6 +337,24 @@ class MirrorPlanTest {
     }
 
     @Test
+    fun `a plan can leave out the contacts that are waiting to be read back`() {
+        val one = mirrored(source(id = "one"))
+        val two = mirrored(source(id = "two"))
+        val three = mirrored(source(id = "three"))
+        val mapped = listOf(
+            SystemContactMirrorEntity("one", 1, "old"),
+            SystemContactMirrorEntity("two", 2, "old"),
+            SystemContactMirrorEntity("gone", 3, "old"),
+        )
+
+        val plan = MirrorPlan.diff(listOf(one, two, three), mapped).excluding(setOf("two", "gone"))
+
+        assertEquals(listOf("three"), plan.inserts.map { it.id })
+        assertEquals(listOf("one"), plan.updates.map { it.first.id })
+        assertTrue(plan.deletes.isEmpty())
+    }
+
+    @Test
     fun `social profiles become profile links for known services and pass real urls through`() {
         val contact = mirrored(
             source(

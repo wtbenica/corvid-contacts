@@ -24,7 +24,8 @@ enum class MirrorField {
     BIRTHDAY,
     ORGANIZATION,
     NICKNAME,
-    NOTE;
+    NOTE,
+    PHOTO;
 
     /** Whether this part is written to the system contacts at [level]. */
     fun isMirroredAt(level: SystemContactsLevel): Boolean = when (this) {
@@ -57,6 +58,7 @@ object SystemEditMerge {
         val taken = MirrorField.entries
             .filter { it.isMirroredAt(base.level) }
             .filter { field ->
+                if (field == MirrorField.PHOTO) return@filter photoTaken(base, theirs, ours)
                 val written = value(base, field, base.level)
                 value(theirs, field, base.level) != written && value(ours, field, base.level) == written
             }
@@ -64,8 +66,20 @@ object SystemEditMerge {
         return SystemMerge(taken, base, theirs)
     }
 
-    /** Applies the parts of [merge] that were taken to [entity]. */
-    fun apply(entity: ContactEntity, merge: SystemMerge): ContactEntity {
+    /**
+     * The photo is compared by its stand-in in the system contacts, since the bytes can't be. With
+     * no stand-in recorded for a photo that was written, there is nothing to compare, so it is left.
+     */
+    private fun photoTaken(base: MirrorContact, theirs: MirrorContact, ours: MirrorContact): Boolean {
+        val comparable = base.systemPhoto != null || base.photoStamp == null
+        return comparable && theirs.systemPhoto != base.systemPhoto && ours.photoStamp == base.photoStamp
+    }
+
+    /**
+     * Applies the parts of [merge] that were taken to [entity]. [photoUrl] is the file the taken
+     * photo was saved to, or `null` if it was removed.
+     */
+    fun apply(entity: ContactEntity, merge: SystemMerge, photoUrl: String? = null): ContactEntity {
         var result = entity
         val theirs = merge.theirs
         for (field in merge.taken) {
@@ -90,6 +104,7 @@ object SystemEditMerge {
 
                 MirrorField.NICKNAME -> result.copy(nickname = theirs.nickname)
                 MirrorField.NOTE -> result.copy(notes = theirs.note)
+                MirrorField.PHOTO -> result.copy(photoUrl = photoUrl, hasPhoto = photoUrl != null)
             }
         }
         return result
@@ -124,6 +139,7 @@ object SystemEditMerge {
         MirrorField.ORGANIZATION -> contact.organization?.let { it.company.norm() to it.title.norm() }
         MirrorField.NICKNAME -> contact.nickname.norm()
         MirrorField.NOTE -> contact.note?.replace("\r\n", "\n").norm()
+        MirrorField.PHOTO -> contact.systemPhoto
     }
 
     private fun String?.norm(): String? = this?.trim()?.takeIf { it.isNotEmpty() }

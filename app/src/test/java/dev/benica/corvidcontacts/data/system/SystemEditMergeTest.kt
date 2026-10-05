@@ -9,6 +9,7 @@ import dev.benica.corvidcontacts.data.model.Relationship
 import dev.benica.corvidcontacts.data.model.SocialProfile
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -258,6 +259,49 @@ class SystemEditMergeTest {
         assertNull(result.birthday)
         assertEquals("Babbage & Co", result.company)
         assertNull(result.jobTitle)
+    }
+
+    @Test
+    fun `a photo changed only in the system contacts is taken, and removing it clears the contact's photo`() {
+        val written = base().copy(photoStamp = "1-100", systemPhoto = "aaa")
+        val replaced = written.copy(systemPhoto = "bbb")
+        val removed = written.copy(systemPhoto = null)
+        val withPhoto = entity().copy(photoUrl = "file:///old.jpg", hasPhoto = true)
+
+        val replace = SystemEditMerge.merge(written, replaced, written)
+        val remove = SystemEditMerge.merge(written, removed, written)
+
+        assertEquals(setOf(MirrorField.PHOTO), replace.taken)
+        assertEquals("file:///new.jpg", SystemEditMerge.apply(withPhoto, replace, "file:///new.jpg").photoUrl)
+        assertEquals(setOf(MirrorField.PHOTO), remove.taken)
+        val cleared = SystemEditMerge.apply(withPhoto, remove, null)
+        assertNull(cleared.photoUrl)
+        assertFalse(cleared.hasPhoto)
+    }
+
+    @Test
+    fun `a photo changed in Corvid since it was written is not replaced`() {
+        val written = base().copy(photoStamp = "1-100", systemPhoto = "aaa")
+        val theirs = written.copy(systemPhoto = "bbb")
+        val ours = written.copy(photoStamp = "2-200")
+
+        assertTrue(SystemEditMerge.merge(written, theirs, ours).isEmpty)
+    }
+
+    @Test
+    fun `a photo that was written without a stand-in is left alone`() {
+        val written = base().copy(photoStamp = "1-100", systemPhoto = null)
+        val theirs = written.copy(systemPhoto = "bbb")
+
+        assertTrue(SystemEditMerge.merge(written, theirs, written).isEmpty)
+    }
+
+    @Test
+    fun `a photo added where there was none is taken`() {
+        val written = base()
+        val theirs = written.copy(systemPhoto = "bbb")
+
+        assertEquals(setOf(MirrorField.PHOTO), SystemEditMerge.merge(written, theirs, written).taken)
     }
 
     @Test

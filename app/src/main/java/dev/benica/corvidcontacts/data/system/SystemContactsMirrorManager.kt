@@ -2,6 +2,11 @@
 
 package dev.benica.corvidcontacts.data.system
 
+import android.content.Context
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
+import android.provider.ContactsContract
 import android.util.Log
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.MirrorSource
@@ -9,8 +14,10 @@ import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -25,17 +32,32 @@ import kotlin.time.Duration.Companion.milliseconds
  * permission, removes it.
  */
 class SystemContactsMirrorManager(
+    private val context: Context,
     private val dao: SystemContactMirrorDao,
     private val mirror: SystemContactsMirror,
 ) {
+    /** Bumped whenever the system contacts change, so edits made in other apps are looked for. */
+    private val systemChanges = MutableStateFlow(0)
+
     @OptIn(FlowPreview::class)
     fun start(scope: CoroutineScope) {
+        // Also fires for the mirror's own writes; the reconcile that follows finds nothing to do.
+        context.contentResolver.registerContentObserver(
+            ContactsContract.RawContacts.CONTENT_URI,
+            true,
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+                override fun onChange(selfChange: Boolean) {
+                    systemChanges.update { it + 1 }
+                }
+            }
+        )
         scope.launch {
             combine(
                 dao.observeSharedBooks(),
                 dao.observeMirrorSources(),
-                dao.observeHiddenIds()
-            ) { books, sources, _ ->
+                dao.observeHiddenIds(),
+                systemChanges
+            ) { books, sources, _, _ ->
                 SharedSnapshot(books, sources)
             }
                 .debounce(DEBOUNCE_MS.milliseconds)

@@ -78,6 +78,11 @@ data class MirrorContact(
     val groupIds: List<Long> = emptyList(),
     /** The sharing level this was written at, so a read-back knows which fields were mirrored. */
     val level: SystemContactsLevel = SystemContactsLevel.CALLER_ID,
+    /**
+     * A stand-in for the photo as the provider stored it right after it was written, or as it is
+     * now when read back. Not part of [hash], since it is only known once the write is done.
+     */
+    val systemPhoto: String? = null,
 ) {
     /**
      * Stable fingerprint of everything that gets written; unchanged contacts aren't touched.
@@ -123,6 +128,17 @@ data class MirrorPlan(
     val deletes: List<SystemContactMirrorEntity>,
 ) {
     val isEmpty: Boolean get() = inserts.isEmpty() && updates.isEmpty() && deletes.isEmpty()
+
+    /** This plan without anything for the contacts in [ids]. */
+    fun excluding(ids: Set<ContactId>): MirrorPlan = if (ids.isEmpty()) {
+        this
+    } else {
+        MirrorPlan(
+            inserts.filter { it.id !in ids },
+            updates.filter { (contact, _) -> contact.id !in ids },
+            deletes.filter { it.contactId !in ids }
+        )
+    }
 
     companion object {
         /** Key identifying the system group that mirrors the address book [href]. */

@@ -41,6 +41,21 @@ data class MirrorSource(
     val addressBookHref: String,
 )
 
+/**
+ * Non-archived contacts in shared address books, with only the columns the mirror needs. Photos
+ * are read from their files, so `photoUrl` is deliberately omitted.
+ */
+private const val MIRROR_SOURCES_QUERY =
+    """
+    SELECT c.id, c.displayName, c.firstName, c.lastName, c.middleName, c.prefix, c.suffix,
+           c.phones, c.emails, c.structuredAddresses, c.websites, c.socialProfiles,
+           c.relationships, c.birthday, c.company, c.jobTitle, c.nickname, c.notes,
+           c.categories, c.hasPhoto, c.addressBookHref AS addressBookHref
+    FROM contacts c
+    INNER JOIN address_books b ON c.addressBookHref = b.href
+    WHERE c.isArchived = 0 AND b.shareWithSystem = 1
+    """
+
 @Dao
 interface SystemContactMirrorDao {
     @Query("SELECT * FROM system_contact_mirror")
@@ -95,20 +110,10 @@ interface SystemContactMirrorDao {
     @Query("SELECT * FROM address_books WHERE shareWithSystem = 1 ORDER BY sortOrder ASC")
     fun observeSharedBooks(): Flow<List<AddressBookEntity>>
 
-    /**
-     * Non-archived contacts in shared address books, with only the columns the mirror needs.
-     * Photos are read from their files, so `photoUrl` is deliberately omitted.
-     */
-    @Query(
-        """
-        SELECT c.id, c.displayName, c.firstName, c.lastName, c.middleName, c.prefix, c.suffix,
-               c.phones, c.emails, c.structuredAddresses, c.websites, c.socialProfiles,
-               c.relationships, c.birthday, c.company, c.jobTitle, c.nickname, c.notes,
-               c.categories, c.hasPhoto, c.addressBookHref AS addressBookHref
-        FROM contacts c
-        INNER JOIN address_books b ON c.addressBookHref = b.href
-        WHERE c.isArchived = 0 AND b.shareWithSystem = 1
-        """
-    )
+    @Query(MIRROR_SOURCES_QUERY)
     fun observeMirrorSources(): Flow<List<MirrorSource>>
+
+    /** The same contacts as [observeMirrorSources], read once. */
+    @Query(MIRROR_SOURCES_QUERY)
+    suspend fun getMirrorSources(): List<MirrorSource>
 }
