@@ -31,9 +31,8 @@ import ezvcard.property.Telephone
 import ezvcard.property.Title
 import ezvcard.property.Uid
 import ezvcard.property.Url
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import ezvcard.util.PartialDate
+import java.time.LocalDate
 import java.util.UUID
 import dev.benica.corvidcontacts.data.model.Email as ModelEmail
 import ezvcard.property.Email as VCardEmail
@@ -44,10 +43,6 @@ import ezvcard.property.Email as VCardEmail
 class VCardMapper(private val photoManager: PhotoManager) {
     private val TAG = "VCardMapper"
     private val ARCHIVED_CATEGORY = "Archived"
-    private val dateFormat = SimpleDateFormat(
-        "yyyy-MM-dd",
-        Locale.US
-    )
 
     /**
      * Maps a [VCard] to a [ContactEntity].
@@ -132,7 +127,7 @@ class VCardMapper(private val photoManager: PhotoManager) {
                 val date = bday.date
                 when {
                     bday.text != null -> bday.text
-                    date != null -> synchronized(dateFormat) { dateFormat.format(date as Date) }
+                    date != null -> LocalDate.from(date).toString()
                     bday.partialDate != null -> bday.partialDate.toString()
                     else -> null
                 }
@@ -256,7 +251,7 @@ class VCardMapper(private val photoManager: PhotoManager) {
 
         contact.company?.let { vcard.organization = Organization().apply { values.add(it) } }
         contact.jobTitle?.let { vcard.addTitle(Title(it)) }
-        contact.birthday?.let { vcard.birthday = Birthday(it) }
+        contact.birthday?.let { vcard.birthday = birthdayProperty(it) }
         contact.nickname?.let { vcard.nickname = Nickname().apply { values.add(it) } }
         contact.notes?.let { vcard.addNote(Note(it)) }
         contact.websites?.forEach { vcard.addUrl(Url(it)) }
@@ -343,5 +338,25 @@ class VCardMapper(private val photoManager: PhotoManager) {
             }
         }
         return vcard
+    }
+
+    /**
+     * An ISO date goes out as a real vCard date, and a year-less one (`--01-15`) as a partial date;
+     * servers such as Nextcloud turn a text birthday into a date and clients read it back that way,
+     * so anything else stays free text.
+     */
+    private fun birthdayProperty(value: String): Birthday = try {
+        when {
+            ISO_DATE.matches(value) -> Birthday(LocalDate.parse(value))
+            PARTIAL_DATE.matches(value) -> Birthday(PartialDate.parse(value))
+            else -> Birthday(value)
+        }
+    } catch (_: Exception) {
+        Birthday(value)
+    }
+
+    private companion object {
+        val ISO_DATE = Regex("""\d{4}-\d{2}-\d{2}""")
+        val PARTIAL_DATE = Regex("""--\d{2}-\d{2}""")
     }
 }

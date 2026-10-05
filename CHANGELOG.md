@@ -28,6 +28,9 @@ on Google Play is a summary of the user-visible items below.
 
 ### Fixed
 
+- Birthdays from your server were dropped when contacts synced or were imported from a file, and
+  birthdays you entered disappeared on the next sync. They now sync and import correctly, and are
+  sent to the server as real dates.
 - The color preview in the create address book dialog was squeezed out of view by the slider. The
   chosen color now shows on the selected icon while you pick it.
 

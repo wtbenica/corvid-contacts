@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -259,6 +261,47 @@ class ContactsRepositoryVCardRoundTripTest {
             "The Big Cheese",
             roundTripped.getEffectiveDisplayName()
         )
+    }
+
+    @Test
+    fun `a birthday is written to the server as a date, not as text`() {
+        val vcardString = Ezvcard
+            .write(vCardMapper.mapEntityToVCard(minimalContact("bday").copy(birthday = "1990-01-15")))
+            .version(VCardVersion.V4_0)
+            .go()
+
+        assertTrue(vcardString.contains("BDAY:19900115"))
+        assertFalse(vcardString.contains("VALUE=text"))
+    }
+
+    @Test
+    fun `birthdays survive a round trip as dates, year-less dates and free text`() {
+        listOf("1990-01-15", "--01-15", "circa 1990").forEach { birthday ->
+            assertEquals(
+                birthday,
+                roundTrip(minimalContact("bday").copy(birthday = birthday)).birthday
+            )
+        }
+    }
+
+    @Test
+    fun `a date birthday written by another client is read`() {
+        mapOf(
+            "BDAY:19900115" to "1990-01-15",
+            "BDAY:1990-01-15" to "1990-01-15",
+            "BDAY:--0115" to "--01-15",
+            "BDAY;VALUE=text:circa 1990" to "circa 1990",
+        ).forEach { (property, expected) ->
+            val card = "BEGIN:VCARD\nVERSION:4.0\nFN:Test\n$property\nEND:VCARD\n"
+            val entity = vCardMapper.mapVCardToEntity(
+                Ezvcard.parse(card).first(),
+                "/book/",
+                "/book/test.vcf",
+                null
+            )
+
+            assertEquals(property, expected, entity.birthday)
+        }
     }
 
     /** Mirrors what [ContactsRepository.saveContact] and a sync cycle actually do: entity -> text -> entity. */
