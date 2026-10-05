@@ -2,7 +2,6 @@
 
 package dev.benica.corvidcontacts.ui.onboarding
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -68,7 +67,9 @@ import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.extensions.surfaceVariant
-import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsWritePermission
+import dev.benica.corvidcontacts.ui.addressbooks.CONTACTS_PERMISSIONS
+import dev.benica.corvidcontacts.ui.addressbooks.grantedAllContacts
+import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsPermission
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
@@ -515,7 +516,7 @@ private fun SystemContactsSharingStep(
     onSave: (selected: Set<String>) -> Unit,
 ) {
     val context = LocalContext.current
-    val hasPermission = rememberHasContactsWritePermission()
+    val hasPermission = rememberHasContactsPermission()
     // A book is only really shared while the permission is held too, so with it revoked every
     // switch starts off, matching what the address book pages and Settings show.
     var selected by remember {
@@ -531,14 +532,16 @@ private fun SystemContactsSharingStep(
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) {
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        if (results.grantedAllContacts()) {
             onSave(selected)
         } else {
             permissionDenied = true
-            canAskAgain = context.findActivity()?.let {
-                ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.WRITE_CONTACTS)
+            canAskAgain = context.findActivity()?.let { activity ->
+                CONTACTS_PERMISSIONS.any {
+                    ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
+                }
             } ?: false
             // Back to a clean page: the books that needed the permission are off again.
             selected = addressBooks
@@ -557,7 +560,7 @@ private fun SystemContactsSharingStep(
                 text = R.string.onboarding_action_continue,
                 onClick = {
                     if (needsPermission(selected)) {
-                        permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+                        permissionLauncher.launch(CONTACTS_PERMISSIONS)
                     } else {
                         onSave(selected)
                     }

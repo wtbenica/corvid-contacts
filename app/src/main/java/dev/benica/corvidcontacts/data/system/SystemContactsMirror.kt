@@ -87,13 +87,13 @@ class SystemContactsMirror(
     @Volatile
     private var readOnlyFlagSupported = true
 
-    fun hasPermission(): Boolean = ContextCompat.checkSelfPermission(
+    /** Whether both permissions are held: writing the mirror, and reading back edits made to it. */
+    fun hasPermission(): Boolean = canRead() && ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.WRITE_CONTACTS
     ) == PackageManager.PERMISSION_GRANTED
 
-    /** Whether edits made in other apps can be read back. Without it the mirror only writes. */
-    fun canRead(): Boolean = ContextCompat.checkSelfPermission(
+    private fun canRead(): Boolean = ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.READ_CONTACTS
     ) == PackageManager.PERMISSION_GRANTED

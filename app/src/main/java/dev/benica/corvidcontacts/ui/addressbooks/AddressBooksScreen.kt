@@ -67,7 +67,7 @@ fun AddressBooksScreen(
     val hapticFeedback = LocalHapticFeedback.current
     val genericErrorMessage = stringResource(R.string.settings_address_book_generic_error)
     val title = stringResource(R.string.settings_section_address_books)
-    val hasContactsPermission = rememberHasContactsWritePermission()
+    val hasContactsPermission = rememberHasContactsPermission()
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }

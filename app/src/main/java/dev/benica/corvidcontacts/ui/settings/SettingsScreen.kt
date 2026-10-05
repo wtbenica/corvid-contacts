@@ -55,7 +55,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.common_ui.SecondaryHeader
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
 import dev.benica.corvidcontacts.ui.settings.sections.AccountSection
-import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsWritePermission
+import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsPermission
 import dev.benica.corvidcontacts.ui.settings.sections.AddressBooksLinkSection
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.DataManagementSection
@@ -268,7 +268,7 @@ private fun SettingsScreen(
 
                 AddressBooksLinkSection(
                     bookCount = addressBooks.size,
-                    sharedBookCount = if (rememberHasContactsWritePermission()) {
+                    sharedBookCount = if (rememberHasContactsPermission()) {
                         addressBooks.count { it.shareWithSystem }
                     } else {
                         0

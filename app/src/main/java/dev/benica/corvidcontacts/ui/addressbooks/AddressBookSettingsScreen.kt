@@ -2,7 +2,6 @@
 
 package dev.benica.corvidcontacts.ui.addressbooks
 
-import android.Manifest
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -109,11 +108,12 @@ fun AddressBookSettingsScreen(
     var isSubmitting by remember { mutableStateOf(false) }
     var showShareExplanation by remember { mutableStateOf(false) }
 
-    val initiallyHasPermission = rememberHasContactsWritePermission()
+    val initiallyHasPermission = rememberHasContactsPermission()
     var hasPermission by remember { mutableStateOf(initiallyHasPermission) }
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        val granted = results.grantedAllContacts()
         hasPermission = granted
         if (granted) onShareWithSystemChanged(book, true)
     }
@@ -292,7 +292,7 @@ fun AddressBookSettingsScreen(
             confirmButton = R.string.ok,
             onConfirm = {
                 showShareExplanation = false
-                permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+                permissionLauncher.launch(CONTACTS_PERMISSIONS)
             },
             dismissButton = R.string.action_cancel,
         )
