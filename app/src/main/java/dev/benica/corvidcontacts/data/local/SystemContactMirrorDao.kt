@@ -56,6 +56,20 @@ private const val MIRROR_SOURCES_QUERY =
     WHERE c.isArchived = 0 AND b.shareWithSystem = 1
     """
 
+/** A contact hidden from the system contacts, with what the review list needs to name it. */
+data class HiddenContact(
+    val id: ContactId,
+    val displayName: String,
+    val firstName: String?,
+    val lastName: String?,
+    val addressBookHref: String?,
+) {
+    val name: String
+        get() = displayName.ifBlank {
+            listOfNotNull(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
+        }
+}
+
 @Dao
 interface SystemContactMirrorDao {
     @Query("SELECT * FROM system_contact_mirror")
@@ -83,6 +97,16 @@ interface SystemContactMirrorDao {
 
     @Query("SELECT contactId FROM system_contact_hidden")
     fun observeHiddenIds(): Flow<List<ContactId>>
+
+    @Query(
+        """
+        SELECT c.id, c.displayName, c.firstName, c.lastName, c.addressBookHref
+        FROM contacts c
+        INNER JOIN system_contact_hidden h ON h.contactId = c.id
+        ORDER BY c.displayName COLLATE NOCASE ASC
+        """
+    )
+    fun observeHiddenContacts(): Flow<List<HiddenContact>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun hide(entries: List<SystemContactHiddenEntity>)

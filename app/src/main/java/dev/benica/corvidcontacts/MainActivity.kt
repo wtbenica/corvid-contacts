@@ -131,6 +131,7 @@ class MainActivity : ComponentActivity() {
                                 contactsRepository = container.contactsRepository,
                                 settingsRepository = container.settingsRepository,
                                 geocoderRepository = container.geocoderRepository,
+                                systemContactVisibility = container.systemContactVisibility,
                                 onContinueLocally = mainViewModel::continueWithoutAccount,
                                 initialIntentContact = initialContact,
                                 pickType = pickType,

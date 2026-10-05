@@ -103,7 +103,8 @@ class WidgetConfigurationActivity : ComponentActivity() {
                             return ContactsViewModel(
                                 app.container.contactsRepository,
                                 app.container.settingsRepository,
-                                app.container.authRepository
+                                app.container.authRepository,
+                                app.container.systemContactVisibility
                             ) as T
                         }
                     }

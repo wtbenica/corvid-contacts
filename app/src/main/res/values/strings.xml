@@ -515,5 +515,13 @@
     <string name="settings_address_books_description">Appearance, visibility and sharing for each address book</string>
     <string name="system_contact_edit_not_found">Couldn\'t find this contact in Corvid. Open Corvid to edit it.</string>
     <string name="system_contacts_add_account_unsupported">Share an address book from Corvid Contacts instead.</string>
+    <string name="detail_hidden_from_system_title">Hidden from phone contacts</string>
+    <string name="detail_hidden_from_system_message">You deleted this contact from your phone\'s contacts. It is still in Corvid and on your server.</string>
+    <string name="detail_hidden_from_system_show">Show again</string>
+    <string name="detail_hidden_from_system_delete">Delete from Corvid</string>
+    <string name="address_book_setting_hidden">Hidden from phone contacts</string>
+    <string name="address_book_setting_hidden_description">Contacts you deleted from your phone\'s contacts. They are still in Corvid.</string>
+    <string name="address_book_hidden_dialog_message">You deleted these from your phone\'s contacts. They are still in Corvid and on your server. Showing one again puts it back in your phone\'s contacts.</string>
+    <string name="address_book_hidden_show_all">Show all again</string>
 </resources>
 

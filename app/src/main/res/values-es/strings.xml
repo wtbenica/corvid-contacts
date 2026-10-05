@@ -518,4 +518,12 @@
     <string name="settings_address_books_description">Aspecto, visibilidad y uso compartido de cada libreta de direcciones</string>
     <string name="system_contact_edit_not_found">No se encontró este contacto en Corvid. Abre Corvid para editarlo.</string>
     <string name="system_contacts_add_account_unsupported">Comparte una libreta de direcciones desde Corvid Contacts.</string>
+    <string name="detail_hidden_from_system_title">Oculto en los contactos del teléfono</string>
+    <string name="detail_hidden_from_system_message">Eliminaste este contacto de los contactos del teléfono. Sigue en Corvid y en tu servidor.</string>
+    <string name="detail_hidden_from_system_show">Mostrar de nuevo</string>
+    <string name="detail_hidden_from_system_delete">Eliminar de Corvid</string>
+    <string name="address_book_setting_hidden">Ocultos en los contactos del teléfono</string>
+    <string name="address_book_setting_hidden_description">Contactos que eliminaste de los contactos del teléfono. Siguen en Corvid.</string>
+    <string name="address_book_hidden_dialog_message">Eliminaste estos contactos de los contactos del teléfono. Siguen en Corvid y en tu servidor. Al mostrar uno de nuevo, vuelve a los contactos del teléfono.</string>
+    <string name="address_book_hidden_show_all">Mostrar todos de nuevo</string>
 </resources>

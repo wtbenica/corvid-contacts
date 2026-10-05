@@ -349,6 +349,7 @@ internal fun AddressBookSettingsContent(
     val contactCount by produceState(0, key.href) {
         value = contactsRepository.getContactCountInAddressBook(key.href)
     }
+    val hiddenFromSystem by contactsViewModel.hiddenFromSystemContacts.collectAsState()
 
     AddressBookSettingsScreen(
         book = addressBooks.find { it.href == key.href },
@@ -366,6 +367,8 @@ internal fun AddressBookSettingsContent(
         onSystemContactsLevelChanged = { book, level ->
             contactsViewModel.setAddressBookSystemContactsLevel(book, level)
         },
+        hiddenContacts = hiddenFromSystem.filter { it.addressBookHref == key.href },
+        onShowInSystem = { contactsViewModel.showInSystemContacts(it) },
         onUpload = { book, newName -> contactsViewModel.uploadLocalAddressBook(book, newName) },
         onSetUpSync = { backStack.add(Destination.Login()) },
         onDelete = { contactsViewModel.deleteAddressBook(it) },

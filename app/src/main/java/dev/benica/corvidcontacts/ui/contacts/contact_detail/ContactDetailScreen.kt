@@ -35,6 +35,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCTopAppBar
 import dev.benica.corvidcontacts.ui.contacts.common_ui.EmptyState
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.ContactDetailContent
+import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.HiddenFromSystemCard
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.rememberContactDetailActions
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -61,6 +62,8 @@ fun ContactDetailScreen(
     onNavigateToContact: (String) -> Unit,
     onShare: (Boolean) -> Unit, // true for QR, false for normal share
     modifier: Modifier = Modifier,
+    hiddenFromSystem: Boolean = false,
+    onShowInSystem: () -> Unit = {},
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
     // Only rendered here when showScaffold is true; embedders pass their own otherwise.
@@ -114,6 +117,12 @@ fun ContactDetailScreen(
                 systemPadding = padding,
                 modifier = modifier,
                 content = {
+                    if (hiddenFromSystem) {
+                        HiddenFromSystemCard(
+                            onShowAgain = onShowInSystem,
+                            onDelete = handlers.requestDelete
+                        )
+                    }
                     ContactDetailContent(
                         contact = contactWithBook.contact,
                         relatives = relatives,

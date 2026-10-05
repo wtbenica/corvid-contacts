@@ -14,6 +14,7 @@ import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
+import dev.benica.corvidcontacts.data.system.SystemContactVisibility
 import dev.benica.corvidcontacts.navigation.Destination
 import dev.benica.corvidcontacts.ui.contacts.ContactsViewModel
 import dev.benica.corvidcontacts.ui.contacts.PickContent
@@ -33,6 +34,7 @@ fun AppNavigation(
     contactsRepository: ContactsRepository,
     settingsRepository: SettingsRepository,
     geocoderRepository: GeocoderRepository,
+    systemContactVisibility: SystemContactVisibility,
     onContinueLocally: () -> Unit,
     initialIntentContact: ContactEntity? = null,
     pickType: PickContent? = null,
@@ -56,7 +58,8 @@ fun AppNavigation(
                 return ContactsViewModel(
                     contactsRepository,
                     settingsRepository,
-                    authRepository
+                    authRepository,
+                    systemContactVisibility
                 ) as T
             }
         }

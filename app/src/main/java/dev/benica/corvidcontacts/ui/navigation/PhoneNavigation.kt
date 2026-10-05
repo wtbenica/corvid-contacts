@@ -325,10 +325,14 @@ fun PhoneNavigation(
                     }
                 } ?: false
 
+                val hiddenFromSystem by contactsViewModel.hiddenFromSystemContacts.collectAsState()
+
                 ContactDetailScreen(
                     contactWithBook = contactWithBook,
                     allContacts = allContacts,
                     isFavorite = isFavorite,
+                    hiddenFromSystem = hiddenFromSystem.any { it.id == key.contactId },
+                    onShowInSystem = { contactsViewModel.showInSystemContacts(listOf(key.contactId)) },
                     onToggleFavorite = {
                         contact?.let { contactsViewModel.toggleFavorite(it) } ?: true
                     },

@@ -15,7 +15,10 @@ import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
+import dev.benica.corvidcontacts.data.local.HiddenContact
+import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
+import dev.benica.corvidcontacts.data.system.SystemContactVisibility
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +43,7 @@ class ContactsViewModel(
     val repository: ContactsRepository,
     private val settingsRepository: SettingsRepository,
     private val authRepository: AuthRepository,
+    private val systemContactVisibility: SystemContactVisibility,
 ) : ViewModel() {
 
     private val selectionManager = ContactSelectionManager()
@@ -838,6 +842,15 @@ class ContactsViewModel(
         viewModelScope.launch {
             repository.setAddressBookSharedWithSystem(addressBook.href, share)
         }
+    }
+
+    /** The contacts deleted from the system contacts in another app, which Corvid keeps out of them. */
+    val hiddenFromSystemContacts: StateFlow<List<HiddenContact>> = systemContactVisibility.hidden
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Lets the contacts in [ids] be written to the system contacts again. */
+    fun showInSystemContacts(ids: List<ContactId>) {
+        viewModelScope.launch { systemContactVisibility.showAgain(ids) }
     }
 
     /** Sets how much of each contact in [addressBook] is shared with the system contacts. */

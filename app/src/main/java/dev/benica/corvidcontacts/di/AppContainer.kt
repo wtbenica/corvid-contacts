@@ -12,6 +12,7 @@ import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.data.repository.PhotoManager
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import dev.benica.corvidcontacts.data.repository.VCardMapper
+import dev.benica.corvidcontacts.data.system.SystemContactVisibility
 import dev.benica.corvidcontacts.data.system.SystemContactsEditor
 import dev.benica.corvidcontacts.data.system.SystemContactsMirror
 import dev.benica.corvidcontacts.data.system.SystemContactsMirrorManager
@@ -41,6 +42,8 @@ class AppContainer(context: Context) {
     )
 
     val systemContactMirrorDao = database.systemContactMirrorDao()
+
+    val systemContactVisibility = SystemContactVisibility(systemContactMirrorDao)
 
     val systemContactsMirrorManager = SystemContactsMirrorManager(
         context,

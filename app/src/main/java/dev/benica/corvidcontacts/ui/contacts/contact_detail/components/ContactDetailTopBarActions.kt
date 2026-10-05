@@ -133,6 +133,8 @@ fun ContactDetailTopBarActions(
 data class ContactDetailActionsHandlers(
     val actions: @Composable RowScope.() -> Unit,
     val deleteDialog: @Composable () -> Unit,
+    /** Opens the delete confirmation, for a delete that isn't in the top bar menu. */
+    val requestDelete: () -> Unit,
 )
 
 /**
@@ -201,5 +203,5 @@ fun rememberContactDetailActions(
         }
     }
 
-    return ContactDetailActionsHandlers(actions, deleteDialog)
+    return ContactDetailActionsHandlers(actions, deleteDialog) { showDeleteConfirm = true }
 }

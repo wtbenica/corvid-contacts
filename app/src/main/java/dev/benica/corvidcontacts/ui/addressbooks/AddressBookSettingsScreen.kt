@@ -24,6 +24,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -43,6 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
+import dev.benica.corvidcontacts.data.local.ContactId
+import dev.benica.corvidcontacts.data.local.HiddenContact
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
@@ -81,6 +84,8 @@ fun AddressBookSettingsScreen(
     onToggleVisibility: (AddressBookEntity) -> Unit,
     onShareWithSystemChanged: (AddressBookEntity, Boolean) -> Unit,
     onSystemContactsLevelChanged: (AddressBookEntity, SystemContactsLevel) -> Unit,
+    hiddenContacts: List<HiddenContact>,
+    onShowInSystem: (List<ContactId>) -> Unit,
     onUpload: suspend (AddressBookEntity, String) -> Result<AddressBookUploadResult>,
     onSetUpSync: () -> Unit,
     onDelete: suspend (AddressBookEntity) -> Result<Unit>,
@@ -107,6 +112,7 @@ fun AddressBookSettingsScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
     var showShareExplanation by remember { mutableStateOf(false) }
+    var showHiddenDialog by remember { mutableStateOf(false) }
 
     val initiallyHasPermission = rememberHasContactsPermission()
     var hasPermission by remember { mutableStateOf(initiallyHasPermission) }
@@ -211,6 +217,15 @@ fun AddressBookSettingsScreen(
                 )
             }
 
+            if (hiddenContacts.isNotEmpty()) {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.address_book_setting_hidden)) },
+                    supportingContent = { Text(stringResource(R.string.address_book_setting_hidden_description)) },
+                    trailingContent = { Text(hiddenContacts.size.toString()) },
+                    modifier = Modifier.clickable { showHiddenDialog = true },
+                )
+            }
+
             HorizontalDivider()
 
             if (book.isLocal) {
@@ -296,6 +311,38 @@ fun AddressBookSettingsScreen(
             },
             dismissButton = R.string.action_cancel,
         )
+    }
+
+    if (showHiddenDialog) {
+        if (hiddenContacts.isEmpty()) {
+            showHiddenDialog = false
+        } else {
+            CCAlertDialog(
+                onDismissRequest = { showHiddenDialog = false },
+                title = R.string.address_book_setting_hidden,
+                content = {
+                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Text(stringResource(R.string.address_book_hidden_dialog_message))
+                        hiddenContacts.forEach { contact ->
+                            ListItem(
+                                headlineContent = { Text(contact.name) },
+                                trailingContent = {
+                                    TextButton(onClick = { onShowInSystem(listOf(contact.id)) }) {
+                                        Text(stringResource(R.string.detail_hidden_from_system_show))
+                                    }
+                                },
+                            )
+                        }
+                    }
+                },
+                confirmButton = R.string.address_book_hidden_show_all,
+                onConfirm = {
+                    onShowInSystem(hiddenContacts.map { it.id })
+                    showHiddenDialog = false
+                },
+                dismissButton = R.string.common_done,
+            )
+        }
     }
 
     // Uploading needs a server; with none connected, offer to set one up instead of failing.

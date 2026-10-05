@@ -408,10 +408,17 @@ fun AdaptiveMasterScreen(
                             val allContacts =
                                 (uiState as? ContactsUiState.Success)?.contacts ?: emptyList()
 
+                            val hiddenFromSystem by viewModel.hiddenFromSystemContacts.collectAsState()
+                            val shownId = contactWithBook?.contact?.id
+
                             ContactDetailScreen(
                                 contactWithBook = contactWithBook,
                                 allContacts = allContacts,
                                 isFavorite = isFavorite,
+                                hiddenFromSystem = hiddenFromSystem.any { it.id == shownId },
+                                onShowInSystem = {
+                                    shownId?.let { viewModel.showInSystemContacts(listOf(it)) }
+                                },
                                 onToggleFavorite = {
                                     contactWithBook?.contact?.let { viewModel.toggleFavorite(it) }
                                         ?: false
