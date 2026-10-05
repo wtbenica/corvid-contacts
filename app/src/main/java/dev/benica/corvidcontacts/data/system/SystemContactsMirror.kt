@@ -2,52 +2,23 @@
 
 package dev.benica.corvidcontacts.data.system
 
-import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderOperation
-import android.content.ContentProviderResult
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.content.OperationApplicationException
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.Phone
-import android.provider.ContactsContract.CommonDataKinds.Photo
-import android.provider.ContactsContract.CommonDataKinds.Relation
-import android.provider.ContactsContract.CommonDataKinds.StructuredName
-import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
-import android.provider.ContactsContract.CommonDataKinds.Website
-import android.provider.ContactsContract.CommonDataKinds.Email
-import android.provider.ContactsContract.CommonDataKinds.Event
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership
-import android.provider.ContactsContract.CommonDataKinds.Nickname
-import android.provider.ContactsContract.CommonDataKinds.Note
-import android.provider.ContactsContract.CommonDataKinds.Organization
-import android.provider.ContactsContract.Data
-import android.provider.ContactsContract.Groups
-import android.provider.ContactsContract.RawContacts
 import android.util.Log
-import androidx.core.content.ContextCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
-import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.local.MirrorSource
-import dev.benica.corvidcontacts.data.local.SystemContactHiddenEntity
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorDao
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
-import dev.benica.corvidcontacts.data.local.SystemGroupMirrorEntity
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.PhotoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
 /**
  * Keeps a copy of Corvid's contacts in Android's `ContactsContract` provider, under Corvid's own
@@ -57,7 +28,7 @@ import java.io.ByteArrayOutputStream
  * [SystemContactMirrorEntity]) for later updates and deletes, and a row that has disappeared is
  * re-inserted.
  *
- * Edits made to the copy in other apps are read back first (see [SystemContactsReader]): an edit is
+ * Edits made to the copy in other apps are read back first (see [SystemEditAbsorber]): an edit is
  * merged into the Corvid contact, and a delete hides the contact from the copy instead of deleting
  * it anywhere else. Only then is anything written, so an edit is never overwritten unread.
  *
@@ -65,12 +36,14 @@ import java.io.ByteArrayOutputStream
  * books stay distinguishable in the Contacts app. How much of each contact is written depends on
  * the [SystemContactsLevel] chosen for its book; at the Full contact level and up, contact
  * categories become groups too.
+ *
+ * This class owns the account and the order of a reconcile; the pieces it uses do the rest.
  */
 class SystemContactsMirror(
     private val context: Context,
     private val dao: SystemContactMirrorDao,
-    private val photoManager: PhotoManager,
-    private val editor: SystemContactsEditor,
+    photoManager: PhotoManager,
+    editor: SystemContactsEditor,
 ) {
     private val mutex = Mutex()
     private val accountManager = AccountManager.get(context)
@@ -79,21 +52,19 @@ class SystemContactsMirror(
         context.getString(R.string.system_contacts_account_type)
     )
 
+    private val permissions = MirrorPermissions(context)
+    private val provider = MirrorProvider(context, account)
     private val reader = SystemContactsReader(context, account)
+    private val photos = MirrorPhotos(photoManager, provider, reader, permissions::canRead)
+    private val writer = MirrorWriter(dao, provider, MirrorDataRows(provider), photos, reader)
+    private val groups = MirrorGroups(dao, provider)
+    private val absorber = SystemEditAbsorber(dao, reader, editor, photos, writer)
 
-    /** Whether both permissions are held: writing the mirror, and reading back edits made to it. */
-    fun hasPermission(): Boolean = canRead() && ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.WRITE_CONTACTS
-    ) == PackageManager.PERMISSION_GRANTED
-
-    private fun canRead(): Boolean = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.READ_CONTACTS
-    ) == PackageManager.PERMISSION_GRANTED
+    /** Whether both permissions are held: writing the copy, and reading back edits made to it. */
+    fun hasPermission(): Boolean = permissions.hasAll()
 
     /** Whether another app has edited or deleted a mirrored contact since the last reconcile. */
-    fun hasSystemChanges(): Boolean = canRead() && reader.hasChanges()
+    fun hasSystemChanges(): Boolean = permissions.canRead() && reader.hasChanges()
 
     private fun accountExists(): Boolean =
         accountManager.getAccountsByType(account.type).any { it.name == account.name }
@@ -113,7 +84,7 @@ class SystemContactsMirror(
             put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
         }
         context.contentResolver.insert(
-            ContactsContract.Settings.CONTENT_URI.asSyncAdapter(),
+            provider.forAccount(ContactsContract.Settings.CONTENT_URI),
             settings
         )
     }
@@ -130,26 +101,26 @@ class SystemContactsMirror(
             ensureAccount()
 
             // Read before the edits, so a contact changed after this point fails its guarded rewrite.
-            val versions = if (canRead()) reader.versions() else emptyMap()
-            val absorbed = absorbSystemEdits(sources)
+            val versions = reader.versions()
+            val absorbed = absorber.absorb(sources)
             val current = if (absorbed.roomChanged) dao.getMirrorSources() else sources
 
             dao.pruneHidden()
             val contacts = MirrorPlan.toMirrorContacts(
                 current,
                 books.associate { it.href to it.systemContactsLevel },
-                ::photoStamp,
+                photos::stamp,
                 dao.getHiddenIds().toSet(),
-                linkedNames(current)
+                dao.linkedNames(current)
             )
 
             // Every group the contacts need: one per shared book, plus one per category in use.
-            val groups = LinkedHashMap<String, String>()
-            books.forEach { groups[MirrorPlan.bookGroupKey(it.href)] = bookTitle(it) }
+            val wantedGroups = LinkedHashMap<String, String>()
+            books.forEach { wantedGroups[MirrorPlan.bookGroupKey(it.href)] = bookTitle(it) }
             contacts.forEach { contact ->
-                contact.categories.forEach { groups.putIfAbsent(MirrorPlan.categoryGroupKey(it), it) }
+                contact.categories.forEach { wantedGroups.putIfAbsent(MirrorPlan.categoryGroupKey(it), it) }
             }
-            val groupIds = syncGroups(groups)
+            val groupIds = groups.sync(wantedGroups)
 
             val desired = contacts.map { contact ->
                 val keys = listOf(MirrorPlan.bookGroupKey(contact.bookHref)) +
@@ -159,110 +130,16 @@ class SystemContactsMirror(
             val mapped = dao.getAll()
             val plan = MirrorPlan.diff(desired, mapped).excluding(absorbed.blocked)
             Log.i(
-                TAG,
+                MIRROR_TAG,
                 "reconcile: desired=${desired.size} mapped=${mapped.size} inserts=${plan.inserts.size} " +
                     "updates=${plan.updates.size} deletes=${plan.deletes.size}"
             )
             if (plan.isEmpty) return@withLock
 
-            applyDeletes(plan.deletes)
-            applyUpdates(plan.updates, versions)
-            applyInserts(plan.inserts)
+            writer.applyDeletes(plan.deletes)
+            writer.applyUpdates(plan.updates, versions)
+            writer.applyInserts(plan.inserts)
         }
-    }
-
-    /** What absorbing the edits made in other apps changed, and which contacts must not be written yet. */
-    private class Absorbed(val roomChanged: Boolean, val blocked: Set<ContactId>)
-
-    private enum class EditOutcome { APPLIED, REWRITE, RETRY }
-
-    /**
-     * Reads what other apps did to the mirrored contacts and applies it. A contact whose edit could
-     * not be saved is [Absorbed.blocked], so the write that follows leaves it dirty to be tried again
-     * instead of overwriting the edit.
-     */
-    private suspend fun absorbSystemEdits(sources: List<MirrorSource>): Absorbed {
-        val none = Absorbed(false, emptySet())
-        if (!canRead()) return none
-        val changes = reader.readChanges()
-        if (changes.isEmpty()) return none
-
-        val byRaw = dao.getAll().associateBy { it.rawContactId }
-        val sourcesById = sources.associateBy { it.id }
-        var roomChanged = false
-        val blocked = HashSet<ContactId>()
-        val rewrite = ArrayList<ContactId>()
-        for (change in changes) {
-            val entry = byRaw[change.rawContactId] ?: continue
-            when (change) {
-                is SystemContactsReader.Deleted -> {
-                    Log.i(TAG, "contact=${entry.contactId} raw=${entry.rawContactId} deleted elsewhere, hiding")
-                    dao.hide(listOf(SystemContactHiddenEntity(entry.contactId)))
-                    applyDeletes(listOf(entry))
-                }
-
-                is SystemContactsReader.Edited -> when (absorbEdit(entry, change, sourcesById[entry.contactId])) {
-                    EditOutcome.APPLIED -> {
-                        roomChanged = true
-                        rewrite += entry.contactId
-                    }
-
-                    EditOutcome.REWRITE -> rewrite += entry.contactId
-                    EditOutcome.RETRY -> blocked += entry.contactId
-                }
-            }
-        }
-        dao.markStale(rewrite)
-        return Absorbed(roomChanged, blocked)
-    }
-
-    private suspend fun absorbEdit(
-        entry: SystemContactMirrorEntity,
-        change: SystemContactsReader.Edited,
-        source: MirrorSource?,
-    ): EditOutcome {
-        val base = MirrorPlan.readSnapshot(entry.snapshot)
-        if (base == null || source == null) return EditOutcome.REWRITE
-
-        val linkedNames = linkedNames(listOf(source))
-        val ours = MirrorPlan.toMirrorContact(source, photoStamp(source), base.level, linkedNames)
-        val merge = SystemEditMerge.merge(base, change.contact, ours)
-        if (merge.isEmpty) return EditOutcome.REWRITE
-
-        val entity = editor.get(entry.contactId)
-        if (entity == null || !entity.isEditable()) return EditOutcome.REWRITE
-
-        val photoUrl = if (MirrorField.PHOTO in merge.taken) savePhoto(entity.id, change.rawContactId) else null
-        return editor.save(SystemEditMerge.apply(entity, merge, photoUrl, linkedNames)).fold(
-            onSuccess = {
-                Log.i(TAG, "contact=${entry.contactId} took ${merge.taken} from the system contacts")
-                EditOutcome.APPLIED
-            },
-            onFailure = {
-                Log.w(TAG, "contact=${entry.contactId} edit not saved, will retry", it)
-                EditOutcome.RETRY
-            }
-        )
-    }
-
-    /** The names of the contacts that [sources] link to in their relationships, by contact id. */
-    private suspend fun linkedNames(sources: List<MirrorSource>): Map<ContactId, String> {
-        val ids = sources
-            .flatMap { it.relationships.orEmpty() }
-            .filter { it.isUid }
-            .map { it.value }
-            .distinct()
-        return ids.chunked(NAME_QUERY_BATCH).flatMap { dao.getContactNames(it) }.associate { it.id to it.name }
-    }
-
-    /** Stores the contact's photo from the system contacts, or removes it if there is none. */
-    private fun savePhoto(contactId: ContactId, rawId: Long): String? {
-        val bytes = reader.photoBytes(rawId)
-        if (bytes == null) {
-            photoManager.getPhotoFile(contactId).delete()
-            return null
-        }
-        return photoManager.savePhotoToFile(contactId, bytes)
     }
 
     private fun bookTitle(book: AddressBookEntity): String =
@@ -278,401 +155,5 @@ class SystemContactsMirror(
             dao.deleteAll()
             dao.deleteAllGroups()
         }
-    }
-
-    /**
-     * Makes the system groups match [wanted] (group key to title) - creating, renaming and
-     * removing as needed - and returns each key's group id. A group that has vanished from the
-     * provider is detected when renaming it affects nothing, and re-created.
-     */
-    private suspend fun syncGroups(wanted: Map<String, String>): Map<String, Long> {
-        val existing = dao.getAllGroups().associateBy { it.groupKey }
-
-        val stale = existing.values.filter { it.groupKey !in wanted }
-        if (stale.isNotEmpty()) {
-            apply(
-                stale.map {
-                    ContentProviderOperation
-                        .newDelete(Groups.CONTENT_URI.asSyncAdapterByRowId())
-                        .withSelection("${Groups._ID}=?", arrayOf(it.groupId.toString()))
-                        .build()
-                }
-            )
-            dao.deleteGroups(stale.map { it.groupKey })
-        }
-
-        val result = HashMap<String, Long>()
-        for ((key, title) in wanted) {
-            val current = existing[key]
-
-            if (current != null && current.title == title) {
-                result[key] = current.groupId
-                continue
-            }
-            if (current != null) {
-                try {
-                    apply(
-                        listOf(
-                            ContentProviderOperation
-                                .newUpdate(Groups.CONTENT_URI.asSyncAdapterByRowId())
-                                .withSelection("${Groups._ID}=?", arrayOf(current.groupId.toString()))
-                                .withValue(Groups.TITLE, title)
-                                .withExpectedCount(1)
-                                .build()
-                        )
-                    )
-                    dao.upsertGroups(listOf(current.copy(title = title)))
-                    result[key] = current.groupId
-                    continue
-                } catch (_: OperationApplicationException) {
-                    // The group is gone; fall through and create it again.
-                }
-            }
-
-            val results = apply(
-                listOf(
-                    ContentProviderOperation
-                        .newInsert(Groups.CONTENT_URI.asSyncAdapter())
-                        .withValue(Groups.ACCOUNT_NAME, account.name)
-                        .withValue(Groups.ACCOUNT_TYPE, account.type)
-                        .withValue(Groups.TITLE, title)
-                        .withValue(Groups.SOURCE_ID, key)
-                        .withValue(Groups.GROUP_VISIBLE, 1)
-                        .build()
-                )
-            )
-            val groupId = ContentUris.parseId(requireNotNull(results[0].uri))
-            dao.upsertGroups(listOf(SystemGroupMirrorEntity(key, groupId, title)))
-            result[key] = groupId
-        }
-        return result
-    }
-
-    private suspend fun applyDeletes(deletes: List<SystemContactMirrorEntity>) {
-        deletes.chunked(DELETE_BATCH).forEach { chunk ->
-            val ops = chunk.map {
-                ContentProviderOperation
-                    .newDelete(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
-                    .withSelection("${RawContacts._ID}=?", arrayOf(it.rawContactId.toString()))
-                    .build()
-            }
-            val results = apply(ops)
-            Log.i(TAG, "deleted raw ids ${chunk.map { it.rawContactId }} counts=${results.map { it.count }}")
-            dao.delete(chunk.map { it.contactId })
-        }
-    }
-
-    /**
-     * Rewrites each contact from Corvid's copy. [versions] holds each raw contact's version from
-     * before the edits were read: a contact that has changed since is skipped, and the next pass
-     * reads that edit instead of overwriting it.
-     */
-    private suspend fun applyUpdates(
-        updates: List<Pair<MirrorContact, SystemContactMirrorEntity>>,
-        versions: Map<Long, Long>,
-    ) {
-        val missing = ArrayList<MirrorContact>()
-        for ((contact, entry) in updates) {
-            val rawId = entry.rawContactId
-            val expectedVersion = versions[rawId]
-            val ops = ArrayList<ContentProviderOperation>()
-            // Touching the raw contact with an expected count of 1 fails the whole batch if the row
-            // is gone or has changed, instead of attaching new data rows to a stale id.
-            ops += ContentProviderOperation
-                .newUpdate(RawContacts.CONTENT_URI.asSyncAdapterByRowId())
-                .withSelection(
-                    if (expectedVersion != null) "${RawContacts._ID}=? AND ${RawContacts.VERSION}=?" else "${RawContacts._ID}=?",
-                    listOfNotNull(rawId.toString(), expectedVersion?.toString()).toTypedArray()
-                )
-                .withValue(RawContacts.SOURCE_ID, contact.id)
-                .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
-                .withValue(RawContacts.DIRTY, 0)
-                .withExpectedCount(1)
-                .build()
-            // Only the kinds of row Corvid writes; anniversaries, IM and custom rows added by another
-            // app are left alone.
-            ops += ContentProviderOperation
-                .newDelete(Data.CONTENT_URI.asSyncAdapterByRowId())
-                .withSelection(MANAGED_ROWS_SELECTION, arrayOf(rawId.toString()) + MANAGED_ROWS_ARGS)
-                .build()
-            ops += dataOps(contact) { builder -> builder.withValue(Data.RAW_CONTACT_ID, rawId) }
-
-            try {
-                val results = apply(ops)
-                // Counts: [0] raw contact touched (expected 1), [1] data rows deleted, then one
-                // result per inserted row (no count).
-                Log.i(
-                    TAG,
-                    "update contact=${contact.id} raw=$rawId touched=${results.getOrNull(0)?.count} " +
-                        "deletedRows=${results.getOrNull(1)?.count} inserted=${results.size - 2}"
-                )
-                val photoToken = writePhoto(contact, rawId)
-                dao.upsert(listOf(entry(contact, rawId, photoToken)))
-            } catch (e: OperationApplicationException) {
-                val current = reader.version(rawId)
-                if (expectedVersion != null && current != null && current != expectedVersion) {
-                    Log.i(TAG, "update contact=${contact.id} raw=$rawId changed meanwhile, will read it next")
-                } else {
-                    Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
-                    missing += contact
-                }
-            }
-        }
-        if (missing.isNotEmpty()) {
-            dao.delete(missing.map { it.id })
-            applyInserts(missing)
-        }
-    }
-
-    private suspend fun applyInserts(inserts: List<MirrorContact>) {
-        inserts.chunked(INSERT_BATCH).forEach { chunk ->
-            val rawIndexes = IntArray(chunk.size)
-            fun buildOps(): List<ContentProviderOperation> {
-                val ops = ArrayList<ContentProviderOperation>()
-                chunk.forEachIndexed { i, contact ->
-                    rawIndexes[i] = ops.size
-                    ops += rawContactInsert(contact)
-                    val rawIndex = rawIndexes[i]
-                    ops += dataOps(contact) { builder ->
-                        builder.withValueBackReference(Data.RAW_CONTACT_ID, rawIndex)
-                    }
-                }
-                return ops
-            }
-
-            val results = apply(buildOps())
-
-            val entries = chunk.mapIndexed { i, contact ->
-                val rawId = ContentUris.parseId(requireNotNull(results[rawIndexes[i]].uri))
-                entry(contact, rawId)
-            }
-            Log.i(TAG, "inserted ${entries.size} contacts, raw ids ${entries.map { it.rawContactId }}")
-            dao.upsert(entries)
-            chunk.forEachIndexed { i, contact ->
-                writePhoto(contact, entries[i].rawContactId)?.let { token ->
-                    dao.upsert(listOf(entry(contact, entries[i].rawContactId, token)))
-                }
-            }
-        }
-    }
-
-    private fun entry(contact: MirrorContact, rawId: Long, photoToken: String? = null) =
-        SystemContactMirrorEntity(
-            contact.id,
-            rawId,
-            contact.hash,
-            MirrorPlan.snapshotOf(contact.copy(systemPhoto = photoToken))
-        )
-
-    private fun rawContactInsert(contact: MirrorContact): ContentProviderOperation =
-        ContentProviderOperation
-            .newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
-            .withValue(RawContacts.ACCOUNT_NAME, account.name)
-            .withValue(RawContacts.ACCOUNT_TYPE, account.type)
-            .withValue(RawContacts.SOURCE_ID, contact.id)
-            .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
-            .build()
-
-    /**
-     * The data rows for [contact] - name, groups, phones and whatever the sharing level adds;
-     * [bindRaw] attaches each to its raw contact.
-     */
-    private fun dataOps(
-        contact: MirrorContact,
-        bindRaw: (ContentProviderOperation.Builder) -> ContentProviderOperation.Builder,
-    ): List<ContentProviderOperation> {
-        val ops = ArrayList<ContentProviderOperation>()
-        fun row(mimeType: String, fill: ContentProviderOperation.Builder.() -> Unit) {
-            val builder = bindRaw(ContentProviderOperation.newInsert(Data.CONTENT_URI.asSyncAdapter()))
-                .withValue(Data.MIMETYPE, mimeType)
-            builder.fill()
-            ops += builder.build()
-        }
-
-        row(StructuredName.CONTENT_ITEM_TYPE) {
-            withValue(StructuredName.DISPLAY_NAME, contact.displayName)
-            withValue(StructuredName.GIVEN_NAME, contact.givenName)
-            withValue(StructuredName.FAMILY_NAME, contact.familyName)
-            withValue(StructuredName.MIDDLE_NAME, contact.middleName)
-            withValue(StructuredName.PREFIX, contact.prefix)
-            withValue(StructuredName.SUFFIX, contact.suffix)
-        }
-        contact.groupIds.forEach { groupId ->
-            row(GroupMembership.CONTENT_ITEM_TYPE) { withValue(GroupMembership.GROUP_ROW_ID, groupId) }
-        }
-        contact.phones.forEach { phone ->
-            row(Phone.CONTENT_ITEM_TYPE) {
-                withValue(Phone.NUMBER, phone.number)
-                withValue(Phone.TYPE, phone.type)
-            }
-        }
-        contact.emails.forEach { email ->
-            row(Email.CONTENT_ITEM_TYPE) {
-                withValue(Email.ADDRESS, email.address)
-                withValue(Email.TYPE, email.type)
-            }
-        }
-        contact.addresses.forEach { address ->
-            row(StructuredPostal.CONTENT_ITEM_TYPE) {
-                withValue(StructuredPostal.FORMATTED_ADDRESS, address.formatted)
-                withValue(StructuredPostal.STREET, address.street)
-                withValue(StructuredPostal.POBOX, address.poBox)
-                withValue(StructuredPostal.CITY, address.city)
-                withValue(StructuredPostal.REGION, address.region)
-                withValue(StructuredPostal.POSTCODE, address.postcode)
-                withValue(StructuredPostal.COUNTRY, address.country)
-                withValue(StructuredPostal.TYPE, address.type)
-            }
-        }
-        contact.websites.forEach { url ->
-            row(Website.CONTENT_ITEM_TYPE) {
-                withValue(Website.URL, url)
-                withValue(Website.TYPE, Website.TYPE_OTHER)
-            }
-        }
-        contact.profileLinks.forEach { url ->
-            row(Website.CONTENT_ITEM_TYPE) {
-                withValue(Website.URL, url)
-                withValue(Website.TYPE, Website.TYPE_PROFILE)
-            }
-        }
-        contact.relations.forEach { relation ->
-            row(Relation.CONTENT_ITEM_TYPE) {
-                withValue(Relation.NAME, relation.name)
-                withValue(Relation.TYPE, relation.type)
-                if (relation.type == Relation.TYPE_CUSTOM) withValue(Relation.LABEL, relation.label)
-            }
-        }
-        contact.birthday?.let { date ->
-            row(Event.CONTENT_ITEM_TYPE) {
-                withValue(Event.START_DATE, date)
-                withValue(Event.TYPE, Event.TYPE_BIRTHDAY)
-            }
-        }
-        contact.organization?.let { organization ->
-            row(Organization.CONTENT_ITEM_TYPE) {
-                withValue(Organization.COMPANY, organization.company)
-                withValue(Organization.TITLE, organization.title)
-                withValue(Organization.TYPE, Organization.TYPE_WORK)
-            }
-        }
-        contact.nickname?.let { nickname ->
-            row(Nickname.CONTENT_ITEM_TYPE) {
-                withValue(Nickname.NAME, nickname)
-                withValue(Nickname.TYPE, Nickname.TYPE_DEFAULT)
-            }
-        }
-        contact.note?.let { note ->
-            row(Note.CONTENT_ITEM_TYPE) { withValue(Note.NOTE, note) }
-        }
-        return ops
-    }
-
-    /**
-     * Writes [contact]'s photo as its own small batch, since photo bytes can approach the binder
-     * transaction limit. A failure here leaves the contact without a photo rather than failing the
-     * whole reconcile. Returns how the provider now holds the photo (see
-     * [SystemContactsReader.photoToken]), or `null` if none was written or it can't be read back.
-     */
-    private fun writePhoto(contact: MirrorContact, rawId: Long): String? {
-        if (contact.photoStamp == null) return null
-        val bytes = photoBytes(contact.id) ?: return null
-        return try {
-            apply(
-                listOf(
-                    ContentProviderOperation
-                        .newInsert(Data.CONTENT_URI.asSyncAdapter())
-                        .withValue(Data.RAW_CONTACT_ID, rawId)
-                        .withValue(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE)
-                        .withValue(Photo.PHOTO, bytes)
-                        .build()
-                )
-            )
-            if (canRead()) reader.photoToken(rawId) else null
-        } catch (e: Exception) {
-            Log.w(TAG, "Couldn't mirror photo for contact ${contact.id}", e)
-            null
-        }
-    }
-
-    private fun apply(ops: List<ContentProviderOperation>): Array<ContentProviderResult> =
-        context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ArrayList(ops))
-
-    private fun photoStamp(source: MirrorSource): String? {
-        if (!source.hasPhoto) return null
-        val file = photoManager.getPhotoFile(source.id)
-        return if (file.exists()) "${file.lastModified()}-${file.length()}" else null
-    }
-
-    /** The contact's photo, downscaled if large so it fits comfortably in one provider call. */
-    private fun photoBytes(contactId: String): ByteArray? {
-        val file = photoManager.getPhotoFile(contactId)
-        if (!file.exists()) return null
-        val raw = file.readBytes()
-        if (raw.size <= PHOTO_PASS_THROUGH_BYTES) return raw
-
-        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(raw, 0, raw.size, bounds)
-        var sample = 1
-        while (maxOf(bounds.outWidth, bounds.outHeight) / (sample * 2) >= PHOTO_MAX_DIMENSION) sample *= 2
-        val bitmap = BitmapFactory.decodeByteArray(
-            raw,
-            0,
-            raw.size,
-            BitmapFactory.Options().apply { inSampleSize = sample }
-        ) ?: return null
-        return ByteArrayOutputStream().use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-            bitmap.recycle()
-            out.toByteArray()
-        }
-    }
-
-    /**
-     * Marks the call as coming from the account's sync adapter, so changes aren't flagged dirty and
-     * deletes remove the row instead of just marking it deleted. Updates and deletes address rows by
-     * id and must not carry the account as query parameters: the provider turns those into an
-     * `account_name` filter on the raw contacts table, which has no such column, and rejects the
-     * whole batch with "Invalid token account_name".
-     */
-    private fun Uri.asSyncAdapterByRowId(): Uri = buildUpon()
-        .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-        .build()
-
-    /** As [asSyncAdapterByRowId], plus the account, for inserts that name no account in their values. */
-    private fun Uri.asSyncAdapter(): Uri = buildUpon()
-        .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-        .appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
-        .appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
-        .build()
-
-    private companion object {
-        const val TAG = "SystemContactsMirror"
-        const val INSERT_BATCH = 50
-        const val DELETE_BATCH = 200
-        const val NAME_QUERY_BATCH = 500
-        const val PHOTO_PASS_THROUGH_BYTES = 256 * 1024
-        const val PHOTO_MAX_DIMENSION = 720
-
-        private val MANAGED_MIME_TYPES = arrayOf(
-            StructuredName.CONTENT_ITEM_TYPE,
-            GroupMembership.CONTENT_ITEM_TYPE,
-            Phone.CONTENT_ITEM_TYPE,
-            Email.CONTENT_ITEM_TYPE,
-            StructuredPostal.CONTENT_ITEM_TYPE,
-            Website.CONTENT_ITEM_TYPE,
-            Relation.CONTENT_ITEM_TYPE,
-            Organization.CONTENT_ITEM_TYPE,
-            Nickname.CONTENT_ITEM_TYPE,
-            Note.CONTENT_ITEM_TYPE,
-            Photo.CONTENT_ITEM_TYPE,
-        )
-
-        /** Corvid's rows for one raw contact: the kinds it writes, and birthdays among the events. */
-        val MANAGED_ROWS_SELECTION =
-            "${Data.RAW_CONTACT_ID}=? AND (${Data.MIMETYPE} IN (${MANAGED_MIME_TYPES.joinToString(",") { "?" }}) " +
-                "OR (${Data.MIMETYPE}=? AND ${Data.DATA2}=?))"
-        val MANAGED_ROWS_ARGS =
-            MANAGED_MIME_TYPES + Event.CONTENT_ITEM_TYPE + Event.TYPE_BIRTHDAY.toString()
     }
 }

@@ -34,13 +34,7 @@ class SystemContactsAuthenticatorService : Service() {
             authTokenType: String?,
             requiredFeatures: Array<out String>?,
             options: Bundle?,
-        ): Bundle = Bundle().apply {
-            putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION)
-            putString(
-                AccountManager.KEY_ERROR_MESSAGE,
-                context.getString(R.string.system_contacts_add_account_unsupported)
-            )
-        }
+        ): Bundle = unsupported(context.getString(R.string.system_contacts_add_account_unsupported))
 
         override fun editProperties(response: AccountAuthenticatorResponse?, accountType: String?): Bundle =
             unsupported()
@@ -73,9 +67,9 @@ class SystemContactsAuthenticatorService : Service() {
             features: Array<out String>?,
         ): Bundle = Bundle().apply { putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false) }
 
-        private fun unsupported() = Bundle().apply {
+        private fun unsupported(message: String = "Unsupported") = Bundle().apply {
             putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION)
-            putString(AccountManager.KEY_ERROR_MESSAGE, "Unsupported")
+            putString(AccountManager.KEY_ERROR_MESSAGE, message)
         }
     }
 }
