@@ -5,6 +5,16 @@ package dev.benica.corvidcontacts.ui.contacts.contact_edit.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoFixHigh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.flowOf
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -59,6 +69,8 @@ fun StructuredAddressField(
     var isFocused by remember { mutableStateOf(false) }
     var hasInteracted by remember { mutableStateOf(false) }
     var showSuggestions by remember { mutableStateOf(true) }
+    var showFillIn by remember { mutableStateOf(false) }
+    val lookupEnabled by (geocoderRepository?.lookupEnabled ?: flowOf(false)).collectAsState(initial = false)
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
@@ -218,6 +230,34 @@ fun StructuredAddressField(
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             )
         }
+
+        if (geocoderRepository != null && lookupEnabled) {
+            TextButton(
+                onClick = { showFillIn = true },
+                enabled = enabled && address.toSingleLine().isNotBlank(),
+            ) {
+                Icon(Icons.Outlined.AutoFixHigh, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(Dimens.smSpacing))
+                Text(stringResource(R.string.edit_action_fill_in_address))
+            }
+        }
+    }
+
+    if (showFillIn && geocoderRepository != null) {
+        FillInAddressDialog(
+            query = address.toSingleLine(),
+            findMatches = geocoderRepository::getAutocompleteSuggestions,
+            onPick = { match ->
+                scope.launch {
+                    val resolved = geocoderRepository.resolveSuggestion(match) ?: return@launch
+                    isProgrammaticChange = true
+                    // Lookup doesn't produce a PO box or a second line, so the ones typed stay.
+                    onAddressChange(resolved.copy(type = address.type, poBox = address.poBox, extended = address.extended))
+                    showFillIn = false
+                }
+            },
+            onDismiss = { showFillIn = false },
+        )
     }
 }
 

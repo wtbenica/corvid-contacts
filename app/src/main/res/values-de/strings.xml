@@ -513,7 +513,7 @@
     <string name="detail_menu_hide_from_system">In den Telefonkontakten ausblenden</string>
     <string name="detail_menu_show_in_system">In den Telefonkontakten anzeigen</string>
     <string name="detail_hidden_from_system_dismiss">Hinweis schließen</string>
-    <string name="detail_action_fill_in_address">Adressdetails ergänzen</string>
+    <string name="edit_action_fill_in_address">Adressdetails ergänzen</string>
     <string name="fill_in_address_title">Adressdetails ergänzen</string>
     <string name="fill_in_address_message">Wähle den passenden Treffer für „%1$s“, um Straße, Ort, Bundesland und Postleitzahl zu ergänzen. Dabei wird die Adresse an deinen Dienst für die Adresssuche gesendet.</string>
     <string name="fill_in_address_searching">Suche nach Treffern …</string>

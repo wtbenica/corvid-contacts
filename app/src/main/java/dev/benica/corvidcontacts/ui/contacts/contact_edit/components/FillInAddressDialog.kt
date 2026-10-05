@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
-package dev.benica.corvidcontacts.ui.contacts.contact_detail.components
+package dev.benica.corvidcontacts.ui.contacts.contact_edit.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,23 +20,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.benica.corvidcontacts.R
-import dev.benica.corvidcontacts.data.model.StructuredAddress
 import dev.benica.corvidcontacts.data.repository.AddressSuggestion
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.theme.Dimens
 
 /**
- * Looks up [address], which is all in the street field, and lists the matches to pick from. The
- * lookup only runs because the user asked for it here, and nothing changes unless they pick one.
+ * Looks up [query], the address as typed so far, and lists the matches to pick from. The lookup
+ * only runs because the user asked for it, and nothing changes unless they pick one.
  */
 @Composable
 fun FillInAddressDialog(
-    address: StructuredAddress,
+    query: String,
     findMatches: suspend (String) -> List<AddressSuggestion>,
     onPick: (AddressSuggestion) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val query = address.street.orEmpty()
     var matches by remember(query) { mutableStateOf<List<AddressSuggestion>?>(null) }
     LaunchedEffect(query) { matches = findMatches(query) }
 

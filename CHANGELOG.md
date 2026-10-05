@@ -19,9 +19,10 @@ on Google Play is a summary of the user-visible items below.
   contacts it shares: edits you make to them in other apps, up to the level you chose (including a
   new or removed photo), are saved back to the Corvid contact and sync to your server, and deleting
   one there hides it from your phone's contacts instead of deleting it from Corvid or the server.
-- An address that another app saved as one line can be filled in from address lookup: choose "Fill in
-  address details" on the address, pick a match, and it is split into street, city, state, postal
-  code and country. It only appears when address lookup is on, and nothing is sent until you choose it.
+- An address on the edit screen has a "Fill in address details" action, for an address that is
+  incomplete or that another app saved as one line. It looks the address up, and picking a match fills
+  in street, city, state, postal code and country. Nothing is saved until you save the contact. It only
+  appears when address lookup is on, and nothing is sent until you choose it.
 - A relationship that links to another contact is shared by that contact's name, and a name added or
   removed in the phone's contacts is read back. Before, links were left out of the phone's contacts
   and only name-only relationships were shared.

@@ -11,13 +11,9 @@ import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
-import dev.benica.corvidcontacts.data.model.AddressLookupMode
-import dev.benica.corvidcontacts.data.model.StructuredAddress
 import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
-import dev.benica.corvidcontacts.data.repository.AddressSuggestion
 import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
-import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
 import dev.benica.corvidcontacts.data.local.HiddenContact
 import dev.benica.corvidcontacts.data.local.ContactId
@@ -48,7 +44,6 @@ class ContactsViewModel(
     private val settingsRepository: SettingsRepository,
     private val authRepository: AuthRepository,
     private val systemContactVisibility: SystemContactVisibility,
-    private val geocoderRepository: GeocoderRepository,
 ) : ViewModel() {
 
     private val selectionManager = ContactSelectionManager()
@@ -847,31 +842,6 @@ class ContactsViewModel(
         viewModelScope.launch {
             repository.setAddressBookSharedWithSystem(addressBook.href, share)
         }
-    }
-
-    /** Whether address lookup is on, which decides whether an address can be filled in from a match. */
-    val addressLookupEnabled: StateFlow<Boolean> = settingsRepository.addressLookupMode
-        .map { it != AddressLookupMode.OFF }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    /** Matches for the address text [query], from the user's address lookup service. */
-    suspend fun findAddressMatches(query: String): List<AddressSuggestion> =
-        geocoderRepository.getAutocompleteSuggestions(query)
-
-    /**
-     * Replaces [address] on [contact] with the full address for [match], keeping the type. Returns
-     * whether it was saved, which is `false` if the match couldn't be resolved.
-     */
-    suspend fun useAddressMatch(
-        contact: ContactEntity,
-        address: StructuredAddress,
-        match: AddressSuggestion,
-    ): Boolean {
-        val resolved = geocoderRepository.resolveSuggestion(match) ?: return false
-        val updated = contact.structuredAddresses.orEmpty().map {
-            if (it == address) resolved.copy(type = address.type) else it
-        }
-        return repository.saveContact(contact.copy(structuredAddresses = updated)).isSuccess
     }
 
     /** The contacts deleted from the system contacts in another app, which Corvid keeps out of them. */

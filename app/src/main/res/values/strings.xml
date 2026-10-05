@@ -525,7 +525,7 @@
     <string name="detail_menu_hide_from_system">Hide from phone contacts</string>
     <string name="detail_menu_show_in_system">Show in phone contacts</string>
     <string name="detail_hidden_from_system_dismiss">Dismiss</string>
-    <string name="detail_action_fill_in_address">Fill in address details</string>
+    <string name="edit_action_fill_in_address">Fill in address details</string>
     <string name="fill_in_address_title">Fill in address details</string>
     <string name="fill_in_address_message">Pick the match for \"%1$s\" to fill in the street, city, state and postal code. This sends the address to your address lookup service.</string>
     <string name="fill_in_address_searching">Looking for matches…</string>

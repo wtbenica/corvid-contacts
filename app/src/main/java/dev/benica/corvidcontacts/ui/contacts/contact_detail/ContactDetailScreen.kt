@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PersonSearch
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,7 +27,6 @@ import dev.benica.corvidcontacts.data.model.KnownRelative
 import dev.benica.corvidcontacts.data.model.Phone
 import dev.benica.corvidcontacts.data.model.Relative
 import dev.benica.corvidcontacts.data.model.StructuredAddress
-import dev.benica.corvidcontacts.data.repository.AddressSuggestion
 import dev.benica.corvidcontacts.data.model.UnknownRelative
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
@@ -39,7 +36,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCTopAppBar
 import dev.benica.corvidcontacts.ui.contacts.common_ui.EmptyState
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.ContactDetailContent
-import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.FillInAddressDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.HiddenFromSystemCard
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.SystemVisibility
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.rememberContactDetailActions
@@ -72,10 +68,6 @@ fun ContactDetailScreen(
     onShowInSystem: () -> Unit = {},
     onHideFromSystem: () -> Unit = {},
     onDismissHiddenNotice: () -> Unit = {},
-    addressLookupEnabled: Boolean = false,
-    findAddressMatches: suspend (String) -> List<AddressSuggestion> = { emptyList() },
-    onUseAddressMatch: suspend (ContactEntity, StructuredAddress, AddressSuggestion) -> Boolean =
-        { _, _, _ -> false },
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
     // Only rendered here when showScaffold is true; embedders pass their own otherwise.
@@ -85,7 +77,6 @@ fun ContactDetailScreen(
     val baseColor = ContactColors.resolveContactColor(contactWithAddressBook = contactWithBook)
     val errorActionFailed = stringResource(R.string.detail_error_action_failed)
     val scope = rememberCoroutineScope()
-    var addressToFillIn by remember { mutableStateOf<StructuredAddress?>(null) }
 
     val handlers = rememberContactDetailActions(
         contact = contact,
@@ -148,9 +139,6 @@ fun ContactDetailScreen(
                         onNavigateToContact = onNavigateToContact,
                         onShowQr = { onShare(true) },
                         onShare = { onShare(false) },
-                        onFillInAddress = if (addressLookupEnabled) {
-                            { addressToFillIn = it }
-                        } else null,
                         onDownloadPhoto = { downloaded ->
                             scope.launch {
                                 if (!onDownloadPhoto(downloaded)) {
@@ -163,24 +151,6 @@ fun ContactDetailScreen(
             )
         }
         handlers.deleteDialog()
-
-        val address = addressToFillIn
-        if (address != null && contact != null) {
-            FillInAddressDialog(
-                address = address,
-                findMatches = findAddressMatches,
-                onPick = { match ->
-                    scope.launch {
-                        if (onUseAddressMatch(contact, address, match)) {
-                            addressToFillIn = null
-                        } else {
-                            snackbarHostState.showSnackbar(errorActionFailed)
-                        }
-                    }
-                },
-                onDismiss = { addressToFillIn = null }
-            )
-        }
     }
 
     val chromeTitle = stringResource(R.string.detail_title)

@@ -61,9 +61,8 @@ separately. When you do:
 **Account/server credentials.** Your configured server address, username, and app password (or equivalent credential) are stored locally on your device using Android's secure app-private storage, solely to authenticate you to your own server. We do not receive or store these credentials ourselves.
 
 **Address lookup.** While you're typing an address for a contact, the app can look up matching
-suggestions as you type. It does the same when you choose "Fill in address details" on an address
-that is all in one line, which sends that address to the same service. Nothing is looked up unless
-you do one of those things. This is controlled by two Settings toggles:
+suggestions as you type. It does the same when you choose "Fill in address details" on an address,
+which sends that address to the same service. Nothing is looked up unless you do one of those things. This is controlled by two Settings toggles:
 
 - **Enable Address Lookup** (on by default) turns the whole feature on or off. When it's off, no
   address query is ever sent anywhere - you can still type a full address manually, you just won't

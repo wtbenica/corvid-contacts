@@ -19,6 +19,8 @@ import dev.benica.corvidcontacts.data.remote.PhotonService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -53,6 +55,9 @@ class GeocoderRepository(
     }
 
     private val placesClient: PlacesClient by lazy { Places.createClient(context) }
+
+    /** Whether address lookup is on, so screens only offer it when it can work. */
+    val lookupEnabled: Flow<Boolean> = settingsRepository.addressLookupMode.map { it != AddressLookupMode.OFF }
 
     private var cachedBias: Pair<Double, Double>? = null
 

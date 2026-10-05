@@ -57,15 +57,6 @@ data class StructuredAddress(
                 extended.isNullOrBlank()
     }
 
-    /** Whether the whole address is in the street field, as when another app saved it as one line. */
-    fun isStreetOnly(): Boolean = !street.isNullOrBlank() &&
-            city.isNullOrBlank() &&
-            state.isNullOrBlank() &&
-            postalCode.isNullOrBlank() &&
-            country.isNullOrBlank() &&
-            poBox.isNullOrBlank() &&
-            extended.isNullOrBlank()
-
     /** This address with blank parts as `null`, so a cleared field doesn't leave an empty one behind. */
     fun cleaned(): StructuredAddress = copy(
         street = street.cleaned(),

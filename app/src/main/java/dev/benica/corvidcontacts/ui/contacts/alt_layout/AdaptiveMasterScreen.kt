@@ -410,7 +410,6 @@ fun AdaptiveMasterScreen(
                                 (uiState as? ContactsUiState.Success)?.contacts ?: emptyList()
 
                             val hiddenFromSystem by viewModel.hiddenFromSystemContacts.collectAsState()
-                            val addressLookupEnabled by viewModel.addressLookupEnabled.collectAsState()
                             val shownId = contactWithBook?.contact?.id
 
                             ContactDetailScreen(
@@ -423,9 +422,6 @@ fun AdaptiveMasterScreen(
                                 },
                                 onHideFromSystem = { shownId?.let { viewModel.hideFromSystemContacts(it) } },
                                 onDismissHiddenNotice = { shownId?.let { viewModel.dismissHiddenNotice(it) } },
-                                addressLookupEnabled = addressLookupEnabled,
-                                findAddressMatches = viewModel::findAddressMatches,
-                                onUseAddressMatch = viewModel::useAddressMatch,
                                 onToggleFavorite = {
                                     contactWithBook?.contact?.let { viewModel.toggleFavorite(it) }
                                         ?: false
