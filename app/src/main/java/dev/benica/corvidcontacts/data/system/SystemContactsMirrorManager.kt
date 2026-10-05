@@ -41,6 +41,11 @@ class SystemContactsMirrorManager(
 
     private var observing = false
 
+    /** Looks for edits made in other apps; the phone can drop change notices while the app is away. */
+    fun rescan() {
+        systemChanges.update { it + 1 }
+    }
+
     /**
      * Starts watching the system contacts for edits made in other apps. Registering needs a contacts
      * permission, so this waits until one is held; the app must still start without any.

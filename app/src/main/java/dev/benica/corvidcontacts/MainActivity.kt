@@ -36,6 +36,11 @@ import kotlinx.coroutines.launch
  */
 class MainActivity : ComponentActivity() {
 
+    override fun onStart() {
+        super.onStart()
+        (application as CorvidContactsApplication).container.systemContactsMirrorManager.rescan()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
