@@ -16,8 +16,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AddressBookEntity::class,
         SystemContactMirrorEntity::class,
         SystemGroupMirrorEntity::class,
+        SystemContactHiddenEntity::class,
     ],
-    version = 24,
+    version = 25,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -103,12 +104,23 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the table of contacts hidden from the system contacts on this device. */
+        private val MIGRATION_24_25 = object : Migration(24, 25) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `system_contact_hidden` " +
+                        "(`contactId` TEXT NOT NULL, PRIMARY KEY(`contactId`))"
+                )
+            }
+        }
+
         internal val MIGRATIONS = arrayOf(
             MIGRATION_19_20,
             MIGRATION_20_21,
             MIGRATION_21_22,
             MIGRATION_22_23,
-            MIGRATION_23_24
+            MIGRATION_23_24,
+            MIGRATION_24_25
         )
 
         @Volatile

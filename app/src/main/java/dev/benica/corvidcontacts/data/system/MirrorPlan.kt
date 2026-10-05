@@ -142,13 +142,14 @@ data class MirrorPlan(
         /**
          * Builds the [MirrorContact] for every one of [sources] that can be mirrored, each at the
          * level of the address book it is in ([levels], by book href). A book missing from
-         * [levels] falls back to the most private level.
+         * [levels] falls back to the most private level. Contacts in [hidden] are left out.
          */
         fun toMirrorContacts(
             sources: List<MirrorSource>,
             levels: Map<String, SystemContactsLevel>,
             photoStamp: (MirrorSource) -> String?,
-        ): List<MirrorContact> = sources.mapNotNull { source ->
+            hidden: Set<ContactId> = emptySet(),
+        ): List<MirrorContact> = sources.filter { it.id !in hidden }.mapNotNull { source ->
             toMirrorContact(
                 source,
                 photoStamp(source),

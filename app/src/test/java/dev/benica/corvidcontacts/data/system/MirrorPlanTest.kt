@@ -312,6 +312,31 @@ class MirrorPlanTest {
     }
 
     @Test
+    fun `hidden contacts are left out, and the rest are kept`() {
+        val kept = source()
+        val hidden = source().copy(id = "hidden")
+
+        val contacts = MirrorPlan.toMirrorContacts(
+            sources = listOf(kept, hidden),
+            levels = emptyMap(),
+            photoStamp = { null },
+            hidden = setOf("hidden"),
+        )
+
+        assertEquals(listOf(kept.id), contacts.map { it.id })
+    }
+
+    @Test
+    fun `hiding an already mirrored contact deletes it from the system contacts`() {
+        val contact = mirrored(source())
+        val mapped = listOf(SystemContactMirrorEntity(contact.id, 5, contact.hash))
+
+        val plan = MirrorPlan.diff(emptyList(), mapped)
+
+        assertEquals(mapped, plan.deletes)
+    }
+
+    @Test
     fun `social profiles become profile links for known services and pass real urls through`() {
         val contact = mirrored(
             source(

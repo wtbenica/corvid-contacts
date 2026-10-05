@@ -117,10 +117,12 @@ class SystemContactsMirror(
         mutex.withLock {
             ensureAccount()
 
+            dao.pruneHidden()
             val contacts = MirrorPlan.toMirrorContacts(
                 sources,
                 books.associate { it.href to it.systemContactsLevel },
-                ::photoStamp
+                ::photoStamp,
+                dao.getHiddenIds().toSet()
             )
 
             // Every group the contacts need: one per shared book, plus one per category in use.

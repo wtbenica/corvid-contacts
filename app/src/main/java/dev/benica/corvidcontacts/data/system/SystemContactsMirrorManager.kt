@@ -33,8 +33,9 @@ class SystemContactsMirrorManager(
         scope.launch {
             combine(
                 dao.observeSharedBooks(),
-                dao.observeMirrorSources()
-            ) { books, sources ->
+                dao.observeMirrorSources(),
+                dao.observeHiddenIds()
+            ) { books, sources, _ ->
                 SharedSnapshot(books, sources)
             }
                 .debounce(DEBOUNCE_MS.milliseconds)

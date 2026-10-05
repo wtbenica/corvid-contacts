@@ -63,6 +63,22 @@ interface SystemContactMirrorDao {
     @Query("DELETE FROM system_contact_mirror")
     suspend fun deleteAll()
 
+    @Query("SELECT contactId FROM system_contact_hidden")
+    suspend fun getHiddenIds(): List<ContactId>
+
+    @Query("SELECT contactId FROM system_contact_hidden")
+    fun observeHiddenIds(): Flow<List<ContactId>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun hide(entries: List<SystemContactHiddenEntity>)
+
+    @Query("DELETE FROM system_contact_hidden WHERE contactId = :contactId")
+    suspend fun unhide(contactId: ContactId)
+
+    /** Forgets hidden contacts that no longer exist. */
+    @Query("DELETE FROM system_contact_hidden WHERE contactId NOT IN (SELECT id FROM contacts)")
+    suspend fun pruneHidden()
+
     @Query("SELECT * FROM system_group_mirror")
     suspend fun getAllGroups(): List<SystemGroupMirrorEntity>
 
