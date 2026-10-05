@@ -182,7 +182,6 @@ fun PhoneNavigation(
                     },
                     onSetUpSync = { backStack.add(Destination.Login()) },
                     onSettingsClick = { backStack.add(Destination.Settings) },
-                    onManageAddressBooks = { backStack.add(Destination.AddressBooks) },
                     onContactSelected = { contactWithBook ->
                         val sourceId = mergeSourceContactId
                         if (isPickingExternal) {
@@ -257,7 +256,7 @@ fun PhoneNavigation(
                             )
                         )
                     }
-                )
+                ) { backStack.add(Destination.AddressBooks) }
             }
 
             is Destination.Settings -> NavEntry(

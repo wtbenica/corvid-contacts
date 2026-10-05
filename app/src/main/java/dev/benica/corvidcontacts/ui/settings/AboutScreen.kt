@@ -53,7 +53,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
     onBack: () -> Unit,

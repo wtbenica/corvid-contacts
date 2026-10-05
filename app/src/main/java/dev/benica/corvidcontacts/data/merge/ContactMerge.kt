@@ -3,8 +3,6 @@
 package dev.benica.corvidcontacts.data.merge
 
 import dev.benica.corvidcontacts.data.local.ContactEntity
-import dev.benica.corvidcontacts.data.merge.ContactMerger.buildMergedContact
-import dev.benica.corvidcontacts.data.merge.ContactMerger.detectConflicts
 import dev.benica.corvidcontacts.data.model.Relationship
 import dev.benica.corvidcontacts.data.model.StructuredAddress
 

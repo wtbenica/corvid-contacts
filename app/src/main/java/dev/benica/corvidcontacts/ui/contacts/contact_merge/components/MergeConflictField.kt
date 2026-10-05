@@ -21,7 +21,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
  * the survivor's value), freely editable, and offers [survivorValue]/[absorbedValue] as one-tap
  * alternatives via the dropdown. Meant to be wrapped in a [ConflictContainer].
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MergeConflictField(
     label: String,

@@ -41,7 +41,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StructuredAddressField(
     address: StructuredAddress,
@@ -222,7 +221,6 @@ fun StructuredAddressField(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TypedValueField(
     value: String,

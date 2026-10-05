@@ -197,9 +197,9 @@ class ContactsRepository(
             var photoRepairCount = 0
             var phoneRepairCount = 0
 
-            for (book in addressBookEntities) {
+            for ((href, displayName, isVisible) in addressBookEntities) {
                 try {
-                    val bookPath = book.href
+                    val bookPath = href
                         .removePrefix(credentials.serverUrl)
                         .removePrefix("/")
                     val reportResponse = service.report(
@@ -221,7 +221,7 @@ class ContactsRepository(
                                         .forEach { vcard ->
                                             val entity = vCardMapper.mapVCardToEntity(
                                                 vcard,
-                                                normalizeHref(book.href)!!,
+                                                normalizeHref(href)!!,
                                                 normalizeHref(davContact.href)!!,
                                                 davContact.etag,
                                             )
@@ -232,8 +232,8 @@ class ContactsRepository(
                                             )
 
                                             val isReadOnly = isReadOnlyAddressBook(
-                                                book.href,
-                                                book.displayName
+                                                href,
+                                                displayName
                                             )
 
                                             val phonesToFormat = finalEntity.phones ?: emptyList()
@@ -268,7 +268,7 @@ class ContactsRepository(
                                             if (existingInCurrentSync != null) {
                                                 val existingBook =
                                                     addressBookEntities.find { it.href == existingInCurrentSync.addressBookHref }
-                                                if (existingBook?.isVisible == true && !book.isVisible) return@forEach
+                                                if (existingBook?.isVisible == true && !isVisible) return@forEach
                                             }
                                             allEntitiesMap[finalEntity.id] = finalEntity
                                         }
@@ -283,7 +283,7 @@ class ContactsRepository(
                 } catch (e: Exception) {
                     Log.e(
                         TAG,
-                        "Error syncing address book ${book.displayName}: ${e.message}"
+                        "Error syncing address book $displayName: ${e.message}"
                     )
                 }
             }
@@ -802,7 +802,10 @@ class ContactsRepository(
     }
 
     /** Fetches [entity]'s photo now if it's still a remote URL and [autoLoad] is true. */
-    private suspend fun downloadPhotoIfNeeded(entity: ContactEntity, autoLoad: Boolean): ContactEntity {
+    private suspend fun downloadPhotoIfNeeded(
+        entity: ContactEntity,
+        autoLoad: Boolean
+    ): ContactEntity {
         val url = entity.photoUrl?.takeIf { autoLoad && it.startsWith("http") } ?: return entity
         return try {
             val photoPath = photoManager.fetchPhotoAndSave(entity.id, url)

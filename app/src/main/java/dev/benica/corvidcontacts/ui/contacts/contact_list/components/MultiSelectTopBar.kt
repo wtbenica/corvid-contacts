@@ -41,7 +41,6 @@ import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 /**
  * Top app bar for multi-selection mode.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MultiSelectTopBar(
     selectedCount: Int,

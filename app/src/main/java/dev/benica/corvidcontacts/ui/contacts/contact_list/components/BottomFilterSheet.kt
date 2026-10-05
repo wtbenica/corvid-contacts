@@ -39,7 +39,6 @@ import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.extensions.surface
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog

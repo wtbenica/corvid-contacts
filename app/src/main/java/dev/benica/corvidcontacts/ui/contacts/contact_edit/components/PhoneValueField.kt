@@ -42,7 +42,6 @@ import java.util.Locale
  * A customized Composable field specialized for capturing telephone contact metadata.
  * Includes a country code selector with flag emojis and smart paste detection for international numbers.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneValueField(
     value: String,

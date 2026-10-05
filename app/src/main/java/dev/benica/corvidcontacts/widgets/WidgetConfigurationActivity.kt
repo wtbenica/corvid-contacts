@@ -281,7 +281,6 @@ private fun ContactSelectionScreen(
 }
 
 /** Screen for choosing which action (Call, Text, Email, Directions, View) the widget performs. */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActionSelectionScreen(
     contactName: String,
@@ -341,7 +340,6 @@ private fun ActionSelectionScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DetailConfirmationDialog(
     action: WidgetAction,

@@ -18,7 +18,6 @@ import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 /**
  * Top app bar for picking a single contact.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleSelectTopBar(
     onCancelPickingSelf: () -> Unit,

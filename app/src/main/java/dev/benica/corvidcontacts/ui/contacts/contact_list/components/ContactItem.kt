@@ -54,7 +54,6 @@ import dev.benica.corvidcontacts.ui.theme.currentThemeColor
  * @param onLongClick Callback when the item is long-pressed.
  * @param bookColor Color associated with the contact's address book.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactItem(
     contact: ContactEntity,
@@ -200,7 +199,6 @@ fun ContactItem(
  * A simplified version of [ContactItem] for narrow layouts (like tablet side panes).
  * Shows only the avatar and the name.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleContactItem(
     contact: ContactEntity,

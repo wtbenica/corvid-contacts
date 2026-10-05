@@ -66,7 +66,6 @@ import dev.benica.corvidcontacts.ui.theme.isDarkTheme
  * @param selectedBook The currently selected address book (if only one is active).
  * @param modifier Modifier for the layout.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     query: String,

@@ -106,7 +106,6 @@ private fun combinedName(first: String, last: String) =
  * @param snackbarHostState only shown when [showScaffold] is true; pass your own if embedding with it false
  * @param onEffectiveColorChange reports the live-selected address book's color, not the contact's saved one
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactEditScreen(
     contactWithBook: ContactWithAddressBook?,

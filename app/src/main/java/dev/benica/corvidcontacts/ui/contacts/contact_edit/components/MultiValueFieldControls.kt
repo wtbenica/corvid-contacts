@@ -59,7 +59,6 @@ import dev.benica.corvidcontacts.ui.theme.ThemePreview
  * button gives no indication reordering is even possible; a visibly-disabled one does. Delete
  * asks for confirmation first, since it's a single tap with no undo.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TypedFieldControlsRow(
     type: String,

@@ -66,10 +66,6 @@ import java.time.format.FormatStyle
  * groups. Groups stays visible since it's used often enough to warrant that; the rest starts
  * collapsed behind a single "Show more fields" toggle unless the contact already has data there.
  */
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class
-)
 @Composable
 fun EditMiscSection(
     birthday: String,

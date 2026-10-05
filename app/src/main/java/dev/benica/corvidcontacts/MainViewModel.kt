@@ -60,7 +60,7 @@ class MainViewModel(
             ) { credentials, lastOnboardedAccountKey, localOnlyMode, localOnboardingCompleted ->
                 // Heal stray local-only flag if credentials exist.
                 if (credentials != null && localOnlyMode) {
-                    launch { settingsRepository.saveLocalOnlyMode(false) }
+                    this@launch.launch { settingsRepository.saveLocalOnlyMode(false) }
                 }
 
                 when {

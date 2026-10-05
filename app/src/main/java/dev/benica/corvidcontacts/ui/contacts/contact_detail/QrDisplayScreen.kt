@@ -34,7 +34,6 @@ import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.ThemePreview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrDisplayScreen(
     vcard: String,

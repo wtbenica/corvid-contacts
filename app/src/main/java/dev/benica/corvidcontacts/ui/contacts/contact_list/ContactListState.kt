@@ -5,7 +5,6 @@ package dev.benica.corvidcontacts.ui.contacts.contact_list
 import androidx.compose.ui.graphics.Color
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
-import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.ui.contacts.ContactsUiState
 
 /**

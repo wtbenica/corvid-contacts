@@ -68,7 +68,6 @@ import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.ThemePreview
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
@@ -119,7 +118,6 @@ fun SettingsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsScreen(
     serverUrl: String?,

@@ -29,7 +29,6 @@ import dev.benica.corvidcontacts.extensions.border
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
 import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddGroupField(
     allGroups: List<String>,

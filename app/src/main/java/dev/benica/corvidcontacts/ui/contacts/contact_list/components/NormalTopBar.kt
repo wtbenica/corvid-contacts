@@ -75,7 +75,6 @@ import dev.benica.corvidcontacts.ui.theme.isDarkTheme
 /**
  * Standard top app bar for browsing contacts.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NormalTopBar(
     showArchived: Boolean,

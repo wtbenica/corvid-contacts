@@ -9,7 +9,6 @@ import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.Phone
-import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.ui.contacts.ContactsUiState
 
 internal val mockContacts = listOf(

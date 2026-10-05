@@ -27,7 +27,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
 import dev.benica.corvidcontacts.ui.contacts.contact_edit.EditableRelationship
 import dev.benica.corvidcontacts.ui.theme.Dimens
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RelationshipField(
     relationship: EditableRelationship,

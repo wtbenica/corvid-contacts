@@ -12,6 +12,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Keeps the system contacts mirror up to date for as long as the app process lives, by watching
@@ -35,17 +36,20 @@ class SystemContactsMirrorManager(
             ) { books, sources ->
                 SharedSnapshot(books, sources)
             }
-                .debounce(DEBOUNCE_MS)
+                .debounce(DEBOUNCE_MS.milliseconds)
                 .collect { snapshot ->
                     Log.i(
                         TAG,
                         "snapshot: sharedBooks=${snapshot.books.size} sources=${snapshot.sources.size} " +
-                            "permission=${mirror.hasPermission()}"
+                                "permission=${mirror.hasPermission()}"
                     )
                     try {
                         when {
                             snapshot.books.isEmpty() -> mirror.removeAll()
-                            mirror.hasPermission() -> mirror.reconcile(snapshot.books, snapshot.sources)
+                            mirror.hasPermission() -> mirror.reconcile(
+                                snapshot.books,
+                                snapshot.sources
+                            )
                         }
                     } catch (e: CancellationException) {
                         throw e

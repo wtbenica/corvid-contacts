@@ -22,7 +22,6 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCWidthClampedBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicensesScreen(
     onBack: () -> Unit,

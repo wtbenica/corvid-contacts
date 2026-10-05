@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
  * and embedded in the wide-screen shell's detail pane with [showScaffold] = false, in which case
  * [onChromeChange] receives this screen's title/actions instead of it drawing its own top bar.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactDetailScreen(
     contactWithBook: ContactWithAddressBook?,

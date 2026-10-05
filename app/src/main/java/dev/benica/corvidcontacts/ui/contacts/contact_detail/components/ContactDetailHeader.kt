@@ -175,7 +175,6 @@ fun ContactDetailHeader(
  * Name, full name (if different), nickname, and job/company line - the text block shown either
  * below the avatar (portrait) or beside it (wide layout).
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ContactNameInfo(contact: ContactEntity) {
     val effectiveDisplayName = contact.getEffectiveDisplayName()

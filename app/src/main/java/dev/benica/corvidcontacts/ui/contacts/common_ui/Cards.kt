@@ -104,8 +104,7 @@ fun CCCardBordered(
 @Composable
 fun CCCardBorderedPreview() {
     CorvidContactsTheme {
-        CCCardBordered(
-        ) {
+        CCCardBordered {
             Text("This is good content")
         }
     }
@@ -118,8 +117,7 @@ fun CCCardBorderedPreview() {
 @Composable
 fun CCCardBorderedDarkPreview() {
     CorvidContactsTheme {
-        CCCardBordered(
-        ) {
+        CCCardBordered {
             Text("This is good content")
         }
     }

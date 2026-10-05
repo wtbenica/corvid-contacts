@@ -53,7 +53,6 @@ private fun formatForDisplay(isoDate: String): String = try {
  * dates above the same [DatePickerDialog]-driven field ContactEditScreen uses, so a third date is
  * still just a tap away.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MergeConflictBirthdayField(
     label: String,

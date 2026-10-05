@@ -77,7 +77,6 @@ data class ShareField(
     val number: Int = 0,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareSelectionScreen(
     contactWithBook: ContactWithAddressBook,
@@ -98,7 +97,7 @@ fun ShareSelectionScreen(
         if (!contact.middleName.isNullOrBlank() || !contact.prefix.isNullOrBlank() || !contact.suffix.isNullOrBlank()) {
             initial.add(ShareField(ShareFieldType.OTHER_NAME))
         }
-        if (!contact.displayName.isBlank()) initial.add(ShareField(ShareFieldType.DISPLAY_NAME))
+        if (contact.displayName.isNotBlank()) initial.add(ShareField(ShareFieldType.DISPLAY_NAME))
         if (!contact.nickname.isNullOrBlank()) initial.add(ShareField(ShareFieldType.NICKNAME))
         if (contact.hasPhoto) initial.add(ShareField(ShareFieldType.PHOTO))
 
@@ -534,7 +533,7 @@ private fun filterContact(
             )
         },
         photoUrl = if (options.contains(ShareField(ShareFieldType.PHOTO))) contact.photoUrl else null,
-        hasPhoto = if (options.contains(ShareField(ShareFieldType.PHOTO))) contact.hasPhoto else false,
+        hasPhoto = options.contains(ShareField(ShareFieldType.PHOTO)) && contact.hasPhoto,
         etag = null,
         addressBookHref = null,
         contactHref = null,

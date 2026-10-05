@@ -736,7 +736,6 @@ fun MergeReviewScreen(
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             if (state.categories.isNotEmpty()) {
-                                @OptIn(ExperimentalLayoutApi::class)
                                 FlowRow(
                                     modifier = Modifier
                                         .fillMaxWidth()

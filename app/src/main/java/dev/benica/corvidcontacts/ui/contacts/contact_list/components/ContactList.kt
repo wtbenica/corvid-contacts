@@ -36,7 +36,6 @@ import dev.benica.corvidcontacts.ui.theme.isWideScreen
  * @param onToggleSelection Callback to toggle a contact's selection state.
  * @param onContactClick Callback when a contact row is clicked.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactList(
     contacts: List<ContactWithAddressBook>,

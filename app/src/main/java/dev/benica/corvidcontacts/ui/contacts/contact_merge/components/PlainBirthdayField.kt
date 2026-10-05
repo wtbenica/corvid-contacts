@@ -40,7 +40,6 @@ import java.time.format.FormatStyle
 /**
  * A birthday input field that opens a date picker.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlainBirthdayField(
     value: String,

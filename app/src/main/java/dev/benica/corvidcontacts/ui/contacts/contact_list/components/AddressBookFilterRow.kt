@@ -105,7 +105,6 @@ fun AddressBookFilterChip(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressBookFilterChip(
     label: @Composable () -> Unit,

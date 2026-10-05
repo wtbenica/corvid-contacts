@@ -14,8 +14,6 @@ import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.extensions.oklch
-import dev.benica.corvidcontacts.ui.contacts.ContactColors.guessIconNameForAddressBook
-import dev.benica.corvidcontacts.ui.contacts.ContactColors.iconPalette
 import dev.benica.corvidcontacts.ui.contacts.common_ui.HueSliderDefaults
 import kotlin.math.abs
 

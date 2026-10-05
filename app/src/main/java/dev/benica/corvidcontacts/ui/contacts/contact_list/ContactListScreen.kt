@@ -42,13 +42,13 @@ fun ContactListScreen(
     onAddSelfContact: () -> Unit,
     onSetUpSync: () -> Unit,
     onSettingsClick: () -> Unit,
-    onManageAddressBooks: (() -> Unit)? = null,
     onContactSelected: (ContactWithAddressBook?) -> Unit,
     onCancelSelectingContact: () -> Unit,
     onClearSelectingContact: () -> Unit,
     onShareSelf: (ContactWithAddressBook) -> Unit,
     onShareSelfViaQr: (ContactWithAddressBook) -> Unit,
     modifier: Modifier = Modifier,
+    onManageAddressBooks: (() -> Unit)? = null,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
