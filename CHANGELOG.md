@@ -9,6 +9,19 @@ on Google Play is a summary of the user-visible items below.
 
 ### Added
 
+- Sharing with your phone's contacts, per address book. Switch it on for a book and its contacts
+  appear in the phone's contacts under a "Corvid Contacts" account, so names and photos show up for
+  calls and in other apps. It is off until you turn it on, and each book has a level: Caller ID
+  (names, phone numbers and photos), Full contact (also emails, addresses, websites, social
+  profile links, birthdays, company and title, nickname, relationships and groups) or Everything
+  (also notes). Favorites are starred, and unsharing the last book removes the account. It is
+  one-way: Corvid writes to the phone's contacts and never reads them, so edits made in other apps
+  are overwritten the next time that contact changes in Corvid. It needs the contacts permission,
+  which Corvid explains before asking.
+- An Address Books screen lists your books, and each book has its own settings page, including
+  its sharing switch and level.
+- Setup has a sharing step with one switch per address book, so caller ID can work from the start.
+- Birthday reminders are a switch in setup and in Settings.
 - The create address book dialog now has an icon picker. The icon starts as the guess from the
   name you type, and it is only saved if you pick one yourself.
 - Uploading an address book to a server with no server connected now offers to set up sync and
@@ -19,6 +32,11 @@ on Google Play is a summary of the user-visible items below.
 
 ### Changed
 
+- The welcome screen asks one question, where your contacts live, with two equal choices. The
+  sign-in screen has a clearer title, keeps its button above the keyboard, and works with
+  password managers. English now says "Sign In" and "Sign Out" instead of "Login" and "Logout".
+- Setup steps share one layout, and the theme picker is no longer part of setup. The theme is
+  still in Settings and starts on System.
 - New address books start with a color spread away from your existing ones (the hue farthest from
   the colors already in use), instead of always starting at the same color. The color slider is
   still adjustable.
@@ -40,7 +58,9 @@ on Google Play is a summary of the user-visible items below.
   its location permissions were already removed from the manifest.
 - Removed an unsafe internal Kotlin compiler argument that is no longer needed on Kotlin 2.4.
 - Updated Android Gradle Plugin to 9.4.1, Kotlin to 2.4.20, Compose BOM to 2026.09.00, Room to
-  2.8.5, and Robolectric to 4.17.
+  2.8.5, and Robolectric to 4.17. Also updated Gradle to 9.8.0, androidx libraries, libphonenumber
+  and the Places SDK to 6.0.2.
+- Cleaned up lint warnings and unnecessary compiler opt-ins.
 - Fixed the unit test fakes that no longer compiled, and added tests for the new color spacing.
 
 ## 1.0.4

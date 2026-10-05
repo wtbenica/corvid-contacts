@@ -120,9 +120,9 @@ login, onboarding frame and birthday changes are verified on the same phone exce
 two commits' layouts, which the user had not signed off on when this was written. The 51 unit
 tests pass, including migration tests that open version 19, 21 and 22 databases through every
 migration. The debug build assembles. Lint has one error left, an existing French plural
-string (`values-fr/strings.xml`, `ImpliedQuantity`), and five warnings (an unknown `ShrinkResources`
-issue id in `build.gradle.kts` and three unused strings, one of which, `onboarding_action_not_now`,
-is kept for the sharing step), unrelated to this work.
+string (`values-fr/strings.xml`, `ImpliedQuantity`), and four warnings (an unknown `ShrinkResources`
+issue id in `build.gradle.kts`, which lint reports twice, and two unused strings), unrelated to this
+work.
 
 A jerky transition when the address book list opens from the filter sheet was seen in debug
 builds only and is fine in release, so it was left alone.
@@ -185,7 +185,8 @@ on a device in both directions.
   listing and the in-app explanation that already comes before the permission prompt.
 - Redo the Data safety review. The mirror stays on the device, so it should still not count as
   collected, but other apps reading it is a grey area worth reading Play's definitions for.
-- Add a CHANGELOG entry and release note.
+- CHANGELOG entry and release notes: written (2026-10-05). The sharing entry says "one-way" and
+  "never reads"; rewrite it when two-way sync lands.
 
 ### Smaller items
 
@@ -230,8 +231,8 @@ step"). Continue is its only exit; denying the permission keeps the user on the 
    in the app means another privacy-style description. Undecided whether to accept this, add
    two-way sync (needs `READ_CONTACTS` and conflict handling), or only read back cheap fields
    such as the starred flag. **The user now leans toward two-way sync**, since most contacts apps
-   will attempt the edit regardless of who owns the contact. Not started; it changes Step 5's
-   wording and the sharing copy.
+   will attempt the edit regardless of who owns the contact. **Decided: two-way sync, see "Two-way
+   sync: agreed plan".** Not started; it changes Step 5's wording and the sharing copy.
 2. **Onboarding.** Onboarding does not cover system contacts, so out of the box caller ID does
    not work, for synced and local-only users alike. A first-sync hint alone would miss local-only
    users and would fire during onboarding anyway. Current lean: caller ID is expected of a
@@ -254,6 +255,53 @@ step"). Continue is its only exit; denying the permission keeps the user on the 
    contacts in the app would need `READ_CONTACTS` permanently and is a bigger decision
    (duplicates with the mirror, read-only handling, what "source of truth" means). Decide
    whether either belongs in the roadmap.
+
+## Two-way sync: agreed plan
+
+Decided with the user on 2026-10-05. It ships in 1.0.5, but it is built last, after every other fix on
+this branch, so `READ_CONTACTS` can be rolled back to a clean commit.
+
+**Scope.**
+- Edits: read back the fields the book's level mirrors and apply them to the Corvid contact through
+  the normal save path (so CardDAV is updated).
+- Deletes: a delete in another app **hides** the contact from system contacts; it never deletes it
+  from Corvid or the server. A small device-local table keyed by contact id records it (not a column
+  on `ContactEntity`, which a server sync can replace). The mirror skips hidden contacts. The contact
+  screen offers **Show again** and **Delete from Corvid**, and the book's page shows a count with a
+  review list. A manual "don't share this contact" toggle is the same mechanism, optional.
+- Creates are out of scope: Google Contacts only creates in Google accounts, so a contact created
+  under our account is an unlikely edge case.
+- Device import stays deferred until after this.
+
+**Design.**
+- Read only our own account's raw contacts. Catch-up scan on start and foreground, plus a
+  `ContentObserver` while the app runs.
+- Always absorb a row's dirty state before writing that row, so nothing is overwritten.
+- Store a snapshot of what was last written per mirrored contact (migration 23 to 24) and do a
+  field-level three-way merge. One side changed: that side wins. Both changed the same field:
+  Corvid wins. Read back only the fields the book's level mirrors; skip lossy fields (profile links,
+  the downscaled photo) unless they really changed; compare phone numbers normalized.
+- Permission: tie read-back to sharing, with no extra switch. Request `READ_CONTACTS` with
+  `WRITE_CONTACTS`; whether READ is auto-granted for someone who already granted WRITE (same
+  permission group) is still to be checked on a device.
+
+**Spike results (debug build, 2026-10-05, Pixel 9 Pro).**
+- Google Contacts edits a mirrored contact in its normal Google editor without asking for an account.
+  An edit sets `dirty=1` and bumps `version` on the raw contact; the data rows hold the new values.
+- Deleting asks "this is permanent". The raw contact stays with `deleted=1`, `dirty=1`,
+  `contact_id=NULL` and its **data rows are gone**, so the id in `system_contact_mirror` is the only
+  way to say which Corvid contact it was.
+- Through the sync-adapter URI, setting `dirty=0` and deleting a `deleted=1` row both work.
+- Not yet checked: that READ is auto-granted after WRITE; switching to local-only mode clearing the
+  mirror; Messages resolving names; the AOSP editor. With today's write-only code, a user-deleted
+  row is never purged, and the next change to that contact probably re-inserts it.
+
+**Order.** Other fixes first. Then the read-back core, the hide table and UI, the triggers, and last
+the Step 5 text: every privacy statement and string (website policy, EULA, deletion page,
+`PRIVACY_POLICY.md`, the sharing dialog, onboarding and Settings copy, the Data safety form, the store
+listing). The website changes go on a branch and merge when the 1.0.5 rollout starts; the Data safety
+form is updated at the same time. The policy should say "starting with version 1.0.5" so it is
+accurate before and after.
 
 ## Lessons from device debugging
 
@@ -385,8 +433,8 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
   else, and links the data deletion page. The mirror stays on the device, so it should not change the
   form, but other apps reading it is a grey area: recheck Play's definitions.
 - This branch also carries the unreleased 1.0.5 work (version 1.0.5 / versionCode 6, `CHANGELOG.md`,
-  `corvid-contacts-release-notes-translations.txt`), none of which mentions system contacts yet.
-  Whether the mirror ships in 1.0.5 or later is undecided; a new permission makes it a bigger release.
+  `corvid-contacts-release-notes-translations.txt`), which now cover the sharing, welcome, setup and
+  birthday work. The mirror and two-way sync ship in 1.0.5; the branch merges when it is all done.
   Do not merge to `main` without asking.
 - The store listing text files and `scripts/demo-mode.sh` (status-bar demo mode for screenshots) are
   committed now. On Android 17 the script needs `cmd statusbar send-disable-flag notification-icons`
@@ -408,22 +456,6 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
 **Unknowns.** Whether Messages resolves names from the mirror and nothing reaches the Google account
 (not reported). Whether the AOSP Contacts app honors `editContactActivity` or the read-only flag
 (Google Contacts honors neither). Do not assume either.
-
-### 2026-10-04, Gotham to Oracle
-
-Nice work on the update bug and the starred flag; the "Invalid token account_name" note saved me from
-repeating that. What changed on Gotham, listed as items 13 to 19 above:
-
-- `OnboardingScreen.kt` was restructured around `OnboardingStepFrame`. Add a step by calling it
-  (title, optional description, `scrollable` for form-like steps, `actions` for the bottom bar); do
-  not re-add per-step padding or scrolling.
-- The birthday onboarding page is gone: birthday reminders are a switch in Setup and in Settings, so
-  `hasBirthdays` and `OnboardingUiState.BirthdayNotifications` no longer exist.
-- Step 4's outcome and the two-way sync lean are in the doc above.
-- The user cleaned up lint (unnecessary `@OptIn`s and formatting across about 40 files, no behavior
-  change), updated dependencies and moved Gradle to 9.8.0, which regenerated `gradlew.bat` and the
-  wrapper jar and dropped the SPDX header from `gradle-wrapper.properties`. I ran the unit tests,
-  `compileReleaseKotlin`, `compileDebugAndroidTestKotlin`, `assembleDebug` and `lintDebug` on it.
 
 ### 2026-10-05, Oracle to Gotham
 
@@ -448,3 +480,24 @@ changes what Step 5 can say. Nothing else is mid-flight on Oracle.
 
 Sign-off from Oracle: I enjoyed working with you through this file. The log of what we each found made
 the second session much faster than the first, so thank you for the careful notes.
+
+### 2026-10-05, Gotham to Oracle
+
+Thanks for the sharing step and the note. Compared with the code and `git log` on Gotham, nothing in
+it was wrong.
+
+**Verified here** (on `d2c07dd`): `testDebugUnitTest` (51 tests), `compileReleaseKotlin`,
+`compileDebugAndroidTestKotlin` and `assembleDebug` pass, and `lintDebug` shows the one French
+plural error and four warnings. `SystemContactsSharingStep`, `saveSharingChoices` and the
+`onboarding_sharing_*` strings exist, and `onboarding_action_not_now` is gone from every locale. I did
+not run the step on a device.
+
+**One fix to the doc:** the Status paragraph still said `onboarding_action_not_now` was kept for the
+sharing step. It was removed, so the lint line now says four warnings.
+
+**Folded in.** My entry from 2026-10-04 is replaced by this one. What was still true in it is in items
+13 to 19, "Standing context", and Lessons (the birthday root cause, social profile links, Gradle and
+dependency updates, and the Places check).
+
+**Agreed next steps:** Step 5, then the two-way sync decision. Both need the user.
+

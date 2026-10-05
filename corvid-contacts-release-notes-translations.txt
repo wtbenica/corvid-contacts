@@ -1,54 +1,63 @@
 <en-US>
-Creating an address book now lets you choose its icon and shows the color as you pick it. New address books start with a color different from your existing ones.
-Importing contacts now lets you choose the address book, or create a new one.
-Uploading an address book with no server connected now offers to set up sync.
+New: share an address book with your phone's contacts so names and photos appear for calls and in other apps. It's off until you turn it on for each book.
+A simpler welcome, sign-in and setup.
+Birthday reminders are now a simple switch.
 Birthdays now sync correctly.
+You can now pick an icon when creating an address book, and choose the book when importing contacts.
 </en-US>
 <es-419>
-Al crear una libreta de direcciones ahora puedes elegir su icono, y el color se muestra mientras lo eliges. Las libretas nuevas empiezan con un color distinto al de las existentes.
-Al importar contactos, ahora puedes elegir la libreta de destino o crear una nueva.
-Al subir una libreta de direcciones sin servidor conectado, ahora se ofrece configurar la sincronización.
+Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Bienvenida, inicio de sesión y configuración más sencillos.
+Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
+Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
 </es-419>
 <es-ES>
-Al crear una libreta de direcciones ahora puedes elegir su icono, y el color se muestra mientras lo eliges. Las libretas nuevas empiezan con un color distinto al de las existentes.
-Al importar contactos, ahora puedes elegir la libreta de destino o crear una nueva.
-Al subir una libreta de direcciones sin servidor conectado, ahora se ofrece configurar la sincronización.
+Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Bienvenida, inicio de sesión y configuración más sencillos.
+Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
+Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
 </es-ES>
 <es-US>
-Al crear una libreta de direcciones ahora puedes elegir su icono, y el color se muestra mientras lo eliges. Las libretas nuevas empiezan con un color distinto al de las existentes.
-Al importar contactos, ahora puedes elegir la libreta de destino o crear una nueva.
-Al subir una libreta de direcciones sin servidor conectado, ahora se ofrece configurar la sincronización.
+Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Bienvenida, inicio de sesión y configuración más sencillos.
+Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
+Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
 </es-US>
 <fr-FR>
-Lors de la création d'un carnet d'adresses, vous pouvez désormais choisir son icône, et la couleur s'affiche pendant que vous la choisissez. Les nouveaux carnets commencent avec une couleur différente des existants.
-L'importation de contacts permet désormais de choisir le carnet de destination ou d'en créer un nouveau.
-Sans serveur connecté, l'envoi d'un carnet d'adresses propose désormais de configurer la synchronisation.
+Nouveau : partagez un carnet d'adresses avec les contacts du téléphone pour que noms et photos s'affichent lors des appels et dans d'autres applications. Désactivé tant que vous ne l'activez pas, carnet par carnet.
+Accueil, connexion et configuration simplifiés.
+Les rappels d'anniversaire sont désormais un simple interrupteur.
 Les anniversaires se synchronisent désormais correctement.
+Choisissez une icône à la création d'un carnet, et le carnet à l'importation.
 </fr-FR>
 <fr-CA>
-Lors de la création d'un carnet d'adresses, vous pouvez désormais choisir son icône, et la couleur s'affiche pendant que vous la choisissez. Les nouveaux carnets commencent avec une couleur différente des existants.
-L'importation de contacts permet désormais de choisir le carnet de destination ou d'en créer un nouveau.
-Sans serveur connecté, l'envoi d'un carnet d'adresses propose désormais de configurer la synchronisation.
+Nouveau : partagez un carnet d'adresses avec les contacts du téléphone pour que noms et photos s'affichent lors des appels et dans d'autres applications. Désactivé tant que vous ne l'activez pas, carnet par carnet.
+Accueil, connexion et configuration simplifiés.
+Les rappels d'anniversaire sont désormais un simple interrupteur.
 Les anniversaires se synchronisent désormais correctement.
+Choisissez une icône à la création d'un carnet, et le carnet à l'importation.
 </fr-CA>
 <de-DE>
-Beim Erstellen eines Adressbuchs kannst du jetzt ein Symbol wählen, und die Farbe wird bei der Auswahl angezeigt. Neue Adressbücher beginnen mit einer anderen Farbe als deine vorhandenen.
-Beim Importieren von Kontakten kannst du jetzt das Ziel-Adressbuch wählen oder ein neues erstellen.
-Ohne verbundenen Server bietet das Hochladen eines Adressbuchs jetzt an, die Synchronisierung einzurichten.
+Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit Namen und Fotos bei Anrufen und in anderen Apps erscheinen. Standardmäßig aus, einzeln für jedes Adressbuch einschaltbar.
+Einfacherer Willkommensbildschirm, einfachere Anmeldung und Einrichtung.
+Geburtstagserinnerungen sind jetzt ein einfacher Schalter.
 Geburtstage werden jetzt korrekt synchronisiert.
+Beim Erstellen eines Adressbuchs kannst du ein Symbol wählen, beim Importieren das Adressbuch.
 </de-DE>
 <nl-NL>
-Bij het aanmaken van een adresboek kun je nu een pictogram kiezen en wordt de kleur getoond terwijl je kiest. Nieuwe adresboeken beginnen met een kleur die verschilt van je bestaande.
-Bij het importeren van contacten kun je nu het adresboek kiezen of een nieuw aanmaken.
-Zonder verbonden server biedt het uploaden van een adresboek nu aan om synchronisatie in te stellen.
+Nieuw: deel een adresboek met de contacten van je telefoon, zodat namen en foto's verschijnen bij gesprekken en in andere apps. Standaard uit; je zet het per adresboek aan.
+Eenvoudiger welkomstscherm, aanmelden en instellen.
+Verjaardagsherinneringen zijn nu een eenvoudige schakelaar.
 Verjaardagen worden nu correct gesynchroniseerd.
+Bij het aanmaken van een adresboek kies je een pictogram, bij het importeren het adresboek.
 </nl-NL>
 <ko-KR>
-주소록을 만들 때 이제 아이콘을 선택할 수 있으며, 색상이 선택하는 즉시 표시됩니다. 새 주소록은 기존 주소록과 다른 색상으로 시작합니다.
-연락처를 가져올 때 이제 대상 주소록을 선택하거나 새로 만들 수 있습니다.
-서버가 연결되어 있지 않으면 주소록 업로드 시 이제 동기화를 설정할지 묻습니다.
+새 기능: 주소록을 휴대전화 연락처와 공유하면 통화와 다른 앱에서 이름과 사진이 표시됩니다. 기본값은 꺼짐이며 주소록마다 직접 켭니다.
+더 간단해진 시작 화면, 로그인, 설정.
+생일 알림이 이제 간단한 스위치로 바뀌었습니다.
 생일이 이제 올바르게 동기화됩니다.
+주소록을 만들 때 아이콘을 선택하고, 연락처를 가져올 때 주소록을 선택할 수 있습니다.
 </ko-KR>
