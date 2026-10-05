@@ -337,6 +337,43 @@ class MirrorPlanTest {
     }
 
     @Test
+    fun `a relationship that links to another contact is shared by that contact's name`() {
+        val contact = MirrorPlan.toMirrorContact(
+            source(),
+            photoStamp = null,
+            level = SystemContactsLevel.FULL,
+            linkedNames = mapOf("some-uid" to "Noah Kaplan"),
+        )!!
+
+        assertEquals(
+            listOf(
+                MirrorPlan.relation("SPOUSE", "William King"),
+                MirrorPlan.relation("FRIEND", "Noah Kaplan"),
+            ),
+            contact.relations
+        )
+    }
+
+    @Test
+    fun `a link to a contact that can't be found is left out`() {
+        val contact = MirrorPlan.toMirrorContact(source(), photoStamp = null, level = SystemContactsLevel.FULL)!!
+
+        assertEquals(listOf(MirrorPlan.relation("SPOUSE", "William King")), contact.relations)
+    }
+
+    @Test
+    fun `renaming a linked contact changes what is written`() {
+        val before = MirrorPlan.toMirrorContact(
+            source(), null, SystemContactsLevel.FULL, mapOf("some-uid" to "Noah Kaplan")
+        )!!
+        val after = MirrorPlan.toMirrorContact(
+            source(), null, SystemContactsLevel.FULL, mapOf("some-uid" to "Noah K.")
+        )!!
+
+        assertNotEquals(before.hash, after.hash)
+    }
+
+    @Test
     fun `a plan can leave out the contacts that are waiting to be read back`() {
         val one = mirrored(source(id = "one"))
         val two = mirrored(source(id = "two"))

@@ -59,6 +59,19 @@ private const val MIRROR_SOURCES_QUERY =
     WHERE c.isArchived = 0 AND b.shareWithSystem = 1
     """
 
+/** The name parts of a contact, for showing a relationship that links to it. */
+data class ContactName(
+    val id: ContactId,
+    val displayName: String,
+    val firstName: String?,
+    val lastName: String?,
+) {
+    val name: String
+        get() = displayName.ifBlank {
+            listOfNotNull(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
+        }
+}
+
 /** A contact hidden from the system contacts, with what the review list needs to name it. */
 data class HiddenContact(
     val id: ContactId,
@@ -91,6 +104,9 @@ interface SystemContactMirrorDao {
 
     @Query("DELETE FROM system_contact_mirror")
     suspend fun deleteAll()
+
+    @Query("SELECT id, displayName, firstName, lastName FROM contacts WHERE id IN (:ids)")
+    suspend fun getContactNames(ids: List<ContactId>): List<ContactName>
 
     @Query("SELECT contactId FROM system_contact_hidden")
     suspend fun getHiddenIds(): List<ContactId>

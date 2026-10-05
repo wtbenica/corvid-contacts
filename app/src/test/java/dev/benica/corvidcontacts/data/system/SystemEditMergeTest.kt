@@ -234,6 +234,33 @@ class SystemEditMergeTest {
     }
 
     @Test
+    fun `a relationship that links to a contact stays while the system copy still shows its name`() {
+        val linked = entity().copy(relationships = listOf(Relationship("FRIEND", "noah-id", isUid = true)))
+        val names = mapOf("noah-id" to "Noah Kaplan")
+        val written = base().copy(relations = listOf(MirrorPlan.relation("FRIEND", "Noah Kaplan")))
+        val theirs = written.copy(relations = written.relations + MirrorRelation("Fred", 14, null))
+
+        val result = SystemEditMerge.apply(linked, SystemEditMerge.merge(written, theirs, written), linkedNames = names)
+
+        assertEquals(
+            listOf(Relationship("FRIEND", "noah-id", isUid = true), Relationship("SPOUSE", "Fred")),
+            result.relationships
+        )
+    }
+
+    @Test
+    fun `a relationship that links to a contact is removed when the name is removed in the system copy`() {
+        val linked = entity().copy(relationships = listOf(Relationship("FRIEND", "noah-id", isUid = true)))
+        val names = mapOf("noah-id" to "Noah Kaplan")
+        val written = base().copy(relations = listOf(MirrorPlan.relation("FRIEND", "Noah Kaplan")))
+        val theirs = written.copy(relations = emptyList())
+
+        val result = SystemEditMerge.apply(linked, SystemEditMerge.merge(written, theirs, written), linkedNames = names)
+
+        assertEquals(emptyList<Relationship>(), result.relationships)
+    }
+
+    @Test
     fun `an address typed as one line is kept whole as the street`() {
         val theirs = base().copy(
             addresses = listOf(MirrorAddress("1 Main St, London", null, null, null, null, null, null, MirrorPlan.POSTAL_TYPE_HOME))

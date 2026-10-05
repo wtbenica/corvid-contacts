@@ -3,6 +3,7 @@
 package dev.benica.corvidcontacts.data.system
 
 import dev.benica.corvidcontacts.data.local.ContactEntity
+import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.Phone
 import dev.benica.corvidcontacts.data.model.Relationship
@@ -81,7 +82,12 @@ object SystemEditMerge {
      * Applies the parts of [merge] that were taken to [entity]. [photoUrl] is the file the taken
      * photo was saved to, or `null` if it was removed.
      */
-    fun apply(entity: ContactEntity, merge: SystemMerge, photoUrl: String? = null): ContactEntity {
+    fun apply(
+        entity: ContactEntity,
+        merge: SystemMerge,
+        photoUrl: String? = null,
+        linkedNames: Map<ContactId, String> = emptyMap(),
+    ): ContactEntity {
         var result = entity
         val theirs = merge.theirs
         for (field in merge.taken) {
@@ -95,7 +101,7 @@ object SystemEditMerge {
 
                 MirrorField.LINKS -> result.withLinks(theirs)
                 MirrorField.RELATIONS -> result.copy(
-                    relationships = mergeRelations(result.relationships, theirs.relations)
+                    relationships = mergeRelations(result.relationships, theirs.relations, linkedNames)
                 )
 
                 MirrorField.BIRTHDAY -> result.copy(birthday = theirs.birthday)
@@ -244,12 +250,18 @@ object SystemEditMerge {
         )
     }
 
-    private fun mergeRelations(current: List<Relationship>?, theirs: List<MirrorRelation>): List<Relationship> {
-        // A relationship stored as a contact UID is never written, so it can't have been edited.
-        val unmirrored = current.orEmpty().filter { it.isUid || it.value.isBlank() }
-        val remaining = current.orEmpty().filterNot { it.isUid || it.value.isBlank() }.toMutableList()
+    private fun mergeRelations(
+        current: List<Relationship>?,
+        theirs: List<MirrorRelation>,
+        linkedNames: Map<ContactId, String>,
+    ): List<Relationship> {
+        // One with no name to show (a link to a contact that is gone) was never written, so it is kept.
+        val (mirrored, unmirrored) = current.orEmpty().partition { MirrorPlan.relationName(it, linkedNames) != null }
+        val remaining = mirrored.toMutableList()
         return unmirrored + theirs.map { relation ->
-            val i = remaining.indexOfFirst { MirrorPlan.relation(it.type, it.value.trim()) == relation }
+            val i = remaining.indexOfFirst {
+                MirrorPlan.relation(it.type, MirrorPlan.relationName(it, linkedNames).orEmpty()) == relation
+            }
             if (i >= 0) remaining.removeAt(i) else Relationship(MirrorPlan.relationTypeName(relation), relation.name)
         }
     }

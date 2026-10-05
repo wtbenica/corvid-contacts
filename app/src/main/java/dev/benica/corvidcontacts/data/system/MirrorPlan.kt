@@ -5,6 +5,7 @@ package dev.benica.corvidcontacts.data.system
 import dev.benica.corvidcontacts.data.local.ContactId
 import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
+import dev.benica.corvidcontacts.data.model.Relationship
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import com.squareup.moshi.JsonClass
@@ -165,11 +166,13 @@ data class MirrorPlan(
             levels: Map<String, SystemContactsLevel>,
             photoStamp: (MirrorSource) -> String?,
             hidden: Set<ContactId> = emptySet(),
+            linkedNames: Map<ContactId, String> = emptyMap(),
         ): List<MirrorContact> = sources.filter { it.id !in hidden }.mapNotNull { source ->
             toMirrorContact(
                 source,
                 photoStamp(source),
-                levels[source.addressBookHref] ?: SystemContactsLevel.CALLER_ID
+                levels[source.addressBookHref] ?: SystemContactsLevel.CALLER_ID,
+                linkedNames
             )
         }
 
@@ -182,6 +185,7 @@ data class MirrorPlan(
             source: MirrorSource,
             photoStamp: String?,
             level: SystemContactsLevel = SystemContactsLevel.CALLER_ID,
+            linkedNames: Map<ContactId, String> = emptyMap(),
         ): MirrorContact? {
             val name = source.displayName.ifBlank {
                 listOfNotNull(source.firstName, source.lastName)
@@ -242,11 +246,9 @@ data class MirrorPlan(
                     .map { it.copy(value = it.value.trim()).getWebFallback() }
                     .distinct()
                     .filter { it !in websites },
-                // A relationship stored as a contact UID has no name to show, so it is left out.
                 relations = source.relationships
                     .orEmpty()
-                    .filter { !it.isUid && it.value.isNotBlank() }
-                    .map { relation(it.type, it.value.trim()) },
+                    .mapNotNull { r -> relationName(r, linkedNames)?.let { relation(r.type, it) } },
                 birthday = normalizeBirthday(source.birthday),
                 organization = MirrorOrganization(source.company.clean(), source.jobTitle.clean())
                     .takeIf { it.company != null || it.title != null },
@@ -308,6 +310,16 @@ data class MirrorPlan(
                 else -> POSTAL_TYPE_OTHER
             }
         }
+
+        /**
+         * The name a relationship shows in the system contacts: its own text, or for a link to
+         * another contact, that contact's name from [linkedNames]. `null` if it has none, such as a
+         * link to a contact that no longer exists.
+         */
+        internal fun relationName(relationship: Relationship, linkedNames: Map<ContactId, String>): String? =
+            (if (relationship.isUid) linkedNames[relationship.value] else relationship.value)
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
 
         /** Maps a relationship type to a `Relation.TYPE_*` value, keeping unknown ones as a label. */
         internal fun relation(type: String, name: String): MirrorRelation {

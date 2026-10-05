@@ -22,6 +22,9 @@ on Google Play is a summary of the user-visible items below.
 - An address that another app saved as one line can be filled in from address lookup: choose "Fill in
   address details" on the address, pick a match, and it is split into street, city, state, postal
   code and country. It only appears when address lookup is on, and nothing is sent until you choose it.
+- A relationship that links to another contact is shared by that contact's name, and a name added or
+  removed in the phone's contacts is read back. Before, links were left out of the phone's contacts
+  and only name-only relationships were shared.
 - A contact hidden from your phone's contacts shows a notice you can dismiss, with Show again and
   Delete from Corvid. Any contact in a shared book has Hide from / Show in phone contacts in its
   menu, and the address book's page lists the contacts that are hidden.

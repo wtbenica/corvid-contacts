@@ -141,7 +141,8 @@ class SystemContactsMirror(
                 current,
                 books.associate { it.href to it.systemContactsLevel },
                 ::photoStamp,
-                dao.getHiddenIds().toSet()
+                dao.getHiddenIds().toSet(),
+                linkedNames(current)
             )
 
             // Every group the contacts need: one per shared book, plus one per category in use.
@@ -225,7 +226,8 @@ class SystemContactsMirror(
         val base = MirrorPlan.readSnapshot(entry.snapshot)
         if (base == null || source == null) return EditOutcome.REWRITE
 
-        val ours = MirrorPlan.toMirrorContact(source, photoStamp(source), base.level)
+        val linkedNames = linkedNames(listOf(source))
+        val ours = MirrorPlan.toMirrorContact(source, photoStamp(source), base.level, linkedNames)
         val merge = SystemEditMerge.merge(base, change.contact, ours)
         if (merge.isEmpty) return EditOutcome.REWRITE
 
@@ -233,7 +235,7 @@ class SystemContactsMirror(
         if (entity == null || !entity.isEditable()) return EditOutcome.REWRITE
 
         val photoUrl = if (MirrorField.PHOTO in merge.taken) savePhoto(entity.id, change.rawContactId) else null
-        return editor.save(SystemEditMerge.apply(entity, merge, photoUrl)).fold(
+        return editor.save(SystemEditMerge.apply(entity, merge, photoUrl, linkedNames)).fold(
             onSuccess = {
                 Log.i(TAG, "contact=${entry.contactId} took ${merge.taken} from the system contacts")
                 EditOutcome.APPLIED
@@ -243,6 +245,16 @@ class SystemContactsMirror(
                 EditOutcome.RETRY
             }
         )
+    }
+
+    /** The names of the contacts that [sources] link to in their relationships, by contact id. */
+    private suspend fun linkedNames(sources: List<MirrorSource>): Map<ContactId, String> {
+        val ids = sources
+            .flatMap { it.relationships.orEmpty() }
+            .filter { it.isUid }
+            .map { it.value }
+            .distinct()
+        return ids.chunked(NAME_QUERY_BATCH).flatMap { dao.getContactNames(it) }.associate { it.id to it.name }
     }
 
     /** Stores the contact's photo from the system contacts, or removes it if there is none. */
@@ -640,6 +652,7 @@ class SystemContactsMirror(
         const val TAG = "SystemContactsMirror"
         const val INSERT_BATCH = 50
         const val DELETE_BATCH = 200
+        const val NAME_QUERY_BATCH = 500
         const val PHOTO_PASS_THROUGH_BYTES = 256 * 1024
         const val PHOTO_MAX_DIMENSION = 720
 
