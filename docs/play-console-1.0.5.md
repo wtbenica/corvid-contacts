@@ -18,7 +18,7 @@ organizing contacts)" is one of the listed qualifying uses.
 Draft answers (adjust to the form's wording):
 
 - **Which user-facing features need the permission.** "Corvid Contacts is a contacts manager. Its
-  optional 'Share with other apps' feature, off by default and chosen per address book, copies the
+  optional 'Share with phone contacts' feature, off by default and chosen per address book, copies the
   user's selected address books into Android's contacts storage under Corvid's own account, so
   Messages and the dialer can show names and photos. READ_CONTACTS is used only to read back the
   contacts in Corvid's own account, so that edits and deletions the user makes to them in other

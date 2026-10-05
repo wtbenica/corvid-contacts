@@ -438,10 +438,10 @@
     <string name="onboarding_action_continue">Weiter</string>
     <string name="birthday_reminders_title">Geburtstagserinnerungen</string>
     <string name="birthday_reminders_description">Erhalte eine Benachrichtigung, wenn ein Kontakt heute oder morgen Geburtstag hat.</string>
-    <string name="onboarding_sharing_title">Namen in anderen Apps anzeigen</string>
+    <string name="onboarding_sharing_title">Mit Telefonkontakten teilen</string>
     <string name="onboarding_sharing_permission_denied">Die Berechtigung für Kontakte wurde abgelehnt, daher wurde nichts geteilt. Schalte die Bücher aus, um fortzufahren, oder erlaube die Berechtigung, um sie zu teilen.</string>
     <string name="onboarding_sharing_open_settings">App-Einstellungen öffnen</string>
-    <string name="onboarding_sharing_description">Lass Nachrichten, deine Telefon-App und andere Apps Namen und Fotos deiner Kontakte anzeigen. Wähle, welche Adressbücher geteilt werden. Jede App mit Kontaktzugriff kann sehen, was du teilst, und Änderungen dort werden in Corvid zurückgespeichert. Du kannst das jederzeit in den Einstellungen des jeweiligen Adressbuchs ändern.</string>
+    <string name="onboarding_sharing_description">Teile deine Kontakte mit den Telefonkontakten, damit Nachrichten, deine Telefon-App und andere Apps ihre Namen und Fotos anzeigen können. Wähle, welche Adressbücher geteilt werden. Jede App mit Kontaktzugriff kann sehen, was du teilst, und Änderungen dort werden in Corvid zurückgespeichert. Du kannst das jederzeit in den Einstellungen des jeweiligen Adressbuchs ändern.</string>
     <string name="onboarding_self_contact_title">Dein Profil</string>
     <string name="onboarding_self_contact_description">Wähle die Kontaktkarte mit deinen eigenen Informationen aus. Das erleichtert das Teilen mit anderen.</string>
     <string name="onboarding_self_contact_empty_syncing">Deine synchronisierten Kontakte werden in Kürze hier angezeigt. Sobald das passiert, kannst du deinen eigenen aus der Liste auswählen.</string>
@@ -484,8 +484,8 @@
     <string name="detail_share_selection_relationship">Beziehung (%1$s)</string>
 
     <!-- System contacts -->
-    <string name="system_contacts_title">Namen in anderen Apps anzeigen</string>
-    <string name="system_contacts_description">Kopiert die Kontakte dieses Adressbuchs in dem von dir gewählten Umfang in die Kontakte dieses Geräts, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google.\n\nÄnderungen, die du an diesen Kontakten in anderen Apps vornimmst, werden in Corvid zurückgespeichert. Löschst du einen Kontakt dort, wird er nur in den Telefonkontakten ausgeblendet; in Corvid bleibt er erhalten.\n\nAndroid fragt, ob Corvid deine Kontakte lesen und ändern darf. Corvid liest nur die Kontakte, die es teilt.</string>
+    <string name="system_contacts_title">Mit Telefonkontakten teilen</string>
+    <string name="system_contacts_description">Kopiert die Kontakte dieses Adressbuchs in dem von dir gewählten Umfang in die Telefonkontakte, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google.\n\nÄnderungen, die du an diesen Kontakten in anderen Apps vornimmst, werden in Corvid zurückgespeichert. Löschst du einen Kontakt dort, wird er nur in den Telefonkontakten ausgeblendet; in Corvid bleibt er erhalten.\n\nAndroid fragt, ob Corvid deine Kontakte lesen und ändern darf. Corvid liest nur die Kontakte, die es teilt.</string>
     <string name="system_contacts_level_title">Was geteilt wird</string>
     <string name="system_contacts_level_caller_id">Anrufer-ID</string>
     <string name="system_contacts_level_caller_id_description">Name, Telefonnummern und Foto</string>
@@ -493,12 +493,12 @@
     <string name="system_contacts_level_full_description">Zusätzlich E-Mails, Adressen, Social-Media-Profile, Websites, Geburtstag, Gruppen, Firma, Berufsbezeichnung, Spitzname und Beziehungen</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Zusätzlich Notizen</string>
-    <string name="address_book_shared_label_with_level">Mit anderen Apps geteilt (%1$s)</string>
+    <string name="address_book_shared_label_with_level">Mit Telefonkontakten geteilt (%1$s)</string>
     <string name="system_contacts_summary_shared">Geteilte Adressbücher: %1$d von %2$d</string>
-    <string name="system_contacts_summary_none">Wähle Adressbücher aus, die mit Nachrichten und der Telefon-App geteilt werden. Bisher wird nichts geteilt.</string>
+    <string name="system_contacts_summary_none">Wähle Adressbücher aus, die mit den Telefonkontakten geteilt werden. Bisher wird nichts geteilt.</string>
     <string name="address_book_setting_visibility">In der Kontaktliste anzeigen</string>
     <string name="address_book_setting_visibility_description">Ausgeblendete Bücher bleiben auf deinem Gerät, erscheinen aber nicht in der Kontaktliste.</string>
-    <string name="address_book_setting_share">Mit anderen Apps teilen</string>
+    <string name="address_book_setting_share">Mit Telefonkontakten teilen</string>
     <string name="address_book_setting_share_description">Zeigt diese Kontakte in den Telefonkontakten an, damit Apps wie Nachrichten und die Telefon-App Namen anzeigen können. Änderungen dort werden in Corvid zurückgespeichert.</string>
     <string name="settings_address_books_description">Aussehen, Sichtbarkeit und Teilen für jedes Adressbuch</string>
     <string name="system_contacts_add_account_unsupported">Teile stattdessen ein Adressbuch in Corvid Contacts.</string>

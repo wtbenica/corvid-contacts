@@ -438,10 +438,10 @@
     <string name="onboarding_action_continue">Doorgaan</string>
     <string name="birthday_reminders_title">Verjaardagsherinneringen</string>
     <string name="birthday_reminders_description">Ontvang een melding wanneer een contact vandaag of morgen jarig is.</string>
-    <string name="onboarding_sharing_title">Namen tonen in andere apps</string>
+    <string name="onboarding_sharing_title">Delen met de contacten van de telefoon</string>
     <string name="onboarding_sharing_permission_denied">De toestemming voor contacten is geweigerd, dus er is niets gedeeld. Zet de adresboeken uit om door te gaan, of sta de toestemming toe om ze te delen.</string>
     <string name="onboarding_sharing_open_settings">App-instellingen openen</string>
-    <string name="onboarding_sharing_description">Laat Berichten, je Telefoon-app en andere apps namen en foto\'s van je contacten tonen. Kies welke adresboeken je deelt. Elke app met toegang tot contacten kan zien wat je deelt, en wijzigingen daar worden terug in Corvid opgeslagen. Je kunt dit altijd aanpassen in de instellingen van elk adresboek.</string>
+    <string name="onboarding_sharing_description">Deel je contacten met de contacten van je telefoon, zodat Berichten, je Telefoon-app en andere apps hun namen en foto\'s kunnen tonen. Kies welke adresboeken je deelt. Elke app met toegang tot contacten kan zien wat je deelt, en wijzigingen daar worden terug in Corvid opgeslagen. Je kunt dit altijd aanpassen in de instellingen van elk adresboek.</string>
     <string name="onboarding_self_contact_title">Jouw profiel</string>
     <string name="onboarding_self_contact_description">Kies de contactkaart met jouw eigen gegevens. Dit maakt delen met anderen makkelijker.</string>
     <string name="onboarding_self_contact_empty_syncing">Je gesynchroniseerde contacten verschijnen hier binnenkort. Zodra dat gebeurt, kun je die van jou uit de lijst selecteren.</string>
@@ -484,8 +484,8 @@
     <string name="detail_share_selection_relationship">Relatie (%1$s)</string>
 
     <!-- System contacts -->
-    <string name="system_contacts_title">Namen tonen in andere apps</string>
-    <string name="system_contacts_description">Kopieert de contacten van dit adresboek naar de contacten van dit apparaat, op het niveau dat je kiest, zodat Berichten en de telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan dan zien wat je deelt. Corvid stuurt het niet naar Google.\n\nWijzigingen die je in andere apps aan deze contacten aanbrengt, worden terug in Corvid opgeslagen. Als je er daar een verwijdert, wordt het alleen verborgen in de contacten van de telefoon; in Corvid blijft het staan.\n\nAndroid vraagt of Corvid je contacten mag lezen en wijzigen. Corvid leest alleen de contacten die het deelt.</string>
+    <string name="system_contacts_title">Delen met de contacten van de telefoon</string>
+    <string name="system_contacts_description">Kopieert de contacten van dit adresboek naar de contacten van de telefoon, op het niveau dat je kiest, zodat Berichten en de telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan dan zien wat je deelt. Corvid stuurt het niet naar Google.\n\nWijzigingen die je in andere apps aan deze contacten aanbrengt, worden terug in Corvid opgeslagen. Als je er daar een verwijdert, wordt het alleen verborgen in de contacten van de telefoon; in Corvid blijft het staan.\n\nAndroid vraagt of Corvid je contacten mag lezen en wijzigen. Corvid leest alleen de contacten die het deelt.</string>
     <string name="system_contacts_level_title">Wat je deelt</string>
     <string name="system_contacts_level_caller_id">Nummerweergave</string>
     <string name="system_contacts_level_caller_id_description">Naam, telefoonnummers en foto</string>
@@ -493,12 +493,12 @@
     <string name="system_contacts_level_full_description">Ook e-mailadressen, adressen, socialemediaprofielen, websites, verjaardag, groepen, bedrijf, functie, bijnaam en relaties</string>
     <string name="system_contacts_level_everything">Alles</string>
     <string name="system_contacts_level_everything_description">Ook notities</string>
-    <string name="address_book_shared_label_with_level">Gedeeld met andere apps (%1$s)</string>
+    <string name="address_book_shared_label_with_level">Gedeeld met de contacten van de telefoon (%1$s)</string>
     <string name="system_contacts_summary_shared">Gedeelde adresboeken: %1$d van %2$d</string>
-    <string name="system_contacts_summary_none">Kies adresboeken om te delen met Berichten en de telefoon-app. Er wordt nog niets gedeeld.</string>
+    <string name="system_contacts_summary_none">Kies adresboeken om te delen met de contacten van de telefoon. Er wordt nog niets gedeeld.</string>
     <string name="address_book_setting_visibility">Tonen in contactenlijst</string>
     <string name="address_book_setting_visibility_description">Verborgen adresboeken blijven op je toestel, maar staan niet in de contactenlijst.</string>
-    <string name="address_book_setting_share">Delen met andere apps</string>
+    <string name="address_book_setting_share">Delen met de contacten van de telefoon</string>
     <string name="address_book_setting_share_description">Toont deze contacten in de contacten van de telefoon, zodat apps zoals Berichten en de telefoon-app namen kunnen tonen. Wijzigingen daar worden terug in Corvid opgeslagen.</string>
     <string name="settings_address_books_description">Uiterlijk, zichtbaarheid en delen voor elk adresboek</string>
     <string name="system_contacts_add_account_unsupported">Deel in plaats daarvan een adresboek vanuit Corvid Contacts.</string>
