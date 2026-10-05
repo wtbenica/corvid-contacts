@@ -2,19 +2,16 @@
 
 package dev.benica.corvidcontacts.ui.addressbooks
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import android.content.res.Resources
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Delete
@@ -25,16 +22,14 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -48,29 +43,26 @@ import dev.benica.corvidcontacts.data.local.HiddenContact
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.AddressBookUploadResult
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
-import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCAlertDialog
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScreenFrame
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.AddressBookAppearanceDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.ConfirmAddressBookDeletionDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.RenameAddressBookDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.UploadAddressBookDialog
 import dev.benica.corvidcontacts.ui.settings.SettingsLeadingIcon
-import dev.benica.corvidcontacts.ui.settings.SettingsLeadingRadioButton
 import dev.benica.corvidcontacts.ui.theme.Dimens
-import kotlinx.coroutines.launch
 
 /**
  * Everything about one address book in one place: appearance, name, whether it is shown in the
- * contact list, whether it is shared with other apps, uploading a local book to the server, and
- * deleting it. Replaces the per-book dialogs the filter sheet used to stack up.
+ * contact list, how it is shared with the phone's contacts, uploading a local book to the server,
+ * and deleting it.
+ *
+ * The first time sharing is turned on without the contacts permission, a short explanation comes
+ * first and the permission is requested.
  *
  * @param book The book to show, or `null` once it no longer exists (for example just after it was
  * deleted), in which case [onBack] is invoked.
- * Sharing with other apps is decided here, per book: the switch, and how much of each contact to
- * share. The first time it is turned on, with the contacts permission not yet granted, a short
- * explanation comes first and the permission is requested.
  */
 @Composable
 fun AddressBookSettingsScreen(
@@ -100,16 +92,16 @@ fun AddressBookSettingsScreen(
 
     val context = LocalContext.current
     val resources = LocalResources.current
-    val scope = rememberCoroutineScope()
+    val submit = rememberSubmitState()
     val genericErrorMessage = stringResource(R.string.settings_address_book_generic_error)
     val bookName = book.displayName ?: stringResource(R.string.settings_address_book_unnamed)
+    fun showError() = Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
 
     var showAppearanceDialog by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
     var showUploadDialog by remember { mutableStateOf(false) }
     var showSetUpSyncPrompt by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var isSubmitting by remember { mutableStateOf(false) }
     var showShareExplanation by remember { mutableStateOf(false) }
     var showHiddenDialog by remember { mutableStateOf(false) }
 
@@ -121,19 +113,13 @@ fun AddressBookSettingsScreen(
     }
     val isShared = book.shareWithSystem && hasPermission
 
-    val chromeNavigationIcon: @Composable () -> Unit = { BackNavButton(onBack) }
-    if (!showScaffold) {
-        SideEffect {
-            onChromeChange?.invoke(
-                ScreenChrome(
-                    title = bookName,
-                    navigationIcon = chromeNavigationIcon,
-                )
-            )
-        }
-    }
-
-    val body: @Composable (PaddingValues) -> Unit = { padding ->
+    CCScreenFrame(
+        title = bookName,
+        onBack = onBack,
+        showScaffold = showScaffold,
+        onChromeChange = onChromeChange,
+        modifier = modifier,
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -170,57 +156,20 @@ fun AddressBookSettingsScreen(
 
             HorizontalDivider()
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.address_book_setting_share)) },
-                supportingContent = { Text(stringResource(R.string.address_book_setting_share_description)) },
-                trailingContent = {
-                    Switch(
-                        checked = isShared,
-                        onCheckedChange = { wantsOn ->
-                            when {
-                                !wantsOn -> onShareWithSystemChanged(book, false)
-                                hasPermission -> onShareWithSystemChanged(book, true)
-                                else -> showShareExplanation = true
-                            }
-                        },
-                    )
+            AddressBookSharingSection(
+                isShared = isShared,
+                level = book.systemContactsLevel,
+                hiddenCount = hiddenContacts.size,
+                onShareChanged = { wantsOn ->
+                    when {
+                        !wantsOn -> onShareWithSystemChanged(book, false)
+                        hasPermission -> onShareWithSystemChanged(book, true)
+                        else -> showShareExplanation = true
+                    }
                 },
+                onLevelChanged = { onSystemContactsLevelChanged(book, it) },
+                onHiddenClick = { showHiddenDialog = true },
             )
-            // Always shown and only dimmed while the book isn't shared, so the page doesn't change
-            // shape when sharing is switched on or off.
-            val levelAlpha = if (isShared) 1f else DISABLED_ALPHA
-            Text(
-                text = stringResource(R.string.system_contacts_level_title),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier
-                    .alpha(levelAlpha)
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-            )
-            SystemContactsLevel.entries.forEach { option ->
-                ListItem(
-                    headlineContent = { Text(stringResource(option.titleRes())) },
-                    supportingContent = { Text(stringResource(option.descriptionRes())) },
-                    trailingContent = {
-                        SettingsLeadingRadioButton(
-                            selected = option == book.systemContactsLevel,
-                            onClick = { onSystemContactsLevelChanged(book, option) },
-                            enabled = isShared,
-                        )
-                    },
-                    modifier = Modifier
-                        .alpha(levelAlpha)
-                        .clickable(enabled = isShared) { onSystemContactsLevelChanged(book, option) },
-                )
-            }
-
-            if (hiddenContacts.isNotEmpty()) {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.address_book_setting_hidden)) },
-                    supportingContent = { Text(stringResource(R.string.address_book_setting_hidden_description)) },
-                    trailingContent = { TrailingText(hiddenContacts.size.toString()) },
-                    modifier = Modifier.clickable { showHiddenDialog = true },
-                )
-            }
 
             HorizontalDivider()
 
@@ -248,17 +197,6 @@ fun AddressBookSettingsScreen(
         }
     }
 
-    if (showScaffold) {
-        CCScaffold(
-            modifier = modifier,
-            title = bookName,
-            navigationIcon = chromeNavigationIcon,
-            content = body
-        )
-    } else {
-        body(PaddingValues())
-    }
-
     if (showAppearanceDialog) {
         AddressBookAppearanceDialog(
             currentColor = Color(book.colorInt),
@@ -274,22 +212,13 @@ fun AddressBookSettingsScreen(
     if (showRenameDialog) {
         RenameAddressBookDialog(
             oldName = bookName,
-            isSubmitting = isSubmitting,
+            isSubmitting = submit.isSubmitting,
             onConfirm = { newName ->
-                if (!isSubmitting) {
-                    isSubmitting = true
-                    scope.launch {
-                        val result = onRename(book, newName)
-                        isSubmitting = false
-                        if (result.isSuccess) {
-                            showRenameDialog = false
-                        } else {
-                            Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                submit.run {
+                    if (onRename(book, newName).isSuccess) showRenameDialog = false else showError()
                 }
             },
-            onDismiss = { if (!isSubmitting) showRenameDialog = false }
+            onDismiss = { if (!submit.isSubmitting) showRenameDialog = false }
         )
     }
 
@@ -310,30 +239,10 @@ fun AddressBookSettingsScreen(
     }
 
     if (showHiddenDialog && hiddenContacts.isNotEmpty()) {
-        CCAlertDialog(
-            onDismissRequest = { showHiddenDialog = false },
-            title = R.string.address_book_setting_hidden,
-            content = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(stringResource(R.string.address_book_hidden_dialog_message))
-                    hiddenContacts.forEach { contact ->
-                        ListItem(
-                            headlineContent = { Text(contact.name) },
-                            trailingContent = {
-                                TextButton(onClick = { onShowInSystem(listOf(contact.id)) }) {
-                                    Text(stringResource(R.string.detail_hidden_from_system_show))
-                                }
-                            },
-                        )
-                    }
-                }
-            },
-            confirmButton = R.string.address_book_hidden_show_all,
-            onConfirm = {
-                onShowInSystem(hiddenContacts.map { it.id })
-                showHiddenDialog = false
-            },
-            dismissButton = R.string.common_done,
+        HiddenContactsDialog(
+            hiddenContacts = hiddenContacts,
+            onShow = onShowInSystem,
+            onDismiss = { showHiddenDialog = false },
         )
     }
 
@@ -355,42 +264,20 @@ fun AddressBookSettingsScreen(
     if (showUploadDialog) {
         UploadAddressBookDialog(
             oldName = bookName,
-            isSubmitting = isSubmitting,
+            isSubmitting = submit.isSubmitting,
             onConfirm = { newName ->
-                if (!isSubmitting) {
-                    isSubmitting = true
-                    scope.launch {
-                        val result = onUpload(book, newName)
-                        isSubmitting = false
-                        showUploadDialog = false
-                        result.fold(
-                            onSuccess = { outcome ->
-                                val total = outcome.uploadedCount + outcome.failedCount
-                                val message = if (outcome.fullyCompleted) {
-                                    resources.getQuantityString(
-                                        R.plurals.settings_address_book_upload_result_full,
-                                        outcome.uploadedCount,
-                                        outcome.uploadedCount
-                                    )
-                                } else {
-                                    resources.getQuantityString(
-                                        R.plurals.settings_address_book_upload_result_partial,
-                                        total,
-                                        outcome.uploadedCount,
-                                        total,
-                                        outcome.failedCount
-                                    )
-                                }
-                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                            },
-                            onFailure = {
-                                Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
+                submit.run {
+                    val result = onUpload(book, newName)
+                    showUploadDialog = false
+                    result.fold(
+                        onSuccess = { outcome ->
+                            Toast.makeText(context, uploadResultMessage(resources, outcome), Toast.LENGTH_LONG).show()
+                        },
+                        onFailure = { showError() }
+                    )
                 }
             },
-            onDismiss = { if (!isSubmitting) showUploadDialog = false }
+            onDismiss = { if (!submit.isSubmitting) showUploadDialog = false }
         )
     }
 
@@ -398,36 +285,35 @@ fun AddressBookSettingsScreen(
         ConfirmAddressBookDeletionDialog(
             addressBook = book,
             contactCount = contactCount,
-            onDismissRequest = { if (!isSubmitting) showDeleteDialog = false },
+            onDismissRequest = { if (!submit.isSubmitting) showDeleteDialog = false },
             onConfirm = {
-                if (!isSubmitting) {
-                    isSubmitting = true
-                    scope.launch {
-                        val result = onDelete(book)
-                        isSubmitting = false
-                        showDeleteDialog = false
-                        if (result.isFailure) {
-                            Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                submit.run {
+                    val result = onDelete(book)
+                    showDeleteDialog = false
+                    if (result.isFailure) showError()
                 }
             },
-            isSubmittingAddressBookAction = isSubmitting,
+            isSubmittingAddressBookAction = submit.isSubmitting,
         )
     }
 }
 
-/** Material's opacity for disabled content. */
-private const val DISABLED_ALPHA = 0.38f
-
-/** A value at the end of a row, in the same box as the row's other trailing controls. */
-@Composable
-private fun TrailingText(text: String) {
-    Box(
-        modifier = Modifier.defaultMinSize(minWidth = 24.dp, minHeight = 24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = text, style = MaterialTheme.typography.titleMedium)
+private fun uploadResultMessage(resources: Resources, outcome: AddressBookUploadResult): String {
+    val total = outcome.uploadedCount + outcome.failedCount
+    return if (outcome.fullyCompleted) {
+        resources.getQuantityString(
+            R.plurals.settings_address_book_upload_result_full,
+            outcome.uploadedCount,
+            outcome.uploadedCount
+        )
+    } else {
+        resources.getQuantityString(
+            R.plurals.settings_address_book_upload_result_partial,
+            total,
+            outcome.uploadedCount,
+            total,
+            outcome.failedCount
+        )
     }
 }
 

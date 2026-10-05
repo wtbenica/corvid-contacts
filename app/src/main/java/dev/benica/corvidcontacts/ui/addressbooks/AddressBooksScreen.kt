@@ -19,11 +19,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,12 +34,10 @@ import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
-import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
-import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScreenFrame
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.dialogs.CreateAddressBookDialog
 import dev.benica.corvidcontacts.ui.theme.Dimens
-import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -63,14 +59,13 @@ fun AddressBooksScreen(
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val submit = rememberSubmitState()
     val hapticFeedback = LocalHapticFeedback.current
     val genericErrorMessage = stringResource(R.string.settings_address_book_generic_error)
     val title = stringResource(R.string.settings_section_address_books)
     val hasContactsPermission = rememberHasContactsPermission()
 
     var showCreateDialog by remember { mutableStateOf(false) }
-    var isSubmitting by remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
@@ -83,21 +78,16 @@ fun AddressBooksScreen(
     val addIcon: @Composable () -> Unit = {
         Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.settings_address_book_add))
     }
-    val navigationIcon: @Composable () -> Unit = { BackNavButton(onBack) }
-    if (!showScaffold) {
-        SideEffect {
-            onChromeChange?.invoke(
-                ScreenChrome(
-                    title = title,
-                    navigationIcon = navigationIcon,
-                    fabContent = addIcon,
-                    onFabClick = { showCreateDialog = true },
-                )
-            )
-        }
-    }
 
-    val body: @Composable (PaddingValues) -> Unit = { padding ->
+    CCScreenFrame(
+        title = title,
+        onBack = onBack,
+        showScaffold = showScaffold,
+        onChromeChange = onChromeChange,
+        modifier = modifier,
+        fabContent = addIcon,
+        onFabClick = { showCreateDialog = true },
+    ) { padding ->
         LazyColumn(
             state = lazyListState,
             // The same inset the app Settings page gets from its sections, without section headers.
@@ -167,39 +157,22 @@ fun AddressBooksScreen(
         }
     }
 
-    if (showScaffold) {
-        CCScaffold(
-            modifier = modifier,
-            title = title,
-            navigationIcon = navigationIcon,
-            onFabClick = { showCreateDialog = true },
-            fabContent = addIcon,
-            content = body
-        )
-    } else {
-        body(PaddingValues())
-    }
 
     if (showCreateDialog) {
         CreateAddressBookDialog(
-            isSubmitting = isSubmitting,
+            isSubmitting = submit.isSubmitting,
             hasServerConnection = hasServerConnection,
             existingColors = addressBooks.map { it.colorInt },
             onConfirm = { name, color, forceLocal, iconName ->
-                if (!isSubmitting) {
-                    isSubmitting = true
-                    scope.launch {
-                        val result = onCreateAddressBook(name, color, forceLocal, iconName)
-                        isSubmitting = false
-                        if (result.isSuccess) {
-                            showCreateDialog = false
-                        } else {
-                            Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
-                        }
+                submit.run {
+                    if (onCreateAddressBook(name, color, forceLocal, iconName).isSuccess) {
+                        showCreateDialog = false
+                    } else {
+                        Toast.makeText(context, genericErrorMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
             },
-            onDismiss = { if (!isSubmitting) showCreateDialog = false }
+            onDismiss = { if (!submit.isSubmitting) showCreateDialog = false }
         )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,6 +81,47 @@ data class ScreenChrome(
     val fabContent: (@Composable () -> Unit)? = null,
     val onFabClick: (() -> Unit)? = null,
 )
+
+/**
+ * A screen that is either its own destination, with a top bar, or embedded in a shell that draws
+ * one shared top bar, in which case [onChromeChange] gets the title, back button and add button
+ * instead.
+ */
+@Composable
+fun CCScreenFrame(
+    title: String,
+    onBack: () -> Unit,
+    showScaffold: Boolean,
+    onChromeChange: ((ScreenChrome) -> Unit)?,
+    modifier: Modifier = Modifier,
+    fabContent: (@Composable () -> Unit)? = null,
+    onFabClick: (() -> Unit)? = null,
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    val navigationIcon: @Composable () -> Unit = { BackNavButton(onBack) }
+    if (showScaffold) {
+        CCScaffold(
+            modifier = modifier,
+            title = title,
+            navigationIcon = navigationIcon,
+            onFabClick = onFabClick,
+            fabContent = fabContent ?: {},
+            content = content
+        )
+    } else {
+        SideEffect {
+            onChromeChange?.invoke(
+                ScreenChrome(
+                    title = title,
+                    navigationIcon = navigationIcon,
+                    fabContent = fabContent,
+                    onFabClick = onFabClick,
+                )
+            )
+        }
+        content(PaddingValues())
+    }
+}
 
 /**
  * A navigation button to go back.
