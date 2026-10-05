@@ -452,13 +452,9 @@
     <string name="onboarding_address_lookup_off_title">Désactivé</string>
     <string name="onboarding_address_lookup_off_description">Aucune recherche lors de la saisie des adresses</string>
     <string name="onboarding_action_continue">Continuer</string>
-    <string name="onboarding_birthday_title">Rappels d\'anniversaire</string>
-    <string name="onboarding_birthday_description_has_birthdays">Nous avons trouvé des contacts avec des anniversaires ! Souhaitez-vous recevoir des notifications le jour J ?</string>
-    <string name="onboarding_birthday_description_no_birthdays">Souhaitez-vous être averti des anniversaires de vos contacts ?</string>
-    <string name="onboarding_action_enable_notifications">Activer les notifications</string>
+    <string name="birthday_reminders_title">Rappels d\'anniversaire</string>
+    <string name="birthday_reminders_description">Recevez une notification lorsqu\'un contact a son anniversaire aujourd\'hui ou demain.</string>
     <string name="onboarding_action_not_now">Pas maintenant</string>
-    <string name="onboarding_action_keep_enabled">Garder activé</string>
-    <string name="onboarding_action_turn_off">Désactiver</string>
     <string name="onboarding_self_contact_title">Votre profil</string>
     <string name="onboarding_self_contact_description">Choisissez la fiche contact qui contient vos informations. Cela facilite le partage avec les autres.</string>
     <string name="onboarding_self_contact_empty_syncing">Vos contacts synchronisés apparaîtront ici sous peu. Une fois qu\'ils seront là, vous pourrez sélectionner le vôtre dans la liste.</string>

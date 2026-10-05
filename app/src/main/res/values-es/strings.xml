@@ -452,13 +452,9 @@
     <string name="onboarding_address_lookup_off_title">Desactivado</string>
     <string name="onboarding_address_lookup_off_description">Sin búsqueda al introducir direcciones</string>
     <string name="onboarding_action_continue">Continuar</string>
-    <string name="onboarding_birthday_title">Recordatorios de cumpleaños</string>
-    <string name="onboarding_birthday_description_has_birthdays">¡Encontramos contactos con cumpleaños! ¿Quieres recibir notificaciones en su día especial?</string>
-    <string name="onboarding_birthday_description_no_birthdays">¿Quieres recibir notificaciones cuando tus contactos cumplan años?</string>
-    <string name="onboarding_action_enable_notifications">Activar notificaciones</string>
+    <string name="birthday_reminders_title">Recordatorios de cumpleaños</string>
+    <string name="birthday_reminders_description">Recibe una notificación cuando un contacto cumpla años hoy o mañana.</string>
     <string name="onboarding_action_not_now">Ahora no</string>
-    <string name="onboarding_action_keep_enabled">Mantener activado</string>
-    <string name="onboarding_action_turn_off">Desactivar</string>
     <string name="onboarding_self_contact_title">Tu perfil</string>
     <string name="onboarding_self_contact_description">Elige la tarjeta de contacto que contenga tu información. Esto facilita compartir tus datos con otros.</string>
     <string name="onboarding_self_contact_empty_syncing">Tus contactos sincronizados aparecerán aquí en breve. Una vez que lo hagan, podrás seleccionar el tuyo de la lista.</string>

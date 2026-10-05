@@ -2,11 +2,6 @@
 
 package dev.benica.corvidcontacts.ui.onboarding
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,14 +44,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
@@ -74,6 +67,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.ContactAvatar
 import dev.benica.corvidcontacts.ui.contacts.contact_edit.ContactEditScreen
 import dev.benica.corvidcontacts.ui.settings.SettingsHeader
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
+import dev.benica.corvidcontacts.ui.settings.sections.BirthdayRemindersSection
 import dev.benica.corvidcontacts.ui.settings.sections.PhoneFormattingSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -96,7 +90,6 @@ fun OnboardingScreen(
     val hasServerConnection by viewModel.hasServerConnection.collectAsState()
     val isBackgroundSyncing by viewModel.isBackgroundSyncing.collectAsState()
     val contacts by viewModel.contacts.collectAsState()
-    val hasBirthdays by viewModel.hasBirthdays.collectAsState()
     val currentBirthdayNotificationsEnabled by viewModel.currentBirthdayNotificationsEnabled.collectAsState()
     val isMigratingLocalData by viewModel.isMigratingLocalData.collectAsState()
 
@@ -123,6 +116,7 @@ fun OnboardingScreen(
             OnboardingUiState.Setup -> SetupStep(
                 initialAlwaysAdd = alwaysAddCountryCode,
                 initialAddressMode = addressLookupMode,
+                initialBirthdayReminders = currentBirthdayNotificationsEnabled,
                 isSyncing = isBackgroundSyncing,
                 hasServerConnection = hasServerConnection,
                 onComplete = viewModel::saveSetupPreferences
@@ -135,12 +129,6 @@ fun OnboardingScreen(
                 isSubmitting = isMigratingLocalData,
                 hasServerConnection = hasServerConnection,
                 onSelection = viewModel::resolveLocalDataMigration
-            )
-
-            OnboardingUiState.BirthdayNotifications -> BirthdayNotificationsStep(
-                hasBirthdays = hasBirthdays,
-                currentlyEnabled = currentBirthdayNotificationsEnabled,
-                onSelection = viewModel::setBirthdayNotificationsEnabled
             )
 
             OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
@@ -197,7 +185,10 @@ private fun OnboardingStepFrame(
                             modifier = Modifier
                                 .widthIn(max = 600.dp)
                                 .fillMaxWidth()
-                                .padding(horizontal = Dimens.lgSpacing, vertical = Dimens.smSpacing),
+                                .padding(
+                                    horizontal = Dimens.lgSpacing,
+                                    vertical = Dimens.smSpacing
+                                ),
                             verticalArrangement = Arrangement.spacedBy(Dimens.xsSpacing),
                             content = actions
                         )
@@ -232,12 +223,20 @@ private fun OnboardingStepFrame(
 private fun SetupStep(
     initialAlwaysAdd: Boolean,
     initialAddressMode: AddressLookupMode,
+    initialBirthdayReminders: Boolean,
     isSyncing: Boolean,
     hasServerConnection: Boolean,
-    onComplete: (alwaysAddCountryCode: Boolean, addressLookupMode: AddressLookupMode) -> Unit,
+    onComplete: (
+        alwaysAddCountryCode: Boolean,
+        addressLookupMode: AddressLookupMode,
+        birthdayReminders: Boolean,
+    ) -> Unit,
 ) {
     var selectedAlwaysAdd by remember(initialAlwaysAdd) { mutableStateOf(initialAlwaysAdd) }
     var selectedAddressMode by remember(initialAddressMode) { mutableStateOf(initialAddressMode) }
+    var selectedBirthdayReminders by remember(initialBirthdayReminders) {
+        mutableStateOf(initialBirthdayReminders)
+    }
     val uriHandler = LocalUriHandler.current
 
     OnboardingStepFrame(
@@ -267,7 +266,13 @@ private fun SetupStep(
 
             CCButton(
                 text = R.string.onboarding_action_continue,
-                onClick = { onComplete(selectedAlwaysAdd, selectedAddressMode) },
+                onClick = {
+                    onComplete(
+                        selectedAlwaysAdd,
+                        selectedAddressMode,
+                        selectedBirthdayReminders
+                    )
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -280,6 +285,11 @@ private fun SetupStep(
             mode = selectedAddressMode,
             onModeSelected = { selectedAddressMode = it },
             uriHandler = uriHandler
+        )
+
+        BirthdayRemindersSection(
+            enabled = selectedBirthdayReminders,
+            onToggled = { selectedBirthdayReminders = it }
         )
     }
 }
@@ -470,69 +480,6 @@ private fun LocalDataMigrationStep(
 }
 
 @Composable
-private fun BirthdayNotificationsStep(
-    hasBirthdays: Boolean,
-    currentlyEnabled: Boolean,
-    onSelection: (Boolean) -> Unit,
-) {
-    val context = LocalContext.current
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        onSelection(isGranted)
-    }
-
-    // Ask "keep this on?" if notifications were already enabled and permission is granted.
-    val permissionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-    val alreadyEnabled = currentlyEnabled && permissionGranted
-
-    OnboardingStepFrame(
-        title = stringResource(R.string.onboarding_birthday_title),
-        description = stringResource(
-            if (hasBirthdays) R.string.onboarding_birthday_description_has_birthdays
-            else R.string.onboarding_birthday_description_no_birthdays
-        ),
-        actions = {
-            if (alreadyEnabled) {
-                CCButton(
-                    text = R.string.onboarding_action_keep_enabled,
-                    onClick = { onSelection(true) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                CCTextButton(
-                    text = R.string.onboarding_action_turn_off,
-                    onClick = { onSelection(false) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                CCButton(
-                    text = R.string.onboarding_action_enable_notifications,
-                    onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                        } else {
-                            onSelection(true)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                CCTextButton(
-                    text = R.string.onboarding_action_not_now,
-                    onClick = { onSelection(false) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    ) {}
-}
-
-@Composable
 private fun SelfContactSelectionStep(
     contacts: List<ContactWithAddressBook>,
     hasServerConnection: Boolean,
@@ -635,9 +582,10 @@ private fun SetupStepPreview() {
         SetupStep(
             initialAlwaysAdd = true,
             initialAddressMode = AddressLookupMode.PHOTON,
+            initialBirthdayReminders = false,
             isSyncing = true,
             hasServerConnection = true,
-            onComplete = { _, _ -> }
+            onComplete = { _, _, _ -> }
         )
     }
 }
@@ -669,18 +617,6 @@ private fun LocalDataMigrationStepPreview() {
     }
 }
 
-
-@PhonePreview
-@Composable
-private fun BirthdayNotificationsPreview() {
-    CorvidContactsTheme {
-        BirthdayNotificationsStep(
-            hasBirthdays = true,
-            currentlyEnabled = false,
-            onSelection = {}
-        )
-    }
-}
 
 @PhonePreview
 @Composable

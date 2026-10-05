@@ -73,6 +73,14 @@ class SettingsViewModel(
             false
         )
 
+    /** Whether daily birthday reminder notifications are on. */
+    val birthdayNotificationsEnabled: StateFlow<Boolean> = settingsRepository.birthdayNotificationsEnabled
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            false
+        )
+
     /** The user's preferred theme mode. */
     val themeMode: StateFlow<ThemeMode> = settingsRepository.themeMode
         .stateIn(
@@ -110,6 +118,13 @@ class SettingsViewModel(
             if (enabled) {
                 repository.downloadAllPendingRemotePhotos()
             }
+        }
+    }
+
+    /** Turns birthday reminders on or off (the caller has already obtained the notification permission). */
+    fun setBirthdayNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.saveBirthdayNotificationsEnabled(enabled)
         }
     }
 

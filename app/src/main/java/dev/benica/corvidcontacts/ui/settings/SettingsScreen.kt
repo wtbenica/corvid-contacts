@@ -59,6 +59,7 @@ import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsWritePermiss
 import dev.benica.corvidcontacts.ui.settings.sections.AddressBooksLinkSection
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.DataManagementSection
+import dev.benica.corvidcontacts.ui.settings.sections.BirthdayRemindersSection
 import dev.benica.corvidcontacts.ui.settings.sections.ExternalPhotosSection
 import dev.benica.corvidcontacts.ui.settings.sections.PhoneFormattingSection
 import dev.benica.corvidcontacts.ui.settings.sections.ThemeSection
@@ -83,6 +84,7 @@ fun SettingsScreen(
     val alwaysAddCountryCode by viewModel.alwaysAddCountryCode.collectAsState()
     val addressLookupMode by viewModel.addressLookupMode.collectAsState()
     val autoLoadRemotePhotos by viewModel.autoLoadRemotePhotos.collectAsState()
+    val birthdayNotificationsEnabled by viewModel.birthdayNotificationsEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val addressBooks by viewModel.addressBooks.collectAsState()
 
@@ -92,11 +94,13 @@ fun SettingsScreen(
         alwaysAddCountryCode = alwaysAddCountryCode,
         addressLookupMode = addressLookupMode,
         autoLoadRemotePhotos = autoLoadRemotePhotos,
+        birthdayNotificationsEnabled = birthdayNotificationsEnabled,
         themeMode = themeMode,
         addressBooks = addressBooks,
         onAlwaysAddCountryCodeToggled = { alwaysAdd -> viewModel.setAlwaysAddCountryCode(alwaysAdd) },
         onAddressLookupModeSelected = { mode -> viewModel.setAddressLookupMode(mode) },
         onAutoLoadRemotePhotosToggled = { autoLoad -> viewModel.setAutoLoadRemotePhotos(autoLoad) },
+        onBirthdayNotificationsToggled = { enabled -> viewModel.setBirthdayNotificationsEnabled(enabled) },
         onThemeModeSelected = { theme -> viewModel.setThemeMode(theme) },
         onLogout = { viewModel.logout() },
         onExport = { viewModel.getExportData() },
@@ -123,11 +127,13 @@ private fun SettingsScreen(
     alwaysAddCountryCode: Boolean,
     addressLookupMode: AddressLookupMode,
     autoLoadRemotePhotos: Boolean,
+    birthdayNotificationsEnabled: Boolean,
     themeMode: ThemeMode,
     addressBooks: List<AddressBookEntity>,
     onAlwaysAddCountryCodeToggled: (Boolean) -> Unit,
     onAddressLookupModeSelected: (AddressLookupMode) -> Unit,
     onAutoLoadRemotePhotosToggled: (Boolean) -> Unit,
+    onBirthdayNotificationsToggled: (Boolean) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onLogout: () -> Unit,
     onExport: suspend () -> String,
@@ -255,6 +261,11 @@ private fun SettingsScreen(
                 ExternalPhotosSection(
                     autoLoadRemotePhotos = autoLoadRemotePhotos,
                     onAutoLoadRemotePhotosToggled = onAutoLoadRemotePhotosToggled
+                )
+
+                BirthdayRemindersSection(
+                    enabled = birthdayNotificationsEnabled,
+                    onToggled = onBirthdayNotificationsToggled
                 )
 
                 AddressBooksLinkSection(
@@ -569,11 +580,13 @@ fun SettingsScreenPreview() {
             alwaysAddCountryCode = true,
             addressLookupMode = AddressLookupMode.PHOTON,
             autoLoadRemotePhotos = false,
+            birthdayNotificationsEnabled = false,
             themeMode = ThemeMode.SYSTEM,
             addressBooks = emptyList(),
             onAlwaysAddCountryCodeToggled = { },
             onAddressLookupModeSelected = {},
             onAutoLoadRemotePhotosToggled = {},
+            onBirthdayNotificationsToggled = {},
             onThemeModeSelected = {},
             onLogout = {},
             onExport = { "potato salad" },

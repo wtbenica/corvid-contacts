@@ -123,21 +123,10 @@ class OnboardingViewModel(
             AddressLookupMode.PHOTON
         )
 
-    /** Whether any synced contact has a birthday set, used to decide whether to offer the birthday-notifications step. */
-    val hasBirthdays: StateFlow<Boolean> = contacts
-        .map { list ->
-            list.any { it.contact.birthday != null }
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            false
-        )
-
     /**
-     * Whether birthday notifications are already enabled from a prior run of this flow - relevant
-     * when this screen is reached via "Redo Initial Setup" rather than a true first run, so the
-     * birthday-notifications step can frame itself as "keep this on?" instead of "enable it?".
+     * Whether birthday reminders are already enabled from a prior run of this flow - relevant when
+     * this screen is reached via "Redo Initial Setup" rather than a true first run, so the setup
+     * switch starts where the user left it.
      */
     val currentBirthdayNotificationsEnabled: StateFlow<Boolean> =
         settingsRepository.birthdayNotificationsEnabled
@@ -188,10 +177,12 @@ class OnboardingViewModel(
     fun saveSetupPreferences(
         alwaysAddCountryCode: Boolean,
         addressLookupMode: AddressLookupMode,
+        birthdayReminders: Boolean,
     ) {
         viewModelScope.launch {
             settingsRepository.saveAlwaysAddCountryCode(alwaysAddCountryCode)
             settingsRepository.saveAddressLookupMode(addressLookupMode)
+            settingsRepository.saveBirthdayNotificationsEnabled(birthdayReminders)
 
             advanceToMigrationOrWait()
         }
@@ -251,9 +242,7 @@ class OnboardingViewModel(
      */
     private suspend fun advancePastSync() {
         val selfContactSet = settingsRepository.selfContactId.first() != null
-        if (hasBirthdays.first()) {
-            _uiState.value = OnboardingUiState.BirthdayNotifications
-        } else if (!selfContactSet) {
+        if (!selfContactSet) {
             _uiState.value = OnboardingUiState.SelfContactSelection
         } else {
             completeOnboarding()
@@ -294,19 +283,6 @@ class OnboardingViewModel(
                 completeOnboarding()
             } else {
                 advanceToSyncJunction()
-            }
-        }
-    }
-
-    /** Saves the birthday-notifications opt-in (scheduling/canceling [BirthdayWorker][dev.benica.corvidcontacts.sync.BirthdayWorker] work) and advances to self-contact selection. */
-    fun setBirthdayNotificationsEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.saveBirthdayNotificationsEnabled(enabled)
-            val selfContactSet = settingsRepository.selfContactId.first() != null
-            if (!selfContactSet) {
-                _uiState.value = OnboardingUiState.SelfContactSelection
-            } else {
-                completeOnboarding()
             }
         }
     }
@@ -376,9 +352,6 @@ sealed class OnboardingUiState {
      * [ContactsRepository.getLocalAddressBooks][dev.benica.corvidcontacts.data.repository.ContactsRepository.getLocalAddressBooks]).
      */
     data class LocalDataMigration(val localBooks: List<AddressBookEntity>) : OnboardingUiState()
-
-    /** Prompting to opt in/out of birthday-reminder notifications. */
-    object BirthdayNotifications : OnboardingUiState()
 
     /** Prompting the user to pick their own contact card ("My Card"). */
     object SelfContactSelection : OnboardingUiState()

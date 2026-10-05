@@ -448,13 +448,9 @@
     <string name="onboarding_address_lookup_off_title">Off</string>
     <string name="onboarding_address_lookup_off_description">No lookup when entering addresses</string>
     <string name="onboarding_action_continue">Continue</string>
-    <string name="onboarding_birthday_title">Birthday Reminders</string>
-    <string name="onboarding_birthday_description_has_birthdays">We found contacts with birthdays! Would you like to receive notifications on their special day?</string>
-    <string name="onboarding_birthday_description_no_birthdays">Would you like to be notified when your contacts have birthdays?</string>
-    <string name="onboarding_action_enable_notifications">Enable Notifications</string>
+    <string name="birthday_reminders_title">Birthday Reminders</string>
+    <string name="birthday_reminders_description">Get a notification when a contact has a birthday today or tomorrow.</string>
     <string name="onboarding_action_not_now">Not Now</string>
-    <string name="onboarding_action_keep_enabled">Keep Enabled</string>
-    <string name="onboarding_action_turn_off">Turn Off</string>
     <string name="onboarding_self_contact_title">Your Profile</string>
     <string name="onboarding_self_contact_description">Choose the contact card that contains your info. This makes it easier to share with others.</string>
     <string name="onboarding_self_contact_empty_syncing">Your synced contacts will appear here shortly. Once they do, you can select yours from the list.</string>

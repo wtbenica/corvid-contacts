@@ -436,13 +436,9 @@
     <string name="onboarding_address_lookup_off_title">Aus</string>
     <string name="onboarding_address_lookup_off_description">Keine Suche bei der Adresseingabe</string>
     <string name="onboarding_action_continue">Weiter</string>
-    <string name="onboarding_birthday_title">Geburtstagserinnerungen</string>
-    <string name="onboarding_birthday_description_has_birthdays">Wir haben Kontakte mit Geburtstagen gefunden! Möchtest du an ihrem besonderen Tag benachrichtigt werden?</string>
-    <string name="onboarding_birthday_description_no_birthdays">Möchtest du benachrichtigt werden, wenn deine Kontakte Geburtstag haben?</string>
-    <string name="onboarding_action_enable_notifications">Benachrichtigungen aktivieren</string>
+    <string name="birthday_reminders_title">Geburtstagserinnerungen</string>
+    <string name="birthday_reminders_description">Erhalte eine Benachrichtigung, wenn ein Kontakt heute oder morgen Geburtstag hat.</string>
     <string name="onboarding_action_not_now">Nicht jetzt</string>
-    <string name="onboarding_action_keep_enabled">Aktiviert lassen</string>
-    <string name="onboarding_action_turn_off">Deaktivieren</string>
     <string name="onboarding_self_contact_title">Dein Profil</string>
     <string name="onboarding_self_contact_description">Wähle die Kontaktkarte mit deinen eigenen Informationen aus. Das erleichtert das Teilen mit anderen.</string>
     <string name="onboarding_self_contact_empty_syncing">Deine synchronisierten Kontakte werden in Kürze hier angezeigt. Sobald das passiert, kannst du deinen eigenen aus der Liste auswählen.</string>
