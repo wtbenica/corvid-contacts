@@ -2,6 +2,8 @@
 
 package dev.benica.corvidcontacts.ui.login
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,16 +33,13 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -62,6 +57,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.ui.contacts.common_ui.BackNavButton
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCBottomActionBar
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
@@ -91,8 +87,11 @@ fun LoginScreen(
     var fetchRemotePhotos by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
+    val busy = uiState is LoginUiState.Loading
+    val canSubmit = serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
+
     fun submit() {
-        if (serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()) {
+        if (canSubmit) {
             focusManager.clearFocus()
             onLogin(serverUrl, username, appPassword, fetchRemotePhotos)
         }
@@ -107,40 +106,28 @@ fun LoginScreen(
 
     CCScaffold(
         modifier = modifier,
+        // Pinned above the keyboard, so the button is still reachable after a password manager
+        // fills the fields and leaves the keyboard open.
         bottomBar = {
-            // Pinned above the keyboard instead of at the end of the scrolling content, so the
-            // button is still reachable after a password manager fills the fields and leaves the
-            // keyboard open. imePadding goes before navigationBarsPadding so the navigation bar
-            // isn't counted twice while the keyboard is showing.
-            Surface(color = MaterialTheme.colorScheme.surface) {
-                Box(
+            CCBottomActionBar(horizontalPadding = Dimens.innerSpacing) {
+                Button(
+                    onClick = { submit() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .imePadding()
-                        .navigationBarsPadding(),
-                    contentAlignment = Alignment.Center
+                        .heightIn(min = 52.dp),
+                    enabled = !busy && canSubmit
                 ) {
-                    Button(
-                        onClick = { submit() },
-                        modifier = Modifier
-                            .widthIn(max = 600.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = Dimens.innerSpacing, vertical = Dimens.smSpacing)
-                            .heightIn(min = 52.dp),
-                        enabled = uiState !is LoginUiState.Loading && serverUrl.isNotBlank() && username.isNotBlank() && appPassword.isNotBlank()
-                    ) {
-                        if (uiState is LoginUiState.Loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.login_button),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                        }
+                    if (busy) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.login_button),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                 }
             }
@@ -182,7 +169,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChange = { serverUrl = it },
                     readOnly = false,
-                    enabled = uiState !is LoginUiState.Loading,
+                    enabled = !busy,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Uri,
                         capitalization = KeyboardCapitalization.None,
@@ -232,7 +219,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .semantics { contentType = ContentType.Username },
                     singleLine = true,
-                    enabled = uiState !is LoginUiState.Loading,
+                    enabled = !busy,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
                         autoCorrectEnabled = false,
@@ -262,7 +249,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .semantics { contentType = ContentType.Password },
                     singleLine = true,
-                    enabled = uiState !is LoginUiState.Loading,
+                    enabled = !busy,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { submit() }),
                 )
@@ -293,7 +280,7 @@ fun LoginScreen(
                         Switch(
                             checked = fetchRemotePhotos,
                             onCheckedChange = { fetchRemotePhotos = it },
-                            enabled = uiState !is LoginUiState.Loading
+                            enabled = !busy
                         )
                     },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),

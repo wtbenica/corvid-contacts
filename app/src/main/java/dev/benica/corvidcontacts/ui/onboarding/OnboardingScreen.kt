@@ -2,14 +2,12 @@
 
 package dev.benica.corvidcontacts.ui.onboarding
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import dev.benica.corvidcontacts.ui.addressbooks.rememberContactsPermissionRequest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -45,10 +40,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,17 +53,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.extensions.surfaceVariant
-import dev.benica.corvidcontacts.ui.addressbooks.CONTACTS_PERMISSIONS
-import dev.benica.corvidcontacts.ui.addressbooks.grantedAllContacts
 import dev.benica.corvidcontacts.ui.addressbooks.rememberHasContactsPermission
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCBottomActionBar
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
@@ -190,31 +181,7 @@ private fun OnboardingStepFrame(
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
-        bottomBar = {
-            if (actions != null) {
-                Surface(color = MaterialTheme.colorScheme.surface) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .imePadding()
-                            .navigationBarsPadding(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .widthIn(max = 600.dp)
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = Dimens.lgSpacing,
-                                    vertical = Dimens.smSpacing
-                                ),
-                            verticalArrangement = Arrangement.spacedBy(Dimens.xsSpacing),
-                            content = actions
-                        )
-                    }
-                }
-            }
-        },
+        bottomBar = { if (actions != null) CCBottomActionBar(content = actions) },
     ) { padding ->
         CCWidthClampedBox(modifier = Modifier.padding(padding)) {
             Column(
@@ -523,26 +490,16 @@ private fun SystemContactsSharingStep(
         mutableStateOf(addressBooks.filter { it.shareWithSystem && hasPermission }.map { it.href }.toSet())
     }
     var permissionDenied by remember { mutableStateOf(false) }
-    // After a second denial (or "don't ask again") Android no longer shows the prompt, so the only
-    // way to allow it is the app's own settings.
-    var canAskAgain by remember { mutableStateOf(true) }
 
     fun needsPermission(books: Set<String>) = addressBooks.any {
         it.href in books && !(it.shareWithSystem && hasPermission)
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-        if (results.grantedAllContacts()) {
+    val permissionRequest = rememberContactsPermissionRequest { granted ->
+        if (granted) {
             onSave(selected)
         } else {
             permissionDenied = true
-            canAskAgain = context.findActivity()?.let { activity ->
-                CONTACTS_PERMISSIONS.any {
-                    ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
-                }
-            } ?: false
             // Back to a clean page: the books that needed the permission are off again.
             selected = addressBooks
                 .filter { it.href in selected && it.shareWithSystem && hasPermission }
@@ -560,7 +517,7 @@ private fun SystemContactsSharingStep(
                 text = R.string.onboarding_action_continue,
                 onClick = {
                     if (needsPermission(selected)) {
-                        permissionLauncher.launch(CONTACTS_PERMISSIONS)
+                        permissionRequest.launch()
                     } else {
                         onSave(selected)
                     }
@@ -586,7 +543,7 @@ private fun SystemContactsSharingStep(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
-                    if (!canAskAgain) {
+                    if (!permissionRequest.canAskAgain) {
                         CCTextButton(
                             text = R.string.onboarding_sharing_open_settings,
                             onClick = {
@@ -621,12 +578,6 @@ private fun SystemContactsSharingStep(
             )
         }
     }
-}
-
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }
 
 @Composable

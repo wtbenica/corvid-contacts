@@ -2,9 +2,9 @@
 
 package dev.benica.corvidcontacts.ui.addressbooks
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,11 +29,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -117,10 +115,7 @@ fun AddressBookSettingsScreen(
 
     val initiallyHasPermission = rememberHasContactsPermission()
     var hasPermission by remember { mutableStateOf(initiallyHasPermission) }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-        val granted = results.grantedAllContacts()
+    val permissionRequest = rememberContactsPermissionRequest { granted ->
         hasPermission = granted
         if (granted) onShareWithSystemChanged(book, true)
     }
@@ -308,7 +303,7 @@ fun AddressBookSettingsScreen(
             confirmButton = R.string.ok,
             onConfirm = {
                 showShareExplanation = false
-                permissionLauncher.launch(CONTACTS_PERMISSIONS)
+                permissionRequest.launch()
             },
             dismissButton = R.string.action_cancel,
         )
