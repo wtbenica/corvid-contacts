@@ -261,6 +261,11 @@ Agreed design (not built):
   vanished on the next sync. Fixed in `4495ece` (read through `LocalDate`, write real dates).
   Contacts edited in Corvid while their birthday was being dropped may have lost it on the
   server too. Also: a swallowed exception with a plausible fallback hid this for a long time.
+- **Social profiles (`0ae0ffb`):** Android deprecated the IM data kind with no replacement, so a
+  profile is now written as a Website row of type profile, using `SocialProfile.getWebFallback()`.
+  Verified on a device in Google Contacts: it shows as an ordinary website row (no brand icon, no
+  "profile" label) and opens the right account. Existing mirrored contacts with a social profile
+  are rewritten once after the upgrade.
 - Adding a field to the mirror (such as `starred`) changes every contact's hash, so the first
   run after an upgrade rewrites all mirrored contacts once. That is expected.
 - `RAW_CONTACT_IS_READ_ONLY` is not queryable as a column through `adb shell content query` on
