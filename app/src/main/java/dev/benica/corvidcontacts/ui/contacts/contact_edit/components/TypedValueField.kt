@@ -5,13 +5,9 @@ package dev.benica.corvidcontacts.ui.contacts.contact_edit.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoFixHigh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.flowOf
@@ -20,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,6 +38,7 @@ import dev.benica.corvidcontacts.data.model.VCardType
 import dev.benica.corvidcontacts.data.repository.AddressSuggestion
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCExposedDropdownMenuBox
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCOutlinedTextField
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -122,6 +118,17 @@ fun StructuredAddressField(
             onDelete = onDelete,
             onMoveUp = onMoveUp,
             onMoveDown = onMoveDown,
+            extraAction = if (geocoderRepository != null && lookupEnabled) {
+                {
+                    CCIconButton(
+                        icon = Icons.Outlined.AutoFixHigh,
+                        contentDescription = R.string.edit_action_fill_in_address,
+                        onClick = { showFillIn = true },
+                        modifier = Modifier.size(32.dp),
+                        enabled = enabled && address.toSingleLine().isNotBlank(),
+                    )
+                }
+            } else null,
         )
 
         CCExposedDropdownMenuBox(
@@ -229,17 +236,6 @@ fun StructuredAddressField(
                 ),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             )
-        }
-
-        if (geocoderRepository != null && lookupEnabled) {
-            TextButton(
-                onClick = { showFillIn = true },
-                enabled = enabled && address.toSingleLine().isNotBlank(),
-            ) {
-                Icon(Icons.Outlined.AutoFixHigh, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(Dimens.smSpacing))
-                Text(stringResource(R.string.edit_action_fill_in_address))
-            }
         }
     }
 

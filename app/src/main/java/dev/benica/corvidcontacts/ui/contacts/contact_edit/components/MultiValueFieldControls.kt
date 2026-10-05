@@ -57,7 +57,8 @@ import dev.benica.corvidcontacts.ui.theme.ThemePreview
  *
  * Move buttons are always shown, disabled rather than hidden at the list boundaries - a hidden
  * button gives no indication reordering is even possible; a visibly-disabled one does. Delete
- * asks for confirmation first, since it's a single tap with no undo.
+ * asks for confirmation first, since it's a single tap with no undo. A field can add one more
+ * button of its own, [extraAction], between the type selector and the move buttons.
  */
 @Composable
 fun TypedFieldControlsRow(
@@ -69,6 +70,7 @@ fun TypedFieldControlsRow(
     modifier: Modifier = Modifier,
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
+    extraAction: (@Composable () -> Unit)? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -96,6 +98,8 @@ fun TypedFieldControlsRow(
                 )
             }
         }
+
+        extraAction?.invoke()
 
         if (enabled) {
             CCIconButton(
