@@ -453,7 +453,7 @@
     <string name="onboarding_sharing_title">Show names in other apps</string>
     <string name="onboarding_sharing_permission_denied">Contacts permission was denied, so nothing was shared. Switch the books off to continue, or allow the permission to share them.</string>
     <string name="onboarding_sharing_open_settings">Open App Settings</string>
-    <string name="onboarding_sharing_description">Let Messages, your dialer and other apps show names and photos for your contacts. Choose which address books to share. Any app with contacts access can see what you share. You can change this at any time in each address book\'s settings.</string>
+    <string name="onboarding_sharing_description">Let Messages, your dialer and other apps show names and photos for your contacts. Choose which address books to share. Any app with contacts access can see what you share, and edits made there are saved back to Corvid. You can change this at any time in each address book\'s settings.</string>
     <string name="onboarding_self_contact_title">Your Profile</string>
     <string name="onboarding_self_contact_description">Choose the contact card that contains your info. This makes it easier to share with others.</string>
     <string name="onboarding_self_contact_empty_syncing">Your synced contacts will appear here shortly. Once they do, you can select yours from the list.</string>
@@ -497,7 +497,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Show names in other apps</string>
-    <string name="system_contacts_description">Copies this address book\'s contacts to this device\'s contacts, at the level you choose, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see what you share. Corvid doesn\'t send it to Google. This copy is read-only: edit contacts in Corvid.</string>
+    <string name="system_contacts_description">Copies this address book\'s contacts to this device\'s contacts, at the level you choose, so Messages and the dialer can show who is calling or texting. Any app with contacts access can then see what you share. Corvid doesn\'t send it to Google.\n\nEdits you make to these contacts in other apps are saved back to Corvid. Deleting one there only hides it from your phone\'s contacts; it stays in Corvid.\n\nAndroid will ask to let Corvid read and change your contacts. Corvid only reads the contacts it shares.</string>
     <string name="system_contacts_level_title">What to share</string>
     <string name="system_contacts_level_caller_id">Caller ID</string>
     <string name="system_contacts_level_caller_id_description">Name, phone numbers and photo</string>
@@ -511,7 +511,7 @@
     <string name="address_book_setting_visibility">Show in contact list</string>
     <string name="address_book_setting_visibility_description">Hidden books stay on your device but are left out of the contact list.</string>
     <string name="address_book_setting_share">Share with other apps</string>
-    <string name="address_book_setting_share_description">Lets apps like Messages and the dialer show names for these contacts.</string>
+    <string name="address_book_setting_share_description">Shows these contacts in your phone\'s contacts, so apps like Messages and the dialer can show names. Edits made there are saved back to Corvid.</string>
     <string name="settings_address_books_description">Appearance, visibility and sharing for each address book</string>
     <string name="system_contacts_add_account_unsupported">Share an address book from Corvid Contacts instead.</string>
     <string name="detail_hidden_from_system_title">Hidden from phone contacts</string>

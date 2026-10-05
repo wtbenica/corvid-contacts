@@ -14,10 +14,14 @@ on Google Play is a summary of the user-visible items below.
   calls and in other apps. It is off until you turn it on, and each book has a level: Caller ID
   (names, phone numbers and photos), Full contact (also emails, addresses, websites, social
   profile links, birthdays, company and title, nickname, relationships and groups) or Everything
-  (also notes). Favorites are starred, and unsharing the last book removes the account. It is
-  one-way: Corvid writes to the phone's contacts and never reads them, so edits made in other apps
-  are overwritten the next time that contact changes in Corvid. It needs the contacts permission,
-  which Corvid explains before asking.
+  (also notes). Favorites are starred, and unsharing the last book removes the account. It needs the
+  contacts permission (read and write), which Corvid explains before asking. Corvid reads only the
+  contacts it shares: edits you make to them in other apps, up to the level you chose (including a
+  new or removed photo), are saved back to the Corvid contact and sync to your server, and deleting
+  one there hides it from your phone's contacts instead of deleting it from Corvid or the server.
+- A contact hidden from your phone's contacts shows a notice you can dismiss, with Show again and
+  Delete from Corvid. Any contact in a shared book has Hide from / Show in phone contacts in its
+  menu, and the address book's page lists the contacts that are hidden.
 - An Address Books screen lists your books, and each book has its own settings page, including
   its sharing switch and level.
 - Setup has a sharing step with one switch per address book, so caller ID can work from the start.

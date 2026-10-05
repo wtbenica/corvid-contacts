@@ -170,22 +170,25 @@ no contacts permission; the provider deletes the account's contacts on its own, 
 later. Revoking the permission kills the app, so the cleanup runs the next time it starts. Verified
 on a device in both directions.
 
-### Step 5: privacy policy, settings copy, Play declaration
+### Step 5: privacy policy, settings copy, Play declaration (done 2026-10-05, except publishing)
 
-- `PRIVACY_POLICY.md` currently says data at rest is in app-private storage that other apps
-  cannot access. It needs an update covering the opt-in mirror: what is shared at each level,
-  that it is readable by any app with the contacts permission, that Corvid does not send it to
-  Google, and that a user can still copy a contact into a Google account from another app.
-- Review the settings copy in `res/values*/strings.xml` (`system_contacts_*` and
-  `address_book_setting_*` keys).
-- The Play Console side of `WRITE_CONTACTS`. Being a contacts app is the justification; the app
-  never reads the user's other contacts. Check whether Play has a declaration form for contacts
-  permissions at all (the forms are mainly for SMS and call log); it may only need an accurate
-  listing and the in-app explanation that already comes before the permission prompt.
-- Redo the Data safety review. The mirror stays on the device, so it should still not count as
-  collected, but other apps reading it is a grey area worth reading Play's definitions for.
-- CHANGELOG entry and release notes: written (2026-10-05). The sharing entry says "one-way" and
-  "never reads"; rewrite it when two-way sync lands.
+Written and committed in this repo: the in-app strings (`system_contacts_description`,
+`onboarding_sharing_description`, `address_book_setting_share_description`, all six locale files),
+`PRIVACY_POLICY.md`, the CHANGELOG, the release notes (nine locales, each within 500 characters),
+the store listing text and its translations, and `docs/play-console-1.0.5.md`.
+
+Written and committed on the website repo's branch `corvid-contacts-1.0.5-privacy` (not pushed, not on
+`main`): the privacy page and the data deletion page. Merge it to `main` when the 1.0.5 rollout
+starts, and set the "Last updated" date to that day (it says October 5, 2026 now).
+
+What is left, all of it Play Console or a decision:
+
+- Submit the `READ_CONTACTS` declaration (the app targets API 37, so Google's new policy applies);
+  draft answers are in `docs/play-console-1.0.5.md`.
+- Recheck Play's Data safety "share" definition when filling the form (no new answers expected).
+- Verify on a device, then add to the deletion page and policy if true: whether clearing the app's
+  data, or uninstalling the app, removes the "Corvid Contacts" account and its copy from the phone's
+  contacts. Neither claim is made yet.
 
 ### Smaller items
 

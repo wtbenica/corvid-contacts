@@ -15,6 +15,7 @@ FEATURES
 • Share contacts via vCard or QR code, with control over the details you choose
 • Link contacts as relationships (spouse, parent, etc.)
 • Optional birthday reminders, generated entirely on-device
+• Optionally share an address book with your phone's contacts, so Messages and your dialer show names and photos. Off by default, chosen per address book, and edits made there come back to Corvid
 • Dark mode
 Whether you want a simple private contacts app or a full CardDAV client synced to your own server, Corvid Contacts adapts to how much (or little) infrastructure you want to run.
 

@@ -202,13 +202,13 @@ without deleting it from Corvid or the server.
 - Google Contacts' device-contact backup targets account-less contacts, which
   is why a custom account type is required.
 - A user can still explicitly copy or move a contact into a Google account
-  from another app. The app cannot prevent that, and the settings text should
-  say so.
+  from another app. The app cannot prevent that, and the policy and settings text say so.
 - Once mirrored, the contacts are readable by any app the user has granted the
-  contacts permission. The settings text must say this plainly.
-- `PRIVACY_POLICY.md` currently says data at rest is in app-private storage
-  that other apps cannot access. This needs an update covering the opt-in
-  mirror, and the Play Console permissions declaration needs updating.
+  contacts permission. The settings text and the privacy policy say this plainly.
+- The privacy policy, the data deletion page, the in-app strings, the store listing and the release
+  notes were updated for the mirror and for reading edits back (2026-10-05). The website changes are
+  on a branch until the rollout. See `play-console-1.0.5.md` for the Play side: the new
+  `READ_CONTACTS` declaration (the app targets API 37, so it applies) and the Data safety reasoning.
 
 ## Field mapping by level
 

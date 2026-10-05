@@ -2,7 +2,7 @@
 
 # Corvid Contacts Privacy Policy
 
-*Last updated: September 19, 2026*
+*Last updated: October 5, 2026*
 
 This Privacy Policy describes how Corvid Contacts ("the app," "we," "us") handles your information. Corvid Contacts is developed by Wesley Benica (benica.dev). If you have questions, contact [privacy@benica.dev](mailto:privacy@benica.dev).
 
@@ -10,7 +10,10 @@ This Privacy Policy describes how Corvid Contacts ("the app," "we," "us") handle
 
 Corvid Contacts works fully offline, entirely on your device, with **no account or server
 required**. If you choose to, you can also sync your contacts with a CardDAV server you control
-(typically your own Nextcloud instance) - that's entirely optional. We do not operate that server,
+(typically your own Nextcloud instance) - that's entirely optional. From version 1.0.5 you can also,
+if you choose, share an address book with your phone's contacts, so that other apps on your device
+can show names and photos for them (see "Sharing with your phone's contacts," below); that stays on
+your device. We do not operate that server,
 we do not receive a copy of your contact data ourselves, and the app contains no
 analytics, no advertising, and no crash-reporting SDKs. The only outside parties that ever see
 anything are: the server you configure; Google Play, which periodically verifies this is a genuine,
@@ -25,10 +28,34 @@ download that one contact's photo manually - see "Contact photos," below.
 
 **Contact data.** Corvid Contacts stores the contact information you sync or enter, which may include names, phone numbers, email addresses, physical addresses, birthdays, notes, organization/job title, group memberships, photos, and related fields defined by the vCard/CardDAV standard. This data is:
 
-- Stored locally on your device, in the app's own database (not Android's shared system Contacts).
+- Stored locally on your device, in the app's own database. Unless you choose to share an address
+  book with your phone's contacts (see "Sharing with your phone's contacts," below), nothing is
+  placed in Android's shared system Contacts.
 - Sent to and received from the CardDAV server you configure in the app (e.g., your Nextcloud instance) over an encrypted (HTTPS) connection, so that server can keep your contacts in sync across your devices.
 
 We do not have access to this data. It is never sent to us or to any server we operate.
+
+**Sharing with your phone's contacts (version 1.0.5 and later).** You can choose to share an
+address book with the contacts on your phone, so that apps like Messages and the dialer can show
+names and photos for your contacts. This is off by default, and you turn it on for each address book
+separately. When you do:
+
+- Corvid places a copy of that book's contacts in Android's contacts storage on your device, under a
+  "Corvid Contacts" account. You choose how much is copied for each book: *Caller ID* (name, phone
+  numbers and photo), *Full contact* (also emails, addresses, websites, social profile links,
+  birthday, company and job title, nickname, relationships and groups), or *Everything* (also notes).
+- Any app on your device that you have allowed to access contacts can read that copy, and what it
+  does with it is governed by its own privacy policy. Corvid does not send the copy to Google or
+  anyone else, and does not add it to your Google account. An app such as Google Contacts may offer
+  to copy or move a contact into another account; if you do that, the new copy is handled by that
+  app.
+- To keep the copy in step, Corvid reads the contacts in its own account. Edits you make to them in
+  other apps are saved back to the contact in Corvid (and sync to your server, if you use one). A
+  contact you delete from your phone's contacts is hidden from them on that device; it is not deleted
+  from Corvid or from your server. Corvid does not read, copy or upload your other contacts.
+- This uses Android's contacts permission, which Corvid asks for only when you first share an address
+  book. You can switch sharing off for a book at any time, or take the permission away in Android
+  settings, and Corvid removes the copy from your phone's contacts.
 
 **Account/server credentials.** Your configured server address, username, and app password (or equivalent credential) are stored locally on your device using Android's secure app-private storage, solely to authenticate you to your own server. We do not receive or store these credentials ourselves.
 
@@ -83,17 +110,25 @@ The app requests only:
   a genuine Google Play install, and, if address lookup is enabled, to query Photon (Komoot) or
   Google Places.
 - **Notifications**, to show local reminders such as birthdays.
+- **Contacts (read and write)**, only for the optional sharing with your phone's contacts described
+  above. Corvid asks for it when you first share an address book. It writes the shared copy with
+  it, and reads back only the contacts in its own account, to pick up your edits and deletes. It
+  never reads your other contacts.
 
-The app never requests location, contacts, camera, or storage permissions.
+The app never requests location, camera, or storage permissions.
 
 ## Data security
 
-Contact data is transmitted to your configured server over HTTPS. Data at rest is stored in the app's private, sandboxed storage on your device, which other apps cannot access. Your server credentials are excluded from Android's automatic cloud backup. As with any software, we can't guarantee absolute security, and the overall security of your synced contacts also depends on the server you choose to connect to.
+Contact data is transmitted to your configured server over HTTPS. Data at rest is stored in the app's private, sandboxed storage on your device, which other apps cannot access. The one exception is a copy you choose to share with your phone's contacts: it is in Android's contacts storage, where apps you have allowed to access contacts can read it. Your server credentials are excluded from Android's automatic cloud backup. As with any software, we can't guarantee absolute security, and the overall security of your synced contacts also depends on the server you choose to connect to.
 
 ## Your control over your data
 
 - All of your contact data lives on your own device and your own server — you can export it (Settings → Export Contacts) or delete it at any time.
 - Uninstalling the app removes all locally stored data.
+- Turning off sharing for an address book removes its copy from your phone's contacts. You can also
+  take the contacts permission away in Android settings.
+- A contact you delete from your phone's contacts stays in Corvid, hidden from there, until you
+  choose to show it again or delete it in Corvid.
 - Logging out clears your stored server credentials from the device.
 - Because you control the CardDAV server, you control retention and deletion there as well, independent of this app.
 - Step-by-step instructions for deleting your data, on your device and elsewhere, are on the [data deletion page](https://benica.dev/projects/corvid-contacts/data-deletion).

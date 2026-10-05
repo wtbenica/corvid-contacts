@@ -427,7 +427,7 @@
     <string name="onboarding_sharing_title">다른 앱에 이름 표시</string>
     <string name="onboarding_sharing_permission_denied">연락처 권한이 거부되어 아무것도 공유되지 않았습니다. 계속하려면 주소록을 끄거나, 공유하려면 권한을 허용하세요.</string>
     <string name="onboarding_sharing_open_settings">앱 설정 열기</string>
-    <string name="onboarding_sharing_description">메시지 앱, 전화 앱 및 다른 앱이 연락처의 이름과 사진을 표시할 수 있게 합니다. 공유할 주소록을 선택하세요. 연락처 접근 권한이 있는 모든 앱이 공유한 정보를 볼 수 있습니다. 각 주소록의 설정에서 언제든지 변경할 수 있습니다.</string>
+    <string name="onboarding_sharing_description">메시지 앱, 전화 앱 및 다른 앱이 연락처의 이름과 사진을 표시할 수 있게 합니다. 공유할 주소록을 선택하세요. 연락처 접근 권한이 있는 모든 앱이 공유한 정보를 볼 수 있으며, 그곳에서 수정한 내용은 Corvid에 다시 저장됩니다. 각 주소록의 설정에서 언제든지 변경할 수 있습니다.</string>
     <string name="onboarding_self_contact_title">내 프로필</string>
     <string name="onboarding_self_contact_description">본인의 정보가 담긴 연락처 카드를 선택하세요. 다른 사람과 공유하기가 더 쉬워집니다.</string>
     <string name="onboarding_self_contact_empty_syncing">동기화된 연락처가 곧 여기에 표시됩니다. 표시되면 목록에서 본인의 연락처를 선택할 수 있습니다.</string>
@@ -471,7 +471,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">다른 앱에 이름 표시</string>
-    <string name="system_contacts_description">이 주소록의 연락처를 선택한 수준으로 이 기기의 연락처에 복사하여 메시지 앱과 전화 앱에서 누가 전화하거나 문자를 보냈는지 표시할 수 있게 합니다. 연락처 접근 권한이 있는 모든 앱이 공유한 정보를 볼 수 있습니다. Corvid는 이 정보를 Google로 보내지 않습니다. 이 사본은 읽기 전용이므로 연락처는 Corvid에서 편집하세요.</string>
+    <string name="system_contacts_description">이 주소록의 연락처를 선택한 수준으로 이 기기의 연락처에 복사하여 메시지 앱과 전화 앱에서 누가 전화하거나 문자를 보냈는지 표시할 수 있게 합니다. 연락처 접근 권한이 있는 모든 앱이 공유한 정보를 볼 수 있습니다. Corvid는 이 정보를 Google로 보내지 않습니다.\n\n다른 앱에서 이 연락처를 수정하면 변경 내용이 Corvid에 다시 저장됩니다. 그곳에서 연락처를 삭제하면 휴대전화 연락처에서만 숨겨지며 Corvid에는 그대로 남습니다.\n\nAndroid가 Corvid의 연락처 읽기 및 수정 권한을 요청합니다. Corvid는 공유한 연락처만 읽습니다.</string>
     <string name="system_contacts_level_title">공유할 내용</string>
     <string name="system_contacts_level_caller_id">발신자 표시</string>
     <string name="system_contacts_level_caller_id_description">이름, 전화번호, 사진</string>
@@ -485,7 +485,7 @@
     <string name="address_book_setting_visibility">연락처 목록에 표시</string>
     <string name="address_book_setting_visibility_description">숨긴 주소록은 기기에 남아 있지만 연락처 목록에는 표시되지 않습니다.</string>
     <string name="address_book_setting_share">다른 앱과 공유</string>
-    <string name="address_book_setting_share_description">메시지 앱과 전화 앱 같은 앱이 이 연락처의 이름을 표시할 수 있게 합니다.</string>
+    <string name="address_book_setting_share_description">이 연락처를 휴대전화 연락처에 표시하여 메시지 앱과 전화 앱 같은 앱이 이름을 표시할 수 있게 합니다. 그곳에서 수정한 내용은 Corvid에 다시 저장됩니다.</string>
     <string name="settings_address_books_description">각 주소록의 모양, 표시 여부, 공유 설정</string>
     <string name="system_contacts_add_account_unsupported">대신 Corvid Contacts에서 주소록을 공유하세요.</string>
     <string name="detail_hidden_from_system_title">휴대전화 연락처에서 숨김</string>

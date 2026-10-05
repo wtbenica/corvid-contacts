@@ -23,6 +23,7 @@ FUNCIONES
 • Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
 • Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
 • Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Comparte opcionalmente una libreta con los contactos del teléfono para que Mensajes y el teléfono muestren nombres y fotos. Desactivado por defecto, se elige por libreta, y las ediciones hechas allí vuelven a Corvid
 • Modo oscuro
 
 Ya sea que quieras una app de contactos simple y privada o un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la cantidad de infraestructura que quieras mantener.
@@ -54,6 +55,7 @@ FUNCIONES
 • Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
 • Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
 • Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Comparte opcionalmente una libreta con los contactos del teléfono para que Mensajes y el teléfono muestren nombres y fotos. Desactivado por defecto, se elige por libreta, y las ediciones hechas allí vuelven a Corvid
 • Modo oscuro
 
 Tanto si quieres una aplicación de contactos sencilla y privada como un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la infraestructura que quieras mantener, sea mucha o poca.
@@ -85,6 +87,7 @@ FUNCIONES
 • Comparte contactos mediante vCard o código QR, eligiendo qué datos incluir
 • Vincula contactos como relaciones (cónyuge, padre/madre, etc.)
 • Recordatorios de cumpleaños opcionales, generados totalmente en el dispositivo
+• Comparte opcionalmente una libreta con los contactos del teléfono para que Mensajes y el teléfono muestren nombres y fotos. Desactivado por defecto, se elige por libreta, y las ediciones hechas allí vuelven a Corvid
 • Modo oscuro
 
 Ya sea que quieras una app de contactos simple y privada o un cliente CardDAV completo sincronizado con tu propio servidor, Corvid Contacts se adapta a la cantidad de infraestructura que quieras mantener.
@@ -116,6 +119,7 @@ FONCTIONNALITÉS
 • Partagez vos contacts via vCard ou code QR, en choisissant les informations incluses
 • Associez des contacts entre eux (conjoint, parent, etc.)
 • Rappels d'anniversaire facultatifs, générés entièrement sur l'appareil
+• Partagez en option un carnet d'adresses avec les contacts du téléphone pour que Messages et le téléphone affichent noms et photos. Désactivé par défaut, au choix pour chaque carnet, et les modifications faites là-bas reviennent dans Corvid
 • Mode sombre
 
 Que vous souhaitiez une application de contacts simple et privée ou un client CardDAV complet synchronisé avec votre propre serveur, Corvid Contacts s'adapte à l'infrastructure que vous voulez gérer, quelle que soit son ampleur.
@@ -147,6 +151,7 @@ FONCTIONNALITÉS
 • Partagez vos contacts via vCard ou code QR, en choisissant les informations incluses
 • Associez des contacts entre eux (conjoint, parent, etc.)
 • Rappels d'anniversaire facultatifs, générés entièrement sur l'appareil
+• Partagez en option un carnet d'adresses avec les contacts du téléphone pour que Messages et le téléphone affichent noms et photos. Désactivé par défaut, au choix pour chaque carnet, et les modifications faites là-bas reviennent dans Corvid
 • Mode sombre
 
 Que vous cherchiez une application de contacts simple et privée ou un client CardDAV complet synchronisé avec votre propre serveur, Corvid Contacts s'adapte à l'infrastructure que vous voulez gérer, peu importe son ampleur.
@@ -178,6 +183,7 @@ FUNKTIONEN
 • Kontakte per vCard oder QR-Code teilen, mit voller Kontrolle über die geteilten Angaben
 • Kontakte als Beziehungen verknüpfen (Ehepartner, Elternteil usw.)
 • Optionale Geburtstagserinnerungen, vollständig auf dem Gerät erstellt
+• Optional ein Adressbuch mit den Telefonkontakten teilen, damit Nachrichten und die Telefon-App Namen und Fotos anzeigen. Standardmäßig aus, pro Adressbuch wählbar, und dort vorgenommene Änderungen kommen zurück in Corvid
 • Dunkelmodus
 
 Ob du eine einfache, private Kontakte-App suchst oder einen vollwertigen CardDAV-Client mit eigenem Server — Corvid Contacts passt sich der Infrastruktur an, die du betreiben möchtest, ob viel oder wenig.
@@ -209,6 +215,7 @@ FUNCTIES
 • Deel contacten via vCard of QR-code, met controle over welke gegevens je deelt
 • Koppel contacten als relaties (partner, ouder, enz.)
 • Optionele verjaardagsherinneringen, volledig op het apparaat gegenereerd
+• Deel optioneel een adresboek met de contacten van je telefoon, zodat Berichten en de telefoon-app namen en foto's tonen. Standaard uit, per adresboek te kiezen, en wijzigingen daar komen terug in Corvid
 • Donkere modus
 
 Of je nu een eenvoudige, privé contacten-app wilt of een volwaardige CardDAV-client gesynchroniseerd met je eigen server: Corvid Contacts past zich aan de hoeveelheid infrastructuur aan die je wilt beheren.
@@ -240,6 +247,7 @@ Corvid Contacts는 기기에서 완전히 작동하는 연락처 관리 앱입�
 • vCard 또는 QR 코드로 연락처 공유, 포함할 항목을 직접 선택
 • 연락처를 관계로 연결(배우자, 부모 등)
 • 기기에서만 생성되는 선택적 생일 알림
+• 주소록을 휴대전화 연락처와 선택적으로 공유하여 메시지 앱과 전화 앱에서 이름과 사진을 표시합니다. 기본값은 꺼짐이며 주소록마다 선택하고, 그곳에서 수정한 내용은 Corvid에 다시 저장됩니다
 • 다크 모드
 
 간단하고 프라이빗한 연락처 앱을 원하든, 직접 운영하는 서버와 동기화되는 완전한 CardDAV 클라이언트를 원하든, Corvid Contacts는 사용자가 원하는 만큼의 인프라에 맞춰 사용할 수 있습니다.

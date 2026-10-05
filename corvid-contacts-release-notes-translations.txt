@@ -1,61 +1,61 @@
 <en-US>
-New: share an address book with your phone's contacts so names and photos appear for calls and in other apps. It's off until you turn it on for each book.
+New: share an address book with your phone's contacts so names and photos appear for calls and in other apps. It's off until you turn it on for each book, and edits made there come back to Corvid.
 A simpler welcome, sign-in and setup.
 Birthday reminders are now a simple switch.
 Birthdays now sync correctly.
-You can now pick an icon when creating an address book, and choose the book when importing contacts.
+Pick an icon when creating an address book, and the book when importing contacts.
 </en-US>
 <es-419>
-Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta, y las ediciones hechas allí vuelven a Corvid.
 Bienvenida, inicio de sesión y configuración más sencillos.
 Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
-Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
+Elige un icono al crear una libreta y la libreta al importar contactos.
 </es-419>
 <es-ES>
-Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta, y las ediciones hechas allí vuelven a Corvid.
 Bienvenida, inicio de sesión y configuración más sencillos.
 Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
-Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
+Elige un icono al crear una libreta y la libreta al importar contactos.
 </es-ES>
 <es-US>
-Nuevo: comparte una libreta de direcciones con los contactos del teléfono para que los nombres y las fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta.
+Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos aparezcan en las llamadas y en otras apps. Está desactivado hasta que lo actives en cada libreta, y las ediciones hechas allí vuelven a Corvid.
 Bienvenida, inicio de sesión y configuración más sencillos.
 Los recordatorios de cumpleaños ahora son un interruptor.
 Los cumpleaños ahora se sincronizan correctamente.
-Ahora puedes elegir un icono al crear una libreta y la libreta de destino al importar contactos.
+Elige un icono al crear una libreta y la libreta al importar contactos.
 </es-US>
 <fr-FR>
-Nouveau : partagez un carnet d'adresses avec les contacts du téléphone pour que noms et photos s'affichent lors des appels et dans d'autres applications. Désactivé tant que vous ne l'activez pas, carnet par carnet.
+Nouveau : partagez un carnet avec les contacts du téléphone pour afficher noms et photos lors des appels et dans d'autres applis. Désactivé tant que vous ne l'activez pas, carnet par carnet ; les modifications faites là-bas reviennent dans Corvid.
 Accueil, connexion et configuration simplifiés.
 Les rappels d'anniversaire sont désormais un simple interrupteur.
 Les anniversaires se synchronisent désormais correctement.
 Choisissez une icône à la création d'un carnet, et le carnet à l'importation.
 </fr-FR>
 <fr-CA>
-Nouveau : partagez un carnet d'adresses avec les contacts du téléphone pour que noms et photos s'affichent lors des appels et dans d'autres applications. Désactivé tant que vous ne l'activez pas, carnet par carnet.
+Nouveau : partagez un carnet avec les contacts du téléphone pour afficher noms et photos lors des appels et dans d'autres applis. Désactivé tant que vous ne l'activez pas, carnet par carnet ; les modifications faites là-bas reviennent dans Corvid.
 Accueil, connexion et configuration simplifiés.
 Les rappels d'anniversaire sont désormais un simple interrupteur.
 Les anniversaires se synchronisent désormais correctement.
 Choisissez une icône à la création d'un carnet, et le carnet à l'importation.
 </fr-CA>
 <de-DE>
-Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit Namen und Fotos bei Anrufen und in anderen Apps erscheinen. Standardmäßig aus, einzeln für jedes Adressbuch einschaltbar.
+Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit Namen und Fotos bei Anrufen und in anderen Apps erscheinen. Standardmäßig aus, pro Adressbuch einschaltbar; dort vorgenommene Änderungen kommen zurück in Corvid.
 Einfacherer Willkommensbildschirm, einfachere Anmeldung und Einrichtung.
 Geburtstagserinnerungen sind jetzt ein einfacher Schalter.
 Geburtstage werden jetzt korrekt synchronisiert.
-Beim Erstellen eines Adressbuchs kannst du ein Symbol wählen, beim Importieren das Adressbuch.
+Beim Erstellen eines Adressbuchs ein Symbol wählen, beim Importieren das Adressbuch.
 </de-DE>
 <nl-NL>
-Nieuw: deel een adresboek met de contacten van je telefoon, zodat namen en foto's verschijnen bij gesprekken en in andere apps. Standaard uit; je zet het per adresboek aan.
+Nieuw: deel een adresboek met de contacten van je telefoon, zodat namen en foto's verschijnen bij gesprekken en in andere apps. Standaard uit; je zet het per adresboek aan, en wijzigingen daar komen terug in Corvid.
 Eenvoudiger welkomstscherm, aanmelden en instellen.
 Verjaardagsherinneringen zijn nu een eenvoudige schakelaar.
 Verjaardagen worden nu correct gesynchroniseerd.
 Bij het aanmaken van een adresboek kies je een pictogram, bij het importeren het adresboek.
 </nl-NL>
 <ko-KR>
-새 기능: 주소록을 휴대전화 연락처와 공유하면 통화와 다른 앱에서 이름과 사진이 표시됩니다. 기본값은 꺼짐이며 주소록마다 직접 켭니다.
+새 기능: 주소록을 휴대전화 연락처와 공유하면 통화와 다른 앱에서 이름과 사진이 표시됩니다. 기본값은 꺼짐이며 주소록마다 직접 켜고, 그곳에서 수정한 내용은 Corvid에 다시 저장됩니다.
 더 간단해진 시작 화면, 로그인, 설정.
 생일 알림이 이제 간단한 스위치로 바뀌었습니다.
 생일이 이제 올바르게 동기화됩니다.
