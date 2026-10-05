@@ -648,7 +648,7 @@ fun ContactEditScreen(
                 )
             }
         val addrList = structuredAddresses
-            .map { it.value }
+            .map { it.value.cleaned() }
             .filter { !it.isBlank() }
         val categoriesList = categories + hiddenCategories
 

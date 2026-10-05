@@ -66,39 +66,31 @@ data class StructuredAddress(
             poBox.isNullOrBlank() &&
             extended.isNullOrBlank()
 
+    /** This address with blank parts as `null`, so a cleared field doesn't leave an empty one behind. */
+    fun cleaned(): StructuredAddress = copy(
+        street = street.cleaned(),
+        city = city.cleaned(),
+        state = state.cleaned(),
+        postalCode = postalCode.cleaned(),
+        country = country.cleaned(),
+        poBox = poBox.cleaned(),
+        extended = extended.cleaned(),
+    )
+
     /**
      * Returns a single-line string for simplified searching/legacy support.
      */
-    fun toSingleLine(): String {
-        return listOfNotNull(
-            street,
-            city,
-            state,
-            postalCode,
-            country
-        ).joinToString(", ")
-    }
+    fun toSingleLine(): String = joinParts(", ", street, city, state, postalCode, country).orEmpty()
 
-    override fun itemDisplay(): String {
-        val line1 = listOfNotNull(
-            poBox,
-            extended,
-            street
-        )
-            .joinToString(", ")
-            .ifBlank { null }
-        val line2 = listOfNotNull(
-            city,
-            state,
-            postalCode
-        )
-            .joinToString(", ")
-            .ifBlank { null }
-        val line3 = country?.ifBlank { null }
-        return listOfNotNull(
-            line1,
-            line2,
-            line3
-        ).joinToString("\n")
-    }
+    override fun itemDisplay(): String = listOfNotNull(
+        joinParts(", ", poBox, extended, street),
+        joinParts(", ", city, state, postalCode),
+        country?.trim()?.ifBlank { null },
+    ).joinToString("\n")
+
+    /** The parts that aren't blank, joined, or `null` if there are none; blank ones add no separator. */
+    private fun joinParts(separator: String, vararg parts: String?): String? =
+        parts.filter { !it.isNullOrBlank() }.joinToString(separator) { it!!.trim() }.ifBlank { null }
+
+    private fun String?.cleaned(): String? = this?.trim()?.ifBlank { null }
 }
