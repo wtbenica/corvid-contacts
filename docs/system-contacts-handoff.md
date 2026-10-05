@@ -280,8 +280,8 @@ Agreed design (not built):
   `./gradlew --stop` and rebuilding fixed it.
 - **Gradle is 9.8.0 and several dependencies moved** (androidx core-ktx 1.19.1, navigation3 1.2.0,
   work 2.12.0, libphonenumber 9.0.40, **Places SDK 5.3.0 to 6.0.2**). The first build on a machine
-  downloads Gradle 9.8.0. Places 6 is a major version: it compiles and the tests pass, but Google
-  Places address lookup (the opt-in mode) has not been tried on a device since the bump.
+  downloads Gradle 9.8.0. Places 6 is a major version; the user tried Google Places address lookup
+  on a device after the bump and it works as before.
 - **Room schema is not exported** (`exportSchema = false`) and there is no fallback
   migration, so every schema change needs a hand-written migration and a case in
   `AppDatabaseMigrationTest`.

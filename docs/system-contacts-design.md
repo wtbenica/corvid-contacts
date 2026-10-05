@@ -249,7 +249,7 @@ device test.
 | Photo | yes | yes | yes |
 | Name parts (middle, prefix, suffix) | no | yes | yes |
 | Emails, postal addresses, websites | no | yes | yes |
-| Social profiles (custom-protocol IM rows) | no | yes | yes |
+| Social profiles (website links of type profile) | no | yes | yes |
 | Birthday | no | yes | yes |
 | Company and job title | no | yes | yes |
 | Nickname | no | yes | yes |
