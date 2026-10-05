@@ -31,9 +31,6 @@ data class MirrorAddress(
     val type: Int,
 )
 
-/** A social profile, written as a custom-protocol instant messaging row. */
-data class MirrorSocial(val handle: String, val network: String?)
-
 /** A relationship. [type] is a `Relation.TYPE_*` value; [label] is used when it is custom. */
 data class MirrorRelation(val name: String, val type: Int, val label: String?)
 
@@ -59,7 +56,7 @@ data class MirrorContact(
     val emails: List<MirrorEmail> = emptyList(),
     val addresses: List<MirrorAddress> = emptyList(),
     val websites: List<String> = emptyList(),
-    val socials: List<MirrorSocial> = emptyList(),
+    val profileLinks: List<String> = emptyList(),
     val relations: List<MirrorRelation> = emptyList(),
     val birthday: String? = null,
     val organization: MirrorOrganization? = null,
@@ -88,7 +85,7 @@ data class MirrorContact(
             emails,
             addresses,
             websites,
-            socials,
+            profileLinks,
             relations,
             birthday,
             organization,
@@ -185,6 +182,7 @@ data class MirrorPlan(
             )
             if (!level.includesFullContact) return base
 
+            val websites = source.websites.orEmpty().mapNotNull { it.clean() }
             val full = base.copy(
                 middleName = source.middleName.clean(),
                 prefix = source.prefix.clean(),
@@ -208,11 +206,13 @@ data class MirrorPlan(
                             type = addressType(it.type),
                         )
                     },
-                websites = source.websites.orEmpty().mapNotNull { it.clean() },
-                socials = source.socialProfiles
+                websites = websites,
+                profileLinks = source.socialProfiles
                     .orEmpty()
                     .filter { it.value.isNotBlank() }
-                    .map { MirrorSocial(it.value.trim(), it.type.clean()) },
+                    .map { it.copy(value = it.value.trim()).getWebFallback() }
+                    .distinct()
+                    .filter { it !in websites },
                 // A relationship stored as a contact UID has no name to show, so it is left out.
                 relations = source.relationships
                     .orEmpty()

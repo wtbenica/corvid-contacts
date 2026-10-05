@@ -34,6 +34,8 @@ class MirrorPlanTest {
         birthday: String? = "1815-12-10",
         notes: String? = "Door code 1234",
         categories: List<String>? = listOf("Family", "Archived"),
+        websites: List<String> = listOf("https://example.org"),
+        socialProfiles: List<SocialProfile> = listOf(SocialProfile("@ada", "MASTODON")),
     ) = MirrorSource(
         id = id,
         displayName = displayName,
@@ -45,8 +47,8 @@ class MirrorPlanTest {
         phones = phones,
         emails = emails,
         structuredAddresses = addresses,
-        websites = listOf("https://example.org"),
-        socialProfiles = listOf(SocialProfile("@ada", "MASTODON")),
+        websites = websites,
+        socialProfiles = socialProfiles,
         relationships = listOf(
             Relationship("SPOUSE", "William King"),
             Relationship("FRIEND", "some-uid", isUid = true)
@@ -167,7 +169,7 @@ class MirrorPlanTest {
         val contact = mirrored(source(hasPhoto = true), photoStamp = "p")
         assertTrue(contact.emails.isEmpty())
         assertTrue(contact.addresses.isEmpty())
-        assertTrue(contact.websites.isEmpty() && contact.socials.isEmpty() && contact.relations.isEmpty())
+        assertTrue(contact.websites.isEmpty() && contact.profileLinks.isEmpty() && contact.relations.isEmpty())
         assertNull(contact.birthday)
         assertNull(contact.organization)
         assertNull(contact.nickname)
@@ -184,7 +186,7 @@ class MirrorPlanTest {
         assertEquals("1 Main St", contact.addresses.single().street)
         assertEquals(MirrorPlan.POSTAL_TYPE_HOME, contact.addresses.single().type)
         assertEquals(listOf("https://example.org"), contact.websites)
-        assertEquals(listOf(MirrorSocial("@ada", "MASTODON")), contact.socials)
+        assertEquals(listOf("https://mastodon.social/@ada"), contact.profileLinks)
         assertEquals("1815-12-10", contact.birthday)
         assertEquals(MirrorOrganization("Analytical Engines", "Programmer"), contact.organization)
         assertEquals("Ada", contact.nickname)
@@ -307,6 +309,44 @@ class MirrorPlanTest {
 
         assertTrue(contacts.single().emails.isEmpty())
         assertNull(contacts.single().note)
+    }
+
+    @Test
+    fun `social profiles become profile links for known services and pass real urls through`() {
+        val contact = mirrored(
+            source(
+                socialProfiles = listOf(
+                    SocialProfile("ada", "TWITTER"),
+                    SocialProfile("ada_l", "INSTAGRAM"),
+                    SocialProfile("https://example.com/ada", "OTHER"),
+                    SocialProfile("  ", "TWITTER"),
+                )
+            ),
+            level = SystemContactsLevel.FULL
+        )
+
+        assertEquals(
+            listOf(
+                "https://twitter.com/ada",
+                "https://instagram.com/ada_l",
+                "https://example.com/ada",
+            ),
+            contact.profileLinks
+        )
+    }
+
+    @Test
+    fun `a profile link that is already one of the websites is not written twice`() {
+        val contact = mirrored(
+            source(
+                websites = listOf("https://twitter.com/ada"),
+                socialProfiles = listOf(SocialProfile("ada", "TWITTER"), SocialProfile("ada", "TWITTER"))
+            ),
+            level = SystemContactsLevel.FULL
+        )
+
+        assertEquals(listOf("https://twitter.com/ada"), contact.websites)
+        assertTrue(contact.profileLinks.isEmpty())
     }
 }
 

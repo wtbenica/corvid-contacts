@@ -25,7 +25,6 @@ import android.provider.ContactsContract.CommonDataKinds.Website
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Event
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
-import android.provider.ContactsContract.CommonDataKinds.Im
 import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.provider.ContactsContract.CommonDataKinds.Note
 import android.provider.ContactsContract.CommonDataKinds.Organization
@@ -399,12 +398,10 @@ class SystemContactsMirror(
                 withValue(Website.TYPE, Website.TYPE_OTHER)
             }
         }
-        contact.socials.forEach { social ->
-            row(Im.CONTENT_ITEM_TYPE) {
-                withValue(Im.DATA, social.handle)
-                withValue(Im.PROTOCOL, Im.PROTOCOL_CUSTOM)
-                withValue(Im.CUSTOM_PROTOCOL, social.network)
-                withValue(Im.TYPE, Im.TYPE_OTHER)
+        contact.profileLinks.forEach { url ->
+            row(Website.CONTENT_ITEM_TYPE) {
+                withValue(Website.URL, url)
+                withValue(Website.TYPE, Website.TYPE_PROFILE)
             }
         }
         contact.relations.forEach { relation ->
