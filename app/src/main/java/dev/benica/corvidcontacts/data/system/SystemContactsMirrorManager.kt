@@ -39,18 +39,33 @@ class SystemContactsMirrorManager(
     /** Bumped whenever the system contacts change, so edits made in other apps are looked for. */
     private val systemChanges = MutableStateFlow(0)
 
+    private var observing = false
+
+    /**
+     * Starts watching the system contacts for edits made in other apps. Registering needs a contacts
+     * permission, so this waits until one is held; the app must still start without any.
+     */
+    private fun observeSystemContacts() {
+        if (observing) return
+        try {
+            // Also fires for the mirror's own writes; the reconcile that follows finds nothing to do.
+            context.contentResolver.registerContentObserver(
+                ContactsContract.RawContacts.CONTENT_URI,
+                true,
+                object : ContentObserver(Handler(Looper.getMainLooper())) {
+                    override fun onChange(selfChange: Boolean) {
+                        systemChanges.update { it + 1 }
+                    }
+                }
+            )
+            observing = true
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Can't watch the system contacts without the contacts permission", e)
+        }
+    }
+
     @OptIn(FlowPreview::class)
     fun start(scope: CoroutineScope) {
-        // Also fires for the mirror's own writes; the reconcile that follows finds nothing to do.
-        context.contentResolver.registerContentObserver(
-            ContactsContract.RawContacts.CONTENT_URI,
-            true,
-            object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean) {
-                    systemChanges.update { it + 1 }
-                }
-            }
-        )
         scope.launch {
             combine(
                 dao.observeSharedBooks(),
@@ -74,10 +89,13 @@ class SystemContactsMirrorManager(
                             // copy behind. The sharing flags are kept, so granting the permission
                             // again brings the mirror back on the next reconcile.
                             snapshot.books.isEmpty() || !mirror.hasPermission() -> mirror.removeAll()
-                            else -> mirror.reconcile(
-                                snapshot.books,
-                                snapshot.sources
-                            )
+                            else -> {
+                                observeSystemContacts()
+                                mirror.reconcile(
+                                    snapshot.books,
+                                    snapshot.sources
+                                )
+                            }
                         }
                     } catch (e: CancellationException) {
                         throw e

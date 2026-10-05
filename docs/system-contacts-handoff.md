@@ -339,6 +339,12 @@ accurate before and after.
 - `RAW_CONTACT_IS_READ_ONLY` is not queryable as a column through `adb shell content query` on
   `raw_contacts` or `data`.
 
+- **Registering a `ContentObserver` on the contacts provider needs a contacts permission.** It threw
+  a `SecurityException` in `Application.onCreate`, so the app crashed on every launch without the
+  permission (for example after clearing app data). The manager now registers it only once a
+  reconcile runs with both permissions held. Test a fresh install and a data clear, not just an
+  update.
+
 ## Environment notes
 
 - **Places API key.** `local.properties` is gitignored. Without `GOOGLE_PLACES_API_KEY` in it
