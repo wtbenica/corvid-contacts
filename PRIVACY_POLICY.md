@@ -124,9 +124,12 @@ Contact data is transmitted to your configured server over HTTPS. Data at rest i
 ## Your control over your data
 
 - All of your contact data lives on your own device and your own server — you can export it (Settings → Export Contacts) or delete it at any time.
-- Uninstalling the app removes all locally stored data.
+- Uninstalling the app removes all locally stored data, including any copy you shared with your
+  phone's contacts.
 - Turning off sharing for an address book removes its copy from your phone's contacts. You can also
-  take the contacts permission away in Android settings.
+  take the contacts permission away in Android settings. If you only clear the app's data in Android
+  settings, the copy stays until the next time you open the app, which then removes it; turn sharing
+  off first if you want it gone right away.
 - A contact you delete from your phone's contacts stays in Corvid, hidden from there, until you
   choose to show it again or delete it in Corvid.
 - Logging out clears your stored server credentials from the device.

@@ -186,9 +186,10 @@ What is left, all of it Play Console or a decision:
 - Submit the `READ_CONTACTS` declaration (the app targets API 37, so Google's new policy applies);
   draft answers are in `docs/play-console-1.0.5.md`.
 - Recheck Play's Data safety "share" definition when filling the form (no new answers expected).
-- Verify on a device, then add to the deletion page and policy if true: whether clearing the app's
-  data, or uninstalling the app, removes the "Corvid Contacts" account and its copy from the phone's
-  contacts. Neither claim is made yet.
+- Verified on a device (2026-10-05) and now in the policy and deletion page: uninstalling the app
+  removes the "Corvid Contacts" account and its copy; clearing the app's data does not, and the copy
+  stays until the next time the app is opened, when the manager removes it (no permission and no
+  shared books).
 
 ### Smaller items
 
