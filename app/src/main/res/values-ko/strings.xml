@@ -487,7 +487,6 @@
     <string name="address_book_setting_share">다른 앱과 공유</string>
     <string name="address_book_setting_share_description">메시지 앱과 전화 앱 같은 앱이 이 연락처의 이름을 표시할 수 있게 합니다.</string>
     <string name="settings_address_books_description">각 주소록의 모양, 표시 여부, 공유 설정</string>
-    <string name="system_contact_edit_not_found">Corvid에서 이 연락처를 찾을 수 없습니다. Corvid를 열어 편집하세요.</string>
     <string name="system_contacts_add_account_unsupported">대신 Corvid Contacts에서 주소록을 공유하세요.</string>
     <string name="detail_hidden_from_system_title">휴대전화 연락처에서 숨김</string>
     <string name="detail_hidden_from_system_message">휴대전화 연락처에서 이 연락처를 삭제했습니다. Corvid와 서버에는 그대로 남아 있습니다.</string>

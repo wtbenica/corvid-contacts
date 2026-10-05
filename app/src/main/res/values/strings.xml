@@ -513,7 +513,6 @@
     <string name="address_book_setting_share">Share with other apps</string>
     <string name="address_book_setting_share_description">Lets apps like Messages and the dialer show names for these contacts.</string>
     <string name="settings_address_books_description">Appearance, visibility and sharing for each address book</string>
-    <string name="system_contact_edit_not_found">Couldn\'t find this contact in Corvid. Open Corvid to edit it.</string>
     <string name="system_contacts_add_account_unsupported">Share an address book from Corvid Contacts instead.</string>
     <string name="detail_hidden_from_system_title">Hidden from phone contacts</string>
     <string name="detail_hidden_from_system_message">You deleted this contact from your phone\'s contacts. It is still in Corvid and on your server.</string>

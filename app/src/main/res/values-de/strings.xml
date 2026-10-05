@@ -501,7 +501,6 @@
     <string name="address_book_setting_share">Mit anderen Apps teilen</string>
     <string name="address_book_setting_share_description">Lässt Apps wie Nachrichten und die Telefon-App Namen für diese Kontakte anzeigen.</string>
     <string name="settings_address_books_description">Aussehen, Sichtbarkeit und Teilen für jedes Adressbuch</string>
-    <string name="system_contact_edit_not_found">Dieser Kontakt wurde in Corvid nicht gefunden. Öffne Corvid, um ihn zu bearbeiten.</string>
     <string name="system_contacts_add_account_unsupported">Teile stattdessen ein Adressbuch in Corvid Contacts.</string>
     <string name="detail_hidden_from_system_title">In den Telefonkontakten ausgeblendet</string>
     <string name="detail_hidden_from_system_message">Du hast diesen Kontakt aus den Telefonkontakten gelöscht. Er ist weiterhin in Corvid und auf deinem Server.</string>

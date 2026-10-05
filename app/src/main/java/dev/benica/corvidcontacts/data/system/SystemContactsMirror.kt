@@ -83,10 +83,6 @@ class SystemContactsMirror(
 
     private val reader = SystemContactsReader(context, account)
 
-    /** Whether the raw-contact read-only flag is accepted by this device's provider. */
-    @Volatile
-    private var readOnlyFlagSupported = true
-
     /** Whether both permissions are held: writing the mirror, and reading back edits made to it. */
     fun hasPermission(): Boolean = canRead() && ContextCompat.checkSelfPermission(
         context,
@@ -410,16 +406,7 @@ class SystemContactsMirror(
                 return ops
             }
 
-            val results = try {
-                apply(buildOps())
-            } catch (e: IllegalArgumentException) {
-                // A provider that rejects the read-only flag still gets a working (if editable)
-                // mirror: retry once without it.
-                if (!readOnlyFlagSupported) throw e
-                Log.w(TAG, "Provider rejected the read-only flag; continuing without it", e)
-                readOnlyFlagSupported = false
-                apply(buildOps())
-            }
+            val results = apply(buildOps())
 
             val entries = chunk.mapIndexed { i, contact ->
                 val rawId = ContentUris.parseId(requireNotNull(results[rawIndexes[i]].uri))
@@ -443,19 +430,14 @@ class SystemContactsMirror(
             MirrorPlan.snapshotOf(contact.copy(systemPhoto = photoToken))
         )
 
-    private fun rawContactInsert(contact: MirrorContact): ContentProviderOperation {
-        val builder = ContentProviderOperation
+    private fun rawContactInsert(contact: MirrorContact): ContentProviderOperation =
+        ContentProviderOperation
             .newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
             .withValue(RawContacts.ACCOUNT_NAME, account.name)
             .withValue(RawContacts.ACCOUNT_TYPE, account.type)
             .withValue(RawContacts.SOURCE_ID, contact.id)
             .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
-        if (readOnlyFlagSupported) {
-            // Asks the Contacts app not to offer editing: the mirror is overwritten from Corvid.
-            builder.withValue(RawContacts.RAW_CONTACT_IS_READ_ONLY, 1)
-        }
-        return builder.build()
-    }
+            .build()
 
     /**
      * The data rows for [contact] - name, groups, phones and whatever the sharing level adds;

@@ -146,26 +146,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Receives the system Contacts app's edit and create actions for the mirrored account (see
-             system_contacts_structure.xml) and hands them on to MainActivity. No UI of its own. -->
-        <activity
-            android:name=".SystemContactEditActivity"
-            android:exported="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
-            <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="vnd.android.cursor.item/raw_contact" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.INSERT" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="vnd.android.cursor.item/contact" />
-            </intent-filter>
-        </activity>
-
         <service
             android:name=".data.system.SystemContactsAuthenticatorService"
             android:exported="false">
@@ -186,9 +166,6 @@
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/system_contacts_syncadapter" />
-            <meta-data
-                android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/system_contacts_structure" />
         </service>
 
         <meta-data

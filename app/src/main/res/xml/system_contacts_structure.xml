@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Declares this account type as a contacts source. The mirror only uses the standard data
-     kinds, so no custom kinds are declared. The Contacts app sends edit and create actions for
-     this account to SystemContactEditActivity, which opens Corvid's own screens because the mirror
-     is read-only. These attributes are read by name, so they are unprefixed. -->
-<ContactsAccountType xmlns:android="http://schemas.android.com/apk/res/android"
-    createContactActivity="dev.benica.corvidcontacts.SystemContactEditActivity"
-    editContactActivity="dev.benica.corvidcontacts.SystemContactEditActivity" />

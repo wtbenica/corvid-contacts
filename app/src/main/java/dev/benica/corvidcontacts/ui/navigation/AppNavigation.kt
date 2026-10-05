@@ -39,7 +39,6 @@ fun AppNavigation(
     initialIntentContact: ContactEntity? = null,
     pickType: PickContent? = null,
     initialContactId: String? = null,
-    openInEditMode: Boolean = false,
 ) {
     val backStack = rememberNavBackStack(startDestination) as NavBackStack<Destination>
 
@@ -74,8 +73,6 @@ fun AppNavigation(
     LaunchedEffect(initialContactId) {
         if (initialContactId != null) {
             backStack.add(Destination.ContactDetail(initialContactId))
-            // Detail underneath, so closing the editor lands on the contact rather than exiting.
-            if (openInEditMode) backStack.add(Destination.ContactEdit(initialContactId))
         }
     }
 

@@ -48,8 +48,9 @@ convenience. So:
 - Favorites: a favorite is the `Favorites` category in Corvid and on CardDAV, and reaches the
   system contacts as the standard starred flag (`RawContacts.STARRED`), at every level. It is
   not mirrored as a group.
-- The system Contacts app's edit and create actions for the mirrored account are routed to
-  Corvid by `SystemContactEditActivity` (step 4, see below).
+- Other apps can edit and delete the mirrored contacts. The read-only flag and the edit/create
+  activity hook (`SystemContactEditActivity`, step 4) were removed on 2026-10-05, since Google
+  Contacts ignored both and the mirror is now read back (see "Two-way sync: agreed plan").
 
 Key files (all under `app/src/main/java/dev/benica/corvidcontacts/`):
 
@@ -59,7 +60,7 @@ Key files (all under `app/src/main/java/dev/benica/corvidcontacts/`):
 | `data/system/SystemContactsMirror.kt` | Provider writes (batches, groups, photos, starred). |
 | `data/system/SystemContactsMirrorManager.kt` | Observes Room, triggers reconcile. |
 | `data/system/SystemContactsAuthenticatorService.kt`, `SystemContactsSyncService.kt` | Account plumbing (stub authenticator, no-op sync adapter). |
-| `data/system/SystemContactEditRouting.kt`, `SystemContactEditActivity.kt` (package root) | Edit and create routing from the Contacts app. |
+| `data/system/SystemContactsReader.kt`, `SystemEditMerge.kt`, `SystemContactVisibility.kt` | Read-back of edits and deletes, the three-way merge, and the hidden-contacts list. |
 | `data/local/SystemContactMirrorDao.kt`, `SystemContactMirrorEntity.kt`, `SystemGroupMirrorEntity.kt` | Mapping tables. |
 | `data/local/AppDatabase.kt` | Version 23, migrations 19 to 23. |
 | `data/model/SystemContactsLevel.kt` | The three levels. |
@@ -129,14 +130,12 @@ builds only and is fine in release, so it was left alone.
 
 ## What remains
 
-### Step 4: closed
+### Step 4: removed
 
-Edit and create routing are built, but nobody should rely on them. The user checked on a device:
-Google Contacts ignores `editContactActivity` (it opens its own editor) as it ignores the
-read-only flag, and it is the default contacts app on most phones. If some other contacts app
-honors the hook, good; the design assumes most apps will try to edit a mirrored contact. The one
-place it may work is the AOSP Contacts app (an emulator image without Google APIs), untested.
-That makes open question 1 (two-way sync) the real issue.
+Edit and create routing was built, but Google Contacts ignores `editContactActivity` (it opens its
+own editor) as it ignores the read-only flag, so on 2026-10-05 both were removed (the activity, its
+routing helper and test, `system_contacts_structure.xml`, the manifest entries, and the flag with
+its fallback). Edits made in other apps are read back instead (see "Two-way sync: agreed plan").
 
 ### Onboarding sharing step: built, verified on a device
 
@@ -454,8 +453,7 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
 - Translations in de/es/fr/ko/nl are written by Claude, not native-reviewed.
 
 **Unknowns.** Whether Messages resolves names from the mirror and nothing reaches the Google account
-(not reported). Whether the AOSP Contacts app honors `editContactActivity` or the read-only flag
-(Google Contacts honors neither). Do not assume either.
+(not reported).
 
 ### 2026-10-05, Oracle to Gotham
 

@@ -4,7 +4,7 @@ Status: steps 1 (Caller ID level), 2 (per-book sharing) and 3 (the three sharing
 levels) are implemented; the handoff lists what has actually been verified on a
 device. Sharing is decided per
 address book, both whether and how much; there is no global toggle or level.
-Step 4 (routing edits to Corvid) is built but Google Contacts ignores it (see the handoff), the onboarding sharing step is built, and step 5 is not started. How and when to offer sharing during onboarding is
+Step 4 (routing edits to Corvid) was removed in favor of reading edits back (two-way sync, see the handoff), the onboarding sharing step is built, and step 5 is not started. How and when to offer sharing during onboarding is
 still to be decided (see the handoff's open questions).
 
 ## Goal
@@ -24,7 +24,8 @@ privacy to trade for convenience. This feature follows that model:
 
 ## Non-goals
 
-- Two-way sync. The system provider is a read-only mirror.
+- Creating contacts in other apps under Corvid's account. Google Contacts only creates in its own
+  accounts, so a contact created there is an unlikely edge case.
 - Account-less ("local device") contacts. Google Contacts can back these up to
   the user's Google account, which defeats the purpose.
 - Reading the user's other contacts. The app never needs to (see Permissions).
@@ -185,46 +186,15 @@ setting.
   about 720 px. A failed photo write leaves the contact without a photo and does
   not fail the reconcile.
 
-### Read-only rows
+### Edits made in other apps
 
-- Mark mirrored rows read-only using `RawContacts.RAW_CONTACT_IS_READ_ONLY`
-  (a public constant in the SDK; still to be confirmed on a device). It is
-  set on insert. If the provider rejects it, the insert is retried once without
-  the flag, so the mirror still works but is editable.
-- Stock and Google Contacts honor the flag by hiding edit and delete.
-- It is not a security boundary. Any app with `WRITE_CONTACTS` can change the
-  rows, and the next reconcile overwrites them. The user is told the mirror is
-  read-only and edits happen in Corvid.
-
-### Routing edits to Corvid
-
-The system Contacts app's edit and create actions for the mirrored account are
-sent to Corvid instead of being hidden or ignored.
-
-- `system_contacts_structure.xml` declares `editContactActivity` and
-  `createContactActivity` (plain, unprefixed attributes, as in Android's
-  SampleSyncAdapter) pointing at `SystemContactEditActivity`. This is the
-  documented-by-example mechanism for a custom account type; the existing vCard
-  `EDIT` filter on `MainActivity` does not receive these actions.
-- `SystemContactEditActivity` has no UI. It handles `EDIT` on
-  `vnd.android.cursor.item/raw_contact` and `INSERT` on
-  `vnd.android.cursor.item/contact`, and finishes after forwarding.
-- Edit: `SystemContactEditRouting.rawContactIdFrom` reads the id from a
-  `content://com.android.contacts/raw_contacts/<id>` URI (other URI shapes are
-  rejected), `SystemContactMirrorDao.getContactIdForRawContact` looks up the
-  Corvid contact, and the activity opens `cccontacts://contact/<id>?edit=true`.
-  `MainActivity` and `AppNavigation` treat the `edit` flag by putting the detail
-  screen under the edit screen, so closing the editor lands on the contact.
-- Create: forwarded as the standard insert intent that `MainActivity` already
-  handles, so new contacts are made in Corvid and not as orphan rows in the
-  mirror account.
-- If the row can't be resolved (for example after a reset), a toast explains
-  and Corvid opens. A reset prompt was not built, since the mirror rebuilds
-  itself on the next reconcile.
-
-The read-only flag remains the fallback. Whether the stock and Google Contacts
-apps honor `editContactActivity` today is not confirmed by source and needs a
-device test.
+Other apps can edit and delete the mirrored contacts, and Google Contacts ignores the read-only
+flag and the edit-activity hook, so neither is used (both were removed). Instead the mirror is read
+back, which needs `READ_CONTACTS` as well as `WRITE_CONTACTS`; see the handoff's "Two-way sync"
+section for the design. In short: a reconcile first reads the account's dirty and deleted raw
+contacts, merges an edit into the Corvid contact (Corvid wins if both sides changed the same part),
+and treats a delete as "hide this contact from the system contacts", kept in a device-local table,
+without deleting it from Corvid or the server.
 
 ### Privacy and Google
 
@@ -305,7 +275,7 @@ without being a second place to change it.
 - The book page's level picker has the three presets with one line under each
   stating exactly what it exposes.
 - The first-share explanation states that the mirror is readable by any app with
-  contacts access, is read-only, and is never synced to Google by Corvid.
+  contacts access, can be edited from other apps (edits come back to Corvid, and deleting one there only hides it), and is never synced to Google by Corvid.
 
 ## Testing
 
@@ -323,8 +293,8 @@ Manual checks on a real device:
 - The address book list and each book's page work from the filter sheet and from
   Settings, on a phone and on a wide screen, including rename, hide, upload (local
   books) and delete, and the sharing switch on a book's page.
-- Mirrored contacts appear in the Contacts app as read-only, or route to Corvid
-  for editing.
+- Editing a mirrored contact in the Contacts app is read back into Corvid, and deleting one hides it
+  from the system contacts without deleting it from Corvid.
 - Nothing appears in the Google account's contacts, and Google's device-contact
   backup does not pick them up.
 - Removing the account or disabling a book or the feature cleans up the rows.
@@ -333,8 +303,6 @@ Manual checks on a real device:
 
 ## Open questions
 
-- Confirm on a device that the read-only flag is accepted at insert time and that
-  the stock Contacts app honors it on current Android versions.
 - Confirm that write-only works end to end (see Permissions), including that the
   `Settings` row insert, the sync-adapter-flagged inserts and deletes, and
   `removeAccountExplicitly` all work with only `WRITE_CONTACTS`.
@@ -352,5 +320,5 @@ Manual checks on a real device:
    (Implemented.)
 2. Per-book sharing. (Implemented.)
 3. The Full contact and Everything levels, chosen per book. (Implemented.)
-4. Routing edits to Corvid. (Implemented; awaiting device testing.)
+4. Routing edits to Corvid. (Built, then removed: Google Contacts ignores it. Replaced by two-way sync.)
 5. Privacy policy, settings copy, and Play declaration.

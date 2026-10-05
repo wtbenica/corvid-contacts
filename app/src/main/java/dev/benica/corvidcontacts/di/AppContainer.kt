@@ -41,7 +41,7 @@ class AppContainer(context: Context) {
         vCardMapper
     )
 
-    val systemContactMirrorDao = database.systemContactMirrorDao()
+    private val systemContactMirrorDao = database.systemContactMirrorDao()
 
     val systemContactVisibility = SystemContactVisibility(systemContactMirrorDao)
 
