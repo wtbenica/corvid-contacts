@@ -17,7 +17,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SystemContactMirrorEntity::class,
         SystemGroupMirrorEntity::class,
     ],
-    version = 23,
+    version = 24,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -92,7 +92,24 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        internal val MIGRATIONS = arrayOf(MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23)
+        /**
+         * Keeps what was last written to each mirrored contact, so edits made in other apps can be
+         * read back. Existing rows have none, and are rewritten on the next reconcile.
+         */
+        private val MIGRATION_23_24 = object : Migration(23, 24) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `system_contact_mirror` ADD COLUMN `snapshot` TEXT")
+                db.execSQL("UPDATE `system_contact_mirror` SET `hash` = ''")
+            }
+        }
+
+        internal val MIGRATIONS = arrayOf(
+            MIGRATION_19_20,
+            MIGRATION_20_21,
+            MIGRATION_21_22,
+            MIGRATION_22_23,
+            MIGRATION_23_24
+        )
 
         @Volatile
         private var INSTANCE: AppDatabase? = null

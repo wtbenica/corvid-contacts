@@ -7,6 +7,8 @@ import dev.benica.corvidcontacts.data.local.MirrorSource
 import dev.benica.corvidcontacts.data.local.SystemContactMirrorEntity
 import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
 import java.security.MessageDigest
 
 // The `type` values below are those of android.provider.ContactsContract.CommonDataKinds.*,
@@ -14,12 +16,15 @@ import java.security.MessageDigest
 // unit-testable.
 
 /** A phone number as written to the system contacts. [type] is a `Phone.TYPE_*` value. */
+@JsonClass(generateAdapter = true)
 data class MirrorPhone(val number: String, val type: Int)
 
 /** An email address. [type] is an `Email.TYPE_*` value. */
+@JsonClass(generateAdapter = true)
 data class MirrorEmail(val address: String, val type: Int)
 
 /** A postal address. [type] is a `StructuredPostal.TYPE_*` value. */
+@JsonClass(generateAdapter = true)
 data class MirrorAddress(
     val formatted: String,
     val street: String?,
@@ -32,8 +37,10 @@ data class MirrorAddress(
 )
 
 /** A relationship. [type] is a `Relation.TYPE_*` value; [label] is used when it is custom. */
+@JsonClass(generateAdapter = true)
 data class MirrorRelation(val name: String, val type: Int, val label: String?)
 
+@JsonClass(generateAdapter = true)
 data class MirrorOrganization(val company: String?, val title: String?)
 
 /**
@@ -44,6 +51,7 @@ data class MirrorOrganization(val company: String?, val title: String?)
  * categories, which are only known once the groups have been synced, so they are filled in
  * afterwards.
  */
+@JsonClass(generateAdapter = true)
 data class MirrorContact(
     val id: ContactId,
     val displayName: String,
@@ -68,6 +76,8 @@ data class MirrorContact(
     val photoStamp: String?,
     val bookHref: String,
     val groupIds: List<Long> = emptyList(),
+    /** The sharing level this was written at, so a read-back knows which fields were mirrored. */
+    val level: SystemContactsLevel = SystemContactsLevel.CALLER_ID,
 ) {
     /**
      * Stable fingerprint of everything that gets written; unchanged contacts aren't touched.
@@ -96,6 +106,7 @@ data class MirrorContact(
             photoStamp,
             bookHref,
             groupIds,
+            level,
         ).joinToString("\u0000") { it.toString() }
         MessageDigest
             .getInstance("SHA-256")
@@ -179,6 +190,7 @@ data class MirrorPlan(
                     it.trim().equals(ContactsRepository.FAVORITE_CATEGORY, ignoreCase = true)
                 },
                 bookHref = source.addressBookHref,
+                level = level,
             )
             if (!level.includesFullContact) return base
 
@@ -302,6 +314,59 @@ data class MirrorPlan(
             }
         }
 
+        /** The vCard TEL type for a `Phone.TYPE_*` value, or `null` when there is no matching one. */
+        internal fun phoneTypeName(type: Int): String? = when (type) {
+            TYPE_MOBILE -> "CELL"
+            TYPE_HOME -> "HOME"
+            TYPE_WORK -> "WORK"
+            PHONE_TYPE_FAX_WORK, PHONE_TYPE_FAX_HOME, PHONE_TYPE_OTHER_FAX -> "FAX"
+            PHONE_TYPE_MAIN -> "MAIN"
+            else -> null
+        }
+
+        /** The vCard EMAIL type for an `Email.TYPE_*` value, or `null` for other. */
+        internal fun emailTypeName(type: Int): String? = when (type) {
+            EMAIL_TYPE_HOME -> "HOME"
+            EMAIL_TYPE_WORK -> "WORK"
+            EMAIL_TYPE_MOBILE -> "CELL"
+            else -> null
+        }
+
+        /** The vCard ADR type for a `StructuredPostal.TYPE_*` value, or `null` for other. */
+        internal fun addressTypeName(type: Int): String? = when (type) {
+            POSTAL_TYPE_HOME -> "HOME"
+            POSTAL_TYPE_WORK -> "WORK"
+            else -> null
+        }
+
+        /** The relationship type for a [MirrorRelation], the reverse of [relation]. */
+        internal fun relationTypeName(relation: MirrorRelation): String = when (relation.type) {
+            1 -> "ASSISTANT"
+            2 -> "BROTHER"
+            3 -> "CHILD"
+            4 -> "DOMESTIC_PARTNER"
+            5 -> "FATHER"
+            6 -> "FRIEND"
+            7 -> "MANAGER"
+            8 -> "MOTHER"
+            9 -> "PARENT"
+            10 -> "PARTNER"
+            11 -> "REFERRED_BY"
+            12 -> "RELATIVE"
+            13 -> "SISTER"
+            14 -> "SPOUSE"
+            else -> relation.label?.trim()?.uppercase()?.takeIf { it.isNotEmpty() } ?: "OTHER"
+        }
+
+        private val snapshotAdapter by lazy { Moshi.Builder().build().adapter(MirrorContact::class.java) }
+
+        /** What [contact] looked like when it was written, for [SystemEditMerge] to compare against. */
+        fun snapshotOf(contact: MirrorContact): String = snapshotAdapter.toJson(contact)
+
+        /** The contact in [snapshot], or `null` if there is none or it can't be read. */
+        fun readSnapshot(snapshot: String?): MirrorContact? =
+            snapshot?.let { runCatching { snapshotAdapter.fromJson(it) }.getOrNull() }
+
         const val TYPE_HOME = 1
         const val TYPE_MOBILE = 2
         const val TYPE_WORK = 3
@@ -313,6 +378,10 @@ data class MirrorPlan(
         const val EMAIL_TYPE_WORK = 2
         const val EMAIL_TYPE_OTHER = 3
         const val EMAIL_TYPE_MOBILE = 4
+        const val PHONE_TYPE_FAX_WORK = 4
+        const val PHONE_TYPE_FAX_HOME = 5
+        const val PHONE_TYPE_MAIN = 12
+        const val PHONE_TYPE_OTHER_FAX = 13
         const val POSTAL_TYPE_HOME = 1
         const val POSTAL_TYPE_WORK = 2
         const val POSTAL_TYPE_OTHER = 3

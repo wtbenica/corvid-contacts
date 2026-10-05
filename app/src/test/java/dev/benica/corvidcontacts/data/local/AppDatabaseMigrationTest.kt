@@ -208,4 +208,62 @@ class AppDatabaseMigrationTest {
             dbFile.delete()
         }
     }
+
+    @Test
+    fun `mirror rows from version 23 gain a snapshot slot and are marked stale`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val scratch = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        val contactsDdl = scratch.openHelper.writableDatabase
+            .query("SELECT sql FROM sqlite_master WHERE name = 'contacts'")
+            .use {
+                it.moveToFirst()
+                it.getString(0)
+            }
+        scratch.close()
+
+        val dbName = "migration-test-23.db"
+        val dbFile = context.getDatabasePath(dbName)
+        dbFile.parentFile?.mkdirs()
+        dbFile.delete()
+        SQLiteDatabase.openOrCreateDatabase(dbFile, null).use { db ->
+            db.execSQL(contactsDdl)
+            db.execSQL(
+                "CREATE TABLE `address_books` (`href` TEXT NOT NULL, `displayName` TEXT, " +
+                    "`isVisible` INTEGER NOT NULL, `colorInt` INTEGER NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL, `iconName` TEXT, " +
+                    "`shareWithSystem` INTEGER NOT NULL DEFAULT 0, " +
+                    "`systemContactsLevel` TEXT NOT NULL DEFAULT 'CALLER_ID', PRIMARY KEY(`href`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_contact_mirror` (`contactId` TEXT NOT NULL, " +
+                    "`rawContactId` INTEGER NOT NULL, `hash` TEXT NOT NULL, PRIMARY KEY(`contactId`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_group_mirror` (`groupKey` TEXT NOT NULL, " +
+                    "`groupId` INTEGER NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`groupKey`))"
+            )
+            db.execSQL("INSERT INTO system_contact_mirror VALUES ('c1', 10, 'abc')")
+            db.version = 23
+        }
+
+        val migrated = Room
+            .databaseBuilder(context, AppDatabase::class.java, dbName)
+            .addMigrations(*AppDatabase.MIGRATIONS)
+            .allowMainThreadQueries()
+            .build()
+        try {
+            runBlocking {
+                val row = migrated.systemContactMirrorDao().getAll().single()
+                assertEquals("", row.hash)
+                assertEquals(null, row.snapshot)
+                assertEquals(10L, row.rawContactId)
+            }
+        } finally {
+            migrated.close()
+            dbFile.delete()
+        }
+    }
 }

@@ -260,6 +260,7 @@ class SystemContactsMirror(
                 .withSelection("${RawContacts._ID}=?", arrayOf(rawId.toString()))
                 .withValue(RawContacts.SOURCE_ID, contact.id)
                 .withValue(RawContacts.STARRED, if (contact.starred) 1 else 0)
+                .withValue(RawContacts.DIRTY, 0)
                 .withExpectedCount(1)
                 .build()
             ops += ContentProviderOperation
@@ -278,7 +279,7 @@ class SystemContactsMirror(
                         "deletedRows=${results.getOrNull(1)?.count} inserted=${results.size - 2}"
                 )
                 writePhoto(contact, rawId)
-                dao.upsert(listOf(SystemContactMirrorEntity(contact.id, rawId, contact.hash)))
+                dao.upsert(listOf(entry(contact, rawId)))
             } catch (e: OperationApplicationException) {
                 Log.w(TAG, "update contact=${contact.id} raw=$rawId failed, will re-insert", e)
                 missing += contact
@@ -319,13 +320,16 @@ class SystemContactsMirror(
 
             val entries = chunk.mapIndexed { i, contact ->
                 val rawId = ContentUris.parseId(requireNotNull(results[rawIndexes[i]].uri))
-                SystemContactMirrorEntity(contact.id, rawId, contact.hash)
+                entry(contact, rawId)
             }
             Log.i(TAG, "inserted ${entries.size} contacts, raw ids ${entries.map { it.rawContactId }}")
             dao.upsert(entries)
             chunk.forEachIndexed { i, contact -> writePhoto(contact, entries[i].rawContactId) }
         }
     }
+
+    private fun entry(contact: MirrorContact, rawId: Long) =
+        SystemContactMirrorEntity(contact.id, rawId, contact.hash, MirrorPlan.snapshotOf(contact))
 
     private fun rawContactInsert(contact: MirrorContact): ContentProviderOperation {
         val builder = ContentProviderOperation

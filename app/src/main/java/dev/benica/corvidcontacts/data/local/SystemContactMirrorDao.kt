@@ -53,6 +53,10 @@ interface SystemContactMirrorDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entries: List<SystemContactMirrorEntity>)
 
+    /** Forces the next reconcile to rewrite these contacts, whatever Corvid's own state is. */
+    @Query("UPDATE system_contact_mirror SET hash = '' WHERE contactId IN (:contactIds)")
+    suspend fun markStale(contactIds: List<ContactId>)
+
     @Query("DELETE FROM system_contact_mirror WHERE contactId IN (:contactIds)")
     suspend fun delete(contactIds: List<ContactId>)
 
