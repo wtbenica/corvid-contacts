@@ -123,6 +123,7 @@ fun ContactDetailScreen(
                             onDelete = handlers.requestDelete
                         )
                     }
+
                     ContactDetailContent(
                         contact = contactWithBook.contact,
                         relatives = relatives,

@@ -2,24 +2,32 @@
 
 package dev.benica.corvidcontacts.ui.contacts.contact_detail.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import dev.benica.corvidcontacts.R
+import dev.benica.corvidcontacts.extensions.background
+import dev.benica.corvidcontacts.extensions.border
+import dev.benica.corvidcontacts.extensions.borderFocused
 import dev.benica.corvidcontacts.extensions.complementary
+import dev.benica.corvidcontacts.extensions.onBackground
 import dev.benica.corvidcontacts.extensions.onSurface
-import dev.benica.corvidcontacts.extensions.surface
-import dev.benica.corvidcontacts.extensions.text
+import dev.benica.corvidcontacts.extensions.surfaceVariant
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
+import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 
@@ -34,15 +42,13 @@ fun HiddenFromSystemCard(
     modifier: Modifier = Modifier,
 ) {
     // An accent drawn from the contact's color, so the card stands out without leaving the theme.
-    val accent = currentThemeColor().complementary()
-    Surface(
-        color = accent.surface(),
-        contentColor = accent.onSurface(),
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier.fillMaxWidth()
+    val accent = currentThemeColor()
+    CCCardBordered(
+        modifier = modifier.fillMaxWidth(),
+        padding = PaddingValues(Dimens.smSpacing),
     ) {
         Column(
-            modifier = Modifier.padding(Dimens.medSpacing),
+            modifier = Modifier.padding(Dimens.lgSpacing),
             verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
         ) {
             Text(
@@ -57,19 +63,37 @@ fun HiddenFromSystemCard(
                 horizontalArrangement = Arrangement.spacedBy(Dimens.smSpacing),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onShowAgain) {
-                    Text(
-                        text = stringResource(R.string.detail_hidden_from_system_show),
-                        color = accent.text()
-                    )
-                }
-                TextButton(onClick = onDelete) {
-                    Text(
-                        text = stringResource(R.string.detail_hidden_from_system_delete),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                CCButton(
+                    text = R.string.detail_hidden_from_system_show,
+                    baseColor = accent.onSurface(),
+                    onClick = onShowAgain
+                )
+
+                CCButton(
+                    text = R.string.detail_hidden_from_system_delete,
+                    baseColor = accent.onBackground(),
+                    onClick = onDelete
+                )
             }
         }
+    }
+}
+
+
+@Preview
+@Composable
+fun HiddenFromSystemCardPreview() {
+    CorvidContactsTheme {
+        HiddenFromSystemCard(onShowAgain = {}, onDelete = {})
+    }
+}
+
+@Preview(
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Composable
+fun HiddenFromSystemCardNightPreview() {
+    CorvidContactsTheme {
+        HiddenFromSystemCard(onShowAgain = {}, onDelete = {})
     }
 }
