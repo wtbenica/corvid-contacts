@@ -537,15 +537,22 @@ company, nickname, relationships and notes at the Full and Everything levels. Th
 test now (Round 1: change one phone digit on Merel van Dijk and check nothing else changes; Round 2:
 every field type on Puck de Boer, from `contacts_nl.vcf`), and I compare Room before and after.
 
-**Review.** I ran a high-effort review of the whole branch. Findings, most severe first: an
-unrecognised birthday format reads as "removed" and would be wiped on any edit; an edit made during a
-reconcile can be overwritten unread (no version check); labels and rows Corvid doesn't model are
-dropped silently; every contacts change on the phone triggers a full reconcile; state written during
-composition in the hidden-contacts dialog; `SystemContactsMirror` and `AddressBookSettingsScreen` are
-too big (SRP and DRY); the bottom bar and the permission request are duplicated; stale one-way
-comments; and one feature has four names in the UI strings. None is fixed yet.
+**Review: all ten findings are fixed** (`dc76492` for the first five, then `bc72309` through `4aaf502`).
+Behavior: an unrecognised birthday is left alone; a rewrite is guarded by the contact's version; a
+rewrite deletes only the row kinds Corvid writes; contact changes elsewhere on the phone run a cheap
+check first; the hidden dialog no longer writes state while composing. Structure: `SystemContactsMirror`
+is split into `MirrorProvider`, `MirrorDataRows`, `MirrorPhotos`, `MirrorGroups`, `MirrorWriter`,
+`SystemEditAbsorber` and `MirrorPermissions`; `AddressBookSettingsScreen` is split, with
+`AddressBookSharingSection`, `SubmitState` and a shared `CCScreenFrame`; `CCBottomActionBar` and
+`rememberContactsPermissionRequest` are shared; the UI says "phone contacts" everywhere; stale
+comments are fixed. Also added: relationships that link to another contact are shared by that
+contact's name (this includes the name of a contact in a book that is not shared; limit it if the user
+objects), "Fill in address details" for an address saved as one line, a rescan whenever the app comes
+to the front, and edited numbers keep their label. Known limit: labels (groups) edited in other apps
+are not read back, and an address that Google's autofill rewrites arrives as one line.
 
-**Next, the user decides:** fix the review findings (the first three matter most), finish the Full
-level test, then merge to `1.0.5` (a fast-forward). The test review and coverage audit stays last.
+**Next, the user decides:** merge to `1.0.5` (a fast-forward). The Full-level test is done, including
+notes at Everything. The test review and coverage audit stays last; it should include the version guard,
+the kept rows, the reader and the absorber, which only the phone has exercised.
 Play Console work is the user's.
 
