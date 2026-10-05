@@ -493,7 +493,10 @@
     <string name="detail_hidden_from_system_show">다시 표시</string>
     <string name="detail_hidden_from_system_delete">Corvid에서 삭제</string>
     <string name="address_book_setting_hidden">휴대전화 연락처에서 숨김</string>
-    <string name="address_book_setting_hidden_description">휴대전화 연락처에서 삭제한 연락처입니다. Corvid에는 그대로 남아 있습니다.</string>
-    <string name="address_book_hidden_dialog_message">휴대전화 연락처에서 이 연락처들을 삭제했습니다. Corvid와 서버에는 그대로 남아 있습니다. 다시 표시하면 휴대전화 연락처에 다시 들어갑니다.</string>
+    <string name="address_book_setting_hidden_description">휴대전화 연락처에 표시되지 않는 연락처입니다. Corvid에는 그대로 남아 있습니다.</string>
+    <string name="address_book_hidden_dialog_message">직접 숨기거나 휴대전화 연락처에서 삭제해서 표시되지 않는 연락처들입니다. Corvid와 서버에는 그대로 남아 있습니다. 다시 표시하면 휴대전화 연락처에 다시 들어갑니다.</string>
     <string name="address_book_hidden_show_all">모두 다시 표시</string>
+    <string name="detail_menu_hide_from_system">휴대전화 연락처에서 숨기기</string>
+    <string name="detail_menu_show_in_system">휴대전화 연락처에 표시</string>
+    <string name="detail_hidden_from_system_dismiss">알림 닫기</string>
 </resources>

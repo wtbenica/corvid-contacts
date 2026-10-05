@@ -519,8 +519,11 @@
     <string name="detail_hidden_from_system_show">Show again</string>
     <string name="detail_hidden_from_system_delete">Delete from Corvid</string>
     <string name="address_book_setting_hidden">Hidden from phone contacts</string>
-    <string name="address_book_setting_hidden_description">Contacts you deleted from your phone\'s contacts. They are still in Corvid.</string>
-    <string name="address_book_hidden_dialog_message">You deleted these from your phone\'s contacts. They are still in Corvid and on your server. Showing one again puts it back in your phone\'s contacts.</string>
+    <string name="address_book_setting_hidden_description">Contacts kept out of your phone\'s contacts. They are still in Corvid.</string>
+    <string name="address_book_hidden_dialog_message">These are kept out of your phone\'s contacts, because you hid them or deleted them there. They are still in Corvid and on your server. Showing one again puts it back in your phone\'s contacts.</string>
     <string name="address_book_hidden_show_all">Show all again</string>
+    <string name="detail_menu_hide_from_system">Hide from phone contacts</string>
+    <string name="detail_menu_show_in_system">Show in phone contacts</string>
+    <string name="detail_hidden_from_system_dismiss">Dismiss</string>
 </resources>
 

@@ -266,4 +266,67 @@ class AppDatabaseMigrationTest {
             dbFile.delete()
         }
     }
+
+    @Test
+    fun `hidden contacts from version 25 keep their notice until dismissed`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val scratch = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        val contactsDdl = scratch.openHelper.writableDatabase
+            .query("SELECT sql FROM sqlite_master WHERE name = 'contacts'")
+            .use {
+                it.moveToFirst()
+                it.getString(0)
+            }
+        scratch.close()
+
+        val dbName = "migration-test-25.db"
+        val dbFile = context.getDatabasePath(dbName)
+        dbFile.parentFile?.mkdirs()
+        dbFile.delete()
+        SQLiteDatabase.openOrCreateDatabase(dbFile, null).use { db ->
+            db.execSQL(contactsDdl)
+            db.execSQL(
+                "CREATE TABLE `address_books` (`href` TEXT NOT NULL, `displayName` TEXT, " +
+                    "`isVisible` INTEGER NOT NULL, `colorInt` INTEGER NOT NULL, " +
+                    "`sortOrder` INTEGER NOT NULL, `iconName` TEXT, " +
+                    "`shareWithSystem` INTEGER NOT NULL DEFAULT 0, " +
+                    "`systemContactsLevel` TEXT NOT NULL DEFAULT 'CALLER_ID', PRIMARY KEY(`href`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_contact_mirror` (`contactId` TEXT NOT NULL, " +
+                    "`rawContactId` INTEGER NOT NULL, `hash` TEXT NOT NULL, `snapshot` TEXT, " +
+                    "PRIMARY KEY(`contactId`))"
+            )
+            db.execSQL(
+                "CREATE TABLE `system_group_mirror` (`groupKey` TEXT NOT NULL, " +
+                    "`groupId` INTEGER NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`groupKey`))"
+            )
+            db.execSQL("CREATE TABLE `system_contact_hidden` (`contactId` TEXT NOT NULL, PRIMARY KEY(`contactId`))")
+            db.execSQL("INSERT INTO system_contact_hidden VALUES ('c1')")
+            db.version = 25
+        }
+
+        val migrated = Room
+            .databaseBuilder(context, AppDatabase::class.java, dbName)
+            .addMigrations(*AppDatabase.MIGRATIONS)
+            .allowMainThreadQueries()
+            .build()
+        try {
+            runBlocking {
+                val dao = migrated.systemContactMirrorDao()
+                assertEquals(listOf("c1"), dao.getHiddenIds())
+                dao.hide(listOf(SystemContactHiddenEntity("c2", noticeDismissed = true)))
+                dao.dismissHiddenNotice("c1")
+                assertEquals(setOf("c1", "c2"), dao.getHiddenIds().toSet())
+                dao.unhide("c1")
+                assertEquals(listOf("c2"), dao.getHiddenIds())
+            }
+        } finally {
+            migrated.close()
+            dbFile.delete()
+        }
+    }
 }

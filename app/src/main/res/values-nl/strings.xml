@@ -507,7 +507,10 @@
     <string name="detail_hidden_from_system_show">Weer tonen</string>
     <string name="detail_hidden_from_system_delete">Verwijderen uit Corvid</string>
     <string name="address_book_setting_hidden">Verborgen in de contacten van de telefoon</string>
-    <string name="address_book_setting_hidden_description">Contacten die je uit de contacten van de telefoon hebt verwijderd. Ze staan nog in Corvid.</string>
-    <string name="address_book_hidden_dialog_message">Je hebt deze contacten verwijderd uit de contacten van de telefoon. Ze staan nog in Corvid en op je server. Als je er een weer toont, komt het terug in de contacten van de telefoon.</string>
+    <string name="address_book_setting_hidden_description">Contacten die niet in de contacten van de telefoon staan. Ze staan nog in Corvid.</string>
+    <string name="address_book_hidden_dialog_message">Deze contacten staan niet in de contacten van de telefoon, omdat je ze hebt verborgen of daar hebt verwijderd. Ze staan nog in Corvid en op je server. Als je er een weer toont, komt het terug in de contacten van de telefoon.</string>
     <string name="address_book_hidden_show_all">Alles weer tonen</string>
+    <string name="detail_menu_hide_from_system">Verbergen in de contacten van de telefoon</string>
+    <string name="detail_menu_show_in_system">Tonen in de contacten van de telefoon</string>
+    <string name="detail_hidden_from_system_dismiss">Melding sluiten</string>
 </resources>

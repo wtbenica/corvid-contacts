@@ -522,7 +522,10 @@
     <string name="detail_hidden_from_system_show">Mostrar de nuevo</string>
     <string name="detail_hidden_from_system_delete">Eliminar de Corvid</string>
     <string name="address_book_setting_hidden">Ocultos en los contactos del teléfono</string>
-    <string name="address_book_setting_hidden_description">Contactos que eliminaste de los contactos del teléfono. Siguen en Corvid.</string>
-    <string name="address_book_hidden_dialog_message">Eliminaste estos contactos de los contactos del teléfono. Siguen en Corvid y en tu servidor. Al mostrar uno de nuevo, vuelve a los contactos del teléfono.</string>
+    <string name="address_book_setting_hidden_description">Contactos que no aparecen en los contactos del teléfono. Siguen en Corvid.</string>
+    <string name="address_book_hidden_dialog_message">Estos contactos no aparecen en los contactos del teléfono, porque los ocultaste o los eliminaste allí. Siguen en Corvid y en tu servidor. Al mostrar uno de nuevo, vuelve a los contactos del teléfono.</string>
     <string name="address_book_hidden_show_all">Mostrar todos de nuevo</string>
+    <string name="detail_menu_hide_from_system">Ocultar en los contactos del teléfono</string>
+    <string name="detail_menu_show_in_system">Mostrar en los contactos del teléfono</string>
+    <string name="detail_hidden_from_system_dismiss">Descartar aviso</string>
 </resources>

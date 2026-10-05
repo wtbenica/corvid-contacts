@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.extensions.background
 import dev.benica.corvidcontacts.extensions.border
@@ -27,6 +30,7 @@ import dev.benica.corvidcontacts.extensions.onSurface
 import dev.benica.corvidcontacts.extensions.surfaceVariant
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCCardBordered
+import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.currentThemeColor
@@ -39,6 +43,7 @@ import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 fun HiddenFromSystemCard(
     onShowAgain: () -> Unit,
     onDelete: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // An accent drawn from the contact's color, so the card stands out without leaving the theme.
@@ -51,10 +56,23 @@ fun HiddenFromSystemCard(
             modifier = Modifier.padding(Dimens.lgSpacing),
             verticalArrangement = Arrangement.spacedBy(Dimens.smSpacing)
         ) {
-            Text(
-                text = stringResource(R.string.detail_hidden_from_system_title),
-                style = MaterialTheme.typography.titleSmall
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Dimens.smSpacing),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.detail_hidden_from_system_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f)
+                )
+                CCIconButton(
+                    icon = Icons.Rounded.Close,
+                    contentDescription = R.string.detail_hidden_from_system_dismiss,
+                    size = 32.dp,
+                    color = accent.onSurface(),
+                    onClick = onDismiss
+                )
+            }
             Text(
                 text = stringResource(R.string.detail_hidden_from_system_message),
                 style = MaterialTheme.typography.bodyMedium
@@ -84,7 +102,7 @@ fun HiddenFromSystemCard(
 @Composable
 fun HiddenFromSystemCardPreview() {
     CorvidContactsTheme {
-        HiddenFromSystemCard(onShowAgain = {}, onDelete = {})
+        HiddenFromSystemCard(onShowAgain = {}, onDelete = {}, onDismiss = {})
     }
 }
 
@@ -94,6 +112,6 @@ fun HiddenFromSystemCardPreview() {
 @Composable
 fun HiddenFromSystemCardNightPreview() {
     CorvidContactsTheme {
-        HiddenFromSystemCard(onShowAgain = {}, onDelete = {})
+        HiddenFromSystemCard(onShowAgain = {}, onDelete = {}, onDismiss = {})
     }
 }

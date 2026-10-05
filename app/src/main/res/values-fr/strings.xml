@@ -522,7 +522,10 @@
     <string name="detail_hidden_from_system_show">Afficher à nouveau</string>
     <string name="detail_hidden_from_system_delete">Supprimer de Corvid</string>
     <string name="address_book_setting_hidden">Masqués dans les contacts du téléphone</string>
-    <string name="address_book_setting_hidden_description">Contacts que vous avez supprimés des contacts du téléphone. Ils restent dans Corvid.</string>
-    <string name="address_book_hidden_dialog_message">Vous avez supprimé ces contacts des contacts du téléphone. Ils restent dans Corvid et sur votre serveur. En afficher un à nouveau le remet dans les contacts du téléphone.</string>
+    <string name="address_book_setting_hidden_description">Contacts tenus à l\'écart des contacts du téléphone. Ils restent dans Corvid.</string>
+    <string name="address_book_hidden_dialog_message">Ces contacts ne figurent pas dans les contacts du téléphone, car vous les avez masqués ou supprimés. Ils restent dans Corvid et sur votre serveur. En afficher un à nouveau le remet dans les contacts du téléphone.</string>
     <string name="address_book_hidden_show_all">Tout afficher à nouveau</string>
+    <string name="detail_menu_hide_from_system">Masquer dans les contacts du téléphone</string>
+    <string name="detail_menu_show_in_system">Afficher dans les contacts du téléphone</string>
+    <string name="detail_hidden_from_system_dismiss">Fermer l\'avis</string>
 </resources>

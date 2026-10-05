@@ -64,6 +64,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.CCScaffold
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCTopAppBar
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.ContactDetailScreen
+import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.SystemVisibility
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.AddToGroupDialog
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.BottomFilterSheetContent
 import dev.benica.corvidcontacts.ui.contacts.contact_list.components.ContactList
@@ -415,10 +416,12 @@ fun AdaptiveMasterScreen(
                                 contactWithBook = contactWithBook,
                                 allContacts = allContacts,
                                 isFavorite = isFavorite,
-                                hiddenFromSystem = hiddenFromSystem.any { it.id == shownId },
+                                systemVisibility = SystemVisibility.of(contactWithBook, hiddenFromSystem),
                                 onShowInSystem = {
                                     shownId?.let { viewModel.showInSystemContacts(listOf(it)) }
                                 },
+                                onHideFromSystem = { shownId?.let { viewModel.hideFromSystemContacts(it) } },
+                                onDismissHiddenNotice = { shownId?.let { viewModel.dismissHiddenNotice(it) } },
                                 onToggleFavorite = {
                                     contactWithBook?.contact?.let { viewModel.toggleFavorite(it) }
                                         ?: false

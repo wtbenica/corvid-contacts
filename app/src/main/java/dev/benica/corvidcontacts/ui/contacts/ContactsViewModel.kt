@@ -848,6 +848,16 @@ class ContactsViewModel(
     val hiddenFromSystemContacts: StateFlow<List<HiddenContact>> = systemContactVisibility.hidden
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    /** Keeps [id] out of the system contacts, without touching the contact itself. */
+    fun hideFromSystemContacts(id: ContactId) {
+        viewModelScope.launch { systemContactVisibility.hide(id) }
+    }
+
+    /** Stops showing the notice that [id] is hidden from the system contacts. */
+    fun dismissHiddenNotice(id: ContactId) {
+        viewModelScope.launch { systemContactVisibility.dismissNotice(id) }
+    }
+
     /** Lets the contacts in [ids] be written to the system contacts again. */
     fun showInSystemContacts(ids: List<ContactId>) {
         viewModelScope.launch { systemContactVisibility.showAgain(ids) }

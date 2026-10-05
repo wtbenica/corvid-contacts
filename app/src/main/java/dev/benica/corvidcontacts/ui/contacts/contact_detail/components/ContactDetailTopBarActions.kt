@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.CallMerge
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Favorite
@@ -45,6 +47,8 @@ fun ContactDetailTopBarActions(
     onArchive: () -> Unit,
     onMerge: () -> Unit,
     onDelete: () -> Unit,
+    systemVisibility: SystemVisibility? = null,
+    onToggleSystemVisibility: () -> Unit = {},
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -108,6 +112,28 @@ fun ContactDetailTopBarActions(
                     )
                 }
             )
+            if (systemVisibility != null) {
+                val hidden = systemVisibility.isHidden
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(
+                                if (hidden) R.string.detail_menu_show_in_system else R.string.detail_menu_hide_from_system
+                            )
+                        )
+                    },
+                    onClick = {
+                        isMenuExpanded = false
+                        onToggleSystemVisibility()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            if (hidden) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.detail_menu_delete)) },
                 onClick = {
@@ -153,6 +179,8 @@ fun rememberContactDetailActions(
     onDelete: suspend (ContactEntity) -> Boolean,
     snackbarHostState: SnackbarHostState,
     errorMessage: String,
+    systemVisibility: SystemVisibility? = null,
+    onToggleSystemVisibility: () -> Unit = {},
 ): ContactDetailActionsHandlers {
     val scope = rememberCoroutineScope()
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -173,8 +201,11 @@ fun rememberContactDetailActions(
                         if (!onArchive(c)) snackbarHostState.showSnackbar(errorMessage)
                     }
                 },
-                onMerge = { onMerge(c) }
-            ) { showDeleteConfirm = true }
+                onMerge = { onMerge(c) },
+                onDelete = { showDeleteConfirm = true },
+                systemVisibility = systemVisibility,
+                onToggleSystemVisibility = onToggleSystemVisibility
+            )
         }
     }
 

@@ -18,7 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SystemGroupMirrorEntity::class,
         SystemContactHiddenEntity::class,
     ],
-    version = 25,
+    version = 26,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -114,13 +114,23 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** Remembers whether the notice for a hidden contact has been dismissed. */
+        private val MIGRATION_25_26 = object : Migration(25, 26) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `system_contact_hidden` ADD COLUMN `noticeDismissed` INTEGER NOT NULL DEFAULT 0"
+                )
+            }
+        }
+
         internal val MIGRATIONS = arrayOf(
             MIGRATION_19_20,
             MIGRATION_20_21,
             MIGRATION_21_22,
             MIGRATION_22_23,
             MIGRATION_23_24,
-            MIGRATION_24_25
+            MIGRATION_24_25,
+            MIGRATION_25_26
         )
 
         @Volatile

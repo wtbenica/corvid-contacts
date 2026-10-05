@@ -63,6 +63,7 @@ data class HiddenContact(
     val firstName: String?,
     val lastName: String?,
     val addressBookHref: String?,
+    val noticeDismissed: Boolean,
 ) {
     val name: String
         get() = displayName.ifBlank {
@@ -96,7 +97,7 @@ interface SystemContactMirrorDao {
 
     @Query(
         """
-        SELECT c.id, c.displayName, c.firstName, c.lastName, c.addressBookHref
+        SELECT c.id, c.displayName, c.firstName, c.lastName, c.addressBookHref, h.noticeDismissed
         FROM contacts c
         INNER JOIN system_contact_hidden h ON h.contactId = c.id
         ORDER BY c.displayName COLLATE NOCASE ASC
@@ -106,6 +107,9 @@ interface SystemContactMirrorDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun hide(entries: List<SystemContactHiddenEntity>)
+
+    @Query("UPDATE system_contact_hidden SET noticeDismissed = 1 WHERE contactId = :contactId")
+    suspend fun dismissHiddenNotice(contactId: ContactId)
 
     @Query("DELETE FROM system_contact_hidden WHERE contactId = :contactId")
     suspend fun unhide(contactId: ContactId)

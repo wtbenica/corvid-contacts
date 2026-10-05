@@ -40,6 +40,7 @@ import dev.benica.corvidcontacts.ui.contacts.ContactsUiState
 import dev.benica.corvidcontacts.ui.contacts.ContactsViewModel
 import dev.benica.corvidcontacts.ui.contacts.PickContent
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.ContactDetailScreen
+import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.SystemVisibility
 import dev.benica.corvidcontacts.ui.contacts.contact_list.ContactListScreen
 import dev.benica.corvidcontacts.ui.login.LoginScreen
 import dev.benica.corvidcontacts.ui.login.LoginUiState
@@ -331,8 +332,10 @@ fun PhoneNavigation(
                     contactWithBook = contactWithBook,
                     allContacts = allContacts,
                     isFavorite = isFavorite,
-                    hiddenFromSystem = hiddenFromSystem.any { it.id == key.contactId },
+                    systemVisibility = SystemVisibility.of(contactWithBook, hiddenFromSystem),
                     onShowInSystem = { contactsViewModel.showInSystemContacts(listOf(key.contactId)) },
+                    onHideFromSystem = { contactsViewModel.hideFromSystemContacts(key.contactId) },
+                    onDismissHiddenNotice = { contactsViewModel.dismissHiddenNotice(key.contactId) },
                     onToggleFavorite = {
                         contact?.let { contactsViewModel.toggleFavorite(it) } ?: true
                     },

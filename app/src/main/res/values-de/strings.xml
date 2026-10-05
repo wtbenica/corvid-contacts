@@ -507,7 +507,10 @@
     <string name="detail_hidden_from_system_show">Wieder anzeigen</string>
     <string name="detail_hidden_from_system_delete">Aus Corvid löschen</string>
     <string name="address_book_setting_hidden">In den Telefonkontakten ausgeblendet</string>
-    <string name="address_book_setting_hidden_description">Kontakte, die du aus den Telefonkontakten gelöscht hast. Sie sind weiterhin in Corvid.</string>
-    <string name="address_book_hidden_dialog_message">Du hast diese Kontakte aus den Telefonkontakten gelöscht. Sie sind weiterhin in Corvid und auf deinem Server. Wenn du einen wieder anzeigst, kommt er zurück in die Telefonkontakte.</string>
+    <string name="address_book_setting_hidden_description">Kontakte, die nicht in den Telefonkontakten erscheinen. Sie sind weiterhin in Corvid.</string>
+    <string name="address_book_hidden_dialog_message">Diese Kontakte erscheinen nicht in den Telefonkontakten, weil du sie ausgeblendet oder dort gelöscht hast. Sie sind weiterhin in Corvid und auf deinem Server. Wenn du einen wieder anzeigst, kommt er zurück in die Telefonkontakte.</string>
     <string name="address_book_hidden_show_all">Alle wieder anzeigen</string>
+    <string name="detail_menu_hide_from_system">In den Telefonkontakten ausblenden</string>
+    <string name="detail_menu_show_in_system">In den Telefonkontakten anzeigen</string>
+    <string name="detail_hidden_from_system_dismiss">Hinweis schließen</string>
 </resources>

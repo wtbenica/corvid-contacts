@@ -36,6 +36,7 @@ import dev.benica.corvidcontacts.ui.contacts.common_ui.EmptyState
 import dev.benica.corvidcontacts.ui.contacts.common_ui.ScreenChrome
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.ContactDetailContent
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.HiddenFromSystemCard
+import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.SystemVisibility
 import dev.benica.corvidcontacts.ui.contacts.contact_detail.components.rememberContactDetailActions
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
@@ -62,8 +63,10 @@ fun ContactDetailScreen(
     onNavigateToContact: (String) -> Unit,
     onShare: (Boolean) -> Unit, // true for QR, false for normal share
     modifier: Modifier = Modifier,
-    hiddenFromSystem: Boolean = false,
+    systemVisibility: SystemVisibility? = null,
     onShowInSystem: () -> Unit = {},
+    onHideFromSystem: () -> Unit = {},
+    onDismissHiddenNotice: () -> Unit = {},
     showScaffold: Boolean = true,
     onChromeChange: ((ScreenChrome) -> Unit)? = null,
     // Only rendered here when showScaffold is true; embedders pass their own otherwise.
@@ -84,6 +87,10 @@ fun ContactDetailScreen(
         onDelete = onDelete,
         snackbarHostState = snackbarHostState,
         errorMessage = errorActionFailed,
+        systemVisibility = systemVisibility,
+        onToggleSystemVisibility = {
+            if (systemVisibility?.isHidden == true) onShowInSystem() else onHideFromSystem()
+        },
     )
 
     val bodyContent: @Composable (PaddingValues) -> Unit = { padding ->
@@ -117,10 +124,11 @@ fun ContactDetailScreen(
                 systemPadding = padding,
                 modifier = modifier,
                 content = {
-                    if (hiddenFromSystem) {
+                    if (systemVisibility?.showsNotice == true) {
                         HiddenFromSystemCard(
                             onShowAgain = onShowInSystem,
-                            onDelete = handlers.requestDelete
+                            onDelete = handlers.requestDelete,
+                            onDismiss = onDismissHiddenNotice
                         )
                     }
 
