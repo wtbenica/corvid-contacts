@@ -438,7 +438,7 @@
     <string name="onboarding_setup_description_complete">Sync complete! You can continue with setup.</string>
     <string name="onboarding_setup_syncing">Finalizing sync…</string>
     <string name="onboarding_setup_transparency_title">Note</string>
-    <string name="onboarding_local_migration_title">What about your local contacts?</string>
+    <string name="onboarding_local_migration_title">Local Contacts</string>
     <string name="onboarding_local_migration_description">You have contacts that aren\'t synced anywhere yet. For each address book, choose whether to keep it local to this device or upload it to your new server.</string>
     <string name="onboarding_local_migration_keep_separate">Keep local to this device</string>
     <string name="onboarding_local_migration_upload">Upload to this server</string>

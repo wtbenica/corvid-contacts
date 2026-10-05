@@ -426,7 +426,7 @@
     <string name="onboarding_setup_description_complete">Synchronisatie voltooid! Je kunt doorgaan met instellen.</string>
     <string name="onboarding_setup_syncing">Synchronisatie wordt afgerond…</string>
     <string name="onboarding_setup_transparency_title">Opmerking</string>
-    <string name="onboarding_local_migration_title">Wat gebeurt er met je lokale contacten?</string>
+    <string name="onboarding_local_migration_title">Lokale contacten</string>
     <string name="onboarding_local_migration_description">Je hebt contacten die nog nergens zijn gesynchroniseerd. Kies voor elk adresboek of het lokaal op dit apparaat blijft of naar je nieuwe server wordt geüpload.</string>
     <string name="onboarding_local_migration_keep_separate">Lokaal op dit apparaat houden</string>
     <string name="onboarding_local_migration_upload">Uploaden naar deze server</string>

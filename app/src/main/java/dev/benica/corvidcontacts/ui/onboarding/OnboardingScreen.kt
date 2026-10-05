@@ -9,14 +9,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,22 +29,23 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
-import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,7 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,8 +61,8 @@ import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
-import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.data.repository.GeocoderRepository
+import dev.benica.corvidcontacts.extensions.surfaceVariant
 import dev.benica.corvidcontacts.ui.contacts.ContactColors
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCButton
 import dev.benica.corvidcontacts.ui.contacts.common_ui.CCIconButton
@@ -71,7 +75,6 @@ import dev.benica.corvidcontacts.ui.contacts.contact_edit.ContactEditScreen
 import dev.benica.corvidcontacts.ui.settings.SettingsHeader
 import dev.benica.corvidcontacts.ui.settings.sections.AddressLookupSection
 import dev.benica.corvidcontacts.ui.settings.sections.PhoneFormattingSection
-import dev.benica.corvidcontacts.ui.settings.sections.ThemeSection
 import dev.benica.corvidcontacts.ui.theme.CorvidContactsTheme
 import dev.benica.corvidcontacts.ui.theme.Dimens
 import dev.benica.corvidcontacts.ui.theme.PhonePreview
@@ -80,13 +83,14 @@ import dev.benica.corvidcontacts.ui.theme.currentThemeColor
 
 private enum class MigrationDecision { KEEP, UPLOAD, DISCARD }
 
+private val LocalOnboardingSignOut = staticCompositionLocalOf { {} }
+
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel,
     geocoderRepository: GeocoderRepository?,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val themeMode by viewModel.themeMode.collectAsState()
     val alwaysAddCountryCode by viewModel.alwaysAddCountryCode.collectAsState()
     val addressLookupMode by viewModel.addressLookupMode.collectAsState()
     val hasServerConnection by viewModel.hasServerConnection.collectAsState()
@@ -114,110 +118,160 @@ fun OnboardingScreen(
         return
     }
 
+    CompositionLocalProvider(LocalOnboardingSignOut provides viewModel::logout) {
+        when (val currentUiState = uiState) {
+            OnboardingUiState.Setup -> SetupStep(
+                initialAlwaysAdd = alwaysAddCountryCode,
+                initialAddressMode = addressLookupMode,
+                isSyncing = isBackgroundSyncing,
+                hasServerConnection = hasServerConnection,
+                onComplete = viewModel::saveSetupPreferences
+            )
+
+            OnboardingUiState.FinalizingSync -> FinalizingSyncStep()
+
+            is OnboardingUiState.LocalDataMigration -> LocalDataMigrationStep(
+                localBooks = currentUiState.localBooks,
+                isSubmitting = isMigratingLocalData,
+                hasServerConnection = hasServerConnection,
+                onSelection = viewModel::resolveLocalDataMigration
+            )
+
+            OnboardingUiState.BirthdayNotifications -> BirthdayNotificationsStep(
+                hasBirthdays = hasBirthdays,
+                currentlyEnabled = currentBirthdayNotificationsEnabled,
+                onSelection = viewModel::setBirthdayNotificationsEnabled
+            )
+
+            OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
+                contacts = contacts,
+                hasServerConnection = hasServerConnection,
+                onSelection = viewModel::setSelfContact,
+                onCreateNew = viewModel::startCreatingSelfContact
+            )
+
+            OnboardingUiState.CreatingSelfContact -> Unit
+        }
+    }
+}
+
+/**
+ * The layout every onboarding step shares: the step's [title] in the top bar, an optional
+ * [description] under it, [content] in a column with one padding rule, and [actions] pinned in a
+ * bottom bar that rides above the keyboard. Scrolling is decided here too: [scrollable] steps
+ * scroll as a whole, and the rest give their own list the remaining height.
+ */
+@Composable
+private fun OnboardingStepFrame(
+    title: String,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    scrollable: Boolean = false,
+    actions: (@Composable ColumnScope.() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val onSignOut = LocalOnboardingSignOut.current
+
     CCScaffold(
-        title = stringResource(R.string.onboarding_title),
+        title = title,
+        modifier = modifier,
         topBarActions = {
             CCIconButton(
                 icon = Icons.AutoMirrored.Rounded.Logout,
                 contentDescription = R.string.list_menu_logout,
-                onClick = viewModel::logout,
+                onClick = onSignOut,
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
-        content = { padding ->
-            CCWidthClampedBox(modifier = Modifier.padding(padding)) {
-                val currentUiState = uiState
-                val scrollState = rememberScrollState()
-                // Only unscrolled steps need the outer Column scrollable; the list-based ones scroll themselves.
-                val needsOuterScroll = currentUiState is OnboardingUiState.Setup ||
-                        currentUiState is OnboardingUiState.FinalizingSync ||
-                        currentUiState is OnboardingUiState.BirthdayNotifications
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(if (needsOuterScroll) Modifier.verticalScroll(scrollState) else Modifier),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    when (currentUiState) {
-                        OnboardingUiState.Setup -> SetupStep(
-                            themeMode = themeMode,
-                            initialAlwaysAdd = alwaysAddCountryCode,
-                            initialAddressMode = addressLookupMode,
-                            isSyncing = isBackgroundSyncing,
-                            hasServerConnection = hasServerConnection,
-                            onThemeSelection = viewModel::setThemeMode,
-                            onComplete = viewModel::saveSetupPreferences
+        bottomBar = {
+            if (actions != null) {
+                Surface(color = MaterialTheme.colorScheme.surface) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .imePadding()
+                            .navigationBarsPadding(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .widthIn(max = 600.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = Dimens.lgSpacing, vertical = Dimens.smSpacing),
+                            verticalArrangement = Arrangement.spacedBy(Dimens.xsSpacing),
+                            content = actions
                         )
-
-                        OnboardingUiState.FinalizingSync -> FinalizingSyncStep()
-
-                        is OnboardingUiState.LocalDataMigration -> LocalDataMigrationStep(
-                            localBooks = currentUiState.localBooks,
-                            isSubmitting = isMigratingLocalData,
-                            hasServerConnection = hasServerConnection,
-                            onSelection = viewModel::resolveLocalDataMigration
-                        )
-
-                        OnboardingUiState.BirthdayNotifications -> BirthdayNotificationsStep(
-                            hasBirthdays = hasBirthdays,
-                            currentlyEnabled = currentBirthdayNotificationsEnabled,
-                            onSelection = viewModel::setBirthdayNotificationsEnabled
-                        )
-
-                        OnboardingUiState.SelfContactSelection -> SelfContactSelectionStep(
-                            contacts = contacts,
-                            hasServerConnection = hasServerConnection,
-                            onSelection = viewModel::setSelfContact,
-                            onCreateNew = viewModel::startCreatingSelfContact
-                        )
-
-                        // Handled above via early return - never reached, but kept here so this `when`
-                        // stays exhaustive if that changes later.
-                        OnboardingUiState.CreatingSelfContact -> Unit
                     }
                 }
             }
+        },
+    ) { padding ->
+        CCWidthClampedBox(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                    .padding(horizontal = Dimens.smSpacing, vertical = Dimens.lgSpacing),
+                verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing),
+            ) {
+                if (description != null) {
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = Dimens.lgSpacing)
+                    )
+                }
+                content()
+            }
         }
-    )
+    }
 }
 
 @Composable
 private fun SetupStep(
-    themeMode: ThemeMode,
     initialAlwaysAdd: Boolean,
     initialAddressMode: AddressLookupMode,
     isSyncing: Boolean,
     hasServerConnection: Boolean,
-    onThemeSelection: (ThemeMode) -> Unit,
     onComplete: (alwaysAddCountryCode: Boolean, addressLookupMode: AddressLookupMode) -> Unit,
 ) {
     var selectedAlwaysAdd by remember(initialAlwaysAdd) { mutableStateOf(initialAlwaysAdd) }
     var selectedAddressMode by remember(initialAddressMode) { mutableStateOf(initialAddressMode) }
     val uriHandler = LocalUriHandler.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.smSpacing),
-        verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing),
-    ) {
-        if (hasServerConnection) {
-            Text(
-                text = if (isSyncing) {
-                    stringResource(R.string.onboarding_setup_description)
-                } else {
-                    stringResource(R.string.onboarding_setup_description_complete)
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+    OnboardingStepFrame(
+        title = stringResource(R.string.onboarding_title),
+        scrollable = true,
+        actions = {
+            if (hasServerConnection) {
+                Surface(
+                    color = currentThemeColor().surfaceVariant(),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        text = if (isSyncing) {
+                            stringResource(R.string.onboarding_setup_description)
+                        } else {
+                            stringResource(R.string.onboarding_setup_description_complete)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.medSpacing)
+                    )
+                }
+            }
+
+            CCButton(
+                text = R.string.onboarding_action_continue,
+                onClick = { onComplete(selectedAlwaysAdd, selectedAddressMode) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
-
-        ThemeSection(themeMode = themeMode, onThemeModeSelected = onThemeSelection)
-
+    ) {
         PhoneFormattingSection(alwaysAddCountryCode = selectedAlwaysAdd) {
             selectedAlwaysAdd = it
         }
@@ -227,33 +281,29 @@ private fun SetupStep(
             onModeSelected = { selectedAddressMode = it },
             uriHandler = uriHandler
         )
-
-        CCButton(
-            text = R.string.onboarding_action_continue,
-            onClick = {
-                onComplete(
-                    selectedAlwaysAdd,
-                    selectedAddressMode
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Dimens.lgSpacing)
-        )
     }
 }
 
 @Composable
 private fun FinalizingSyncStep() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        CircularProgressIndicator(modifier = Modifier.size(64.dp))
-        Text(
-            text = stringResource(R.string.onboarding_setup_syncing),
-            style = MaterialTheme.typography.headlineSmall
-        )
+    OnboardingStepFrame(title = stringResource(R.string.onboarding_title)) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(64.dp))
+                Text(
+                    text = stringResource(R.string.onboarding_setup_syncing),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+        }
     }
 }
 
@@ -269,7 +319,6 @@ private fun LocalDataMigrationStep(
     hasServerConnection: Boolean,
     onSelection: (booksToUpload: Map<AddressBookEntity, String>, booksToDelete: Set<AddressBookEntity>) -> Unit,
 ) {
-    val baseColor = currentThemeColor()
     val focusManager = LocalFocusManager.current
 
     var decisions by remember(localBooks) {
@@ -279,33 +328,50 @@ private fun LocalDataMigrationStep(
         mutableStateOf(localBooks.associate { it.href to (it.displayName ?: "") })
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Icon(
-            Icons.Rounded.CloudUpload,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = baseColor
-        )
-        Text(
-            text = stringResource(R.string.onboarding_local_migration_title),
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Text(
-            text = stringResource(R.string.onboarding_local_migration_description),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    OnboardingStepFrame(
+        title = stringResource(R.string.onboarding_local_migration_title),
+        description = stringResource(R.string.onboarding_local_migration_description),
+        actions = {
+            if (isSubmitting) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.medSpacing),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = Dimens.smSpacing)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    Text(stringResource(R.string.onboarding_local_migration_uploading))
+                }
+            }
 
+            CCButton(
+                text = R.string.onboarding_action_continue,
+                enabled = !isSubmitting,
+                onClick = {
+                    val booksToUpload = localBooks
+                        .filter { decisions[it] == MigrationDecision.UPLOAD }
+                        .associateWith { book ->
+                            (uploadNames[book.href] ?: "")
+                                .trim()
+                                .ifBlank { book.displayName ?: "" }
+                        }
+                    val booksToDelete = localBooks
+                        .filter { decisions[it] == MigrationDecision.DISCARD }
+                        .toSet()
+
+                    onSelection(
+                        booksToUpload,
+                        booksToDelete
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) {
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(Dimens.medSpacing)
         ) {
             items(
                 localBooks,
@@ -323,7 +389,7 @@ private fun LocalDataMigrationStep(
                         icon = icon,
                     )
 
-                    Column(modifier = Modifier.padding(Dimens.outerSpacing)) {
+                    Column(modifier = Modifier.padding(vertical = Dimens.smSpacing)) {
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.onboarding_local_migration_keep_separate)) },
                             leadingContent = {
@@ -400,41 +466,6 @@ private fun LocalDataMigrationStep(
                 }
             }
         }
-
-        if (isSubmitting) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                Text(stringResource(R.string.onboarding_local_migration_uploading))
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        CCButton(
-            text = R.string.onboarding_action_continue,
-            enabled = !isSubmitting,
-            onClick = {
-                val booksToUpload = localBooks
-                    .filter { decisions[it] == MigrationDecision.UPLOAD }
-                    .associateWith { book ->
-                        (uploadNames[book.href] ?: "")
-                            .trim()
-                            .ifBlank { book.displayName ?: "" }
-                    }
-                val booksToDelete = localBooks
-                    .filter { decisions[it] == MigrationDecision.DISCARD }
-                    .toSet()
-
-                onSelection(
-                    booksToUpload,
-                    booksToDelete
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -459,71 +490,46 @@ private fun BirthdayNotificationsStep(
             ) == PackageManager.PERMISSION_GRANTED
     val alreadyEnabled = currentlyEnabled && permissionGranted
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Icon(
-            Icons.Rounded.Cake,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            text = stringResource(R.string.onboarding_birthday_title),
-            style = MaterialTheme.typography.headlineSmall
-        )
+    OnboardingStepFrame(
+        title = stringResource(R.string.onboarding_birthday_title),
+        description = stringResource(
+            if (hasBirthdays) R.string.onboarding_birthday_description_has_birthdays
+            else R.string.onboarding_birthday_description_no_birthdays
+        ),
+        actions = {
+            if (alreadyEnabled) {
+                CCButton(
+                    text = R.string.onboarding_action_keep_enabled,
+                    onClick = { onSelection(true) },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        if (hasBirthdays) {
-            Text(
-                text = stringResource(R.string.onboarding_birthday_description_has_birthdays),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        } else {
-            Text(
-                text = stringResource(R.string.onboarding_birthday_description_no_birthdays),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                CCTextButton(
+                    text = R.string.onboarding_action_turn_off,
+                    onClick = { onSelection(false) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                CCButton(
+                    text = R.string.onboarding_action_enable_notifications,
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            onSelection(true)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                CCTextButton(
+                    text = R.string.onboarding_action_not_now,
+                    onClick = { onSelection(false) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
-
-        Spacer(Modifier.height(16.dp))
-
-        if (alreadyEnabled) {
-            CCButton(
-                text = R.string.onboarding_action_keep_enabled,
-                onClick = { onSelection(true) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            CCTextButton(
-                text = R.string.onboarding_action_turn_off,
-                onClick = { onSelection(false) },
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-            CCButton(
-                text = R.string.onboarding_action_enable_notifications,
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        onSelection(true)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            CCTextButton(
-                text = R.string.onboarding_action_not_now,
-                onClick = { onSelection(false) },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
+    ) {}
 }
 
 @Composable
@@ -550,26 +556,23 @@ private fun SelfContactSelectionStep(
         }
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.outerSpacing)
-    ) {
-        Text(
-            text = stringResource(R.string.onboarding_self_contact_title),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            text = stringResource(R.string.onboarding_self_contact_description),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    OnboardingStepFrame(
+        title = stringResource(R.string.onboarding_self_contact_title),
+        description = stringResource(R.string.onboarding_self_contact_description),
+        actions = {
+            CCButton(
+                text = R.string.onboarding_self_contact_create_new,
+                onClick = onCreateNew,
+                modifier = Modifier.fillMaxWidth()
+            )
 
+            CCTextButton(
+                text = R.string.onboarding_action_skip,
+                onClick = { onSelection(null) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) {
         if (contacts.isNotEmpty()) {
             CCOutlinedTextField(
                 value = searchQuery,
@@ -617,22 +620,11 @@ private fun SelfContactSelectionStep(
                 ),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.weight(1f))
         }
-
-        CCButton(
-            text = R.string.onboarding_self_contact_create_new,
-            onClick = onCreateNew,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        CCTextButton(
-            text = R.string.onboarding_action_skip,
-            onClick = { onSelection(null) },
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -640,30 +632,13 @@ private fun SelfContactSelectionStep(
 @Composable
 private fun SetupStepPreview() {
     CorvidContactsTheme {
-        CCScaffold(
-            title = "Setup",
-        ) { padding ->
-            CCWidthClampedBox(modifier = Modifier.padding(padding)) {
-                val scrollState = rememberScrollState()
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    SetupStep(
-                        themeMode = ThemeMode.SYSTEM,
-                        initialAlwaysAdd = true,
-                        initialAddressMode = AddressLookupMode.PHOTON,
-                        isSyncing = true,
-                        hasServerConnection = true,
-                        onThemeSelection = {},
-                        onComplete = { _, _ -> }
-                    )
-                }
-            }
-        }
+        SetupStep(
+            initialAlwaysAdd = true,
+            initialAddressMode = AddressLookupMode.PHOTON,
+            isSyncing = true,
+            hasServerConnection = true,
+            onComplete = { _, _ -> }
+        )
     }
 }
 

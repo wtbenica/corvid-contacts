@@ -8,7 +8,6 @@ import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.AddressLookupMode
-import dev.benica.corvidcontacts.data.model.ThemeMode
 import dev.benica.corvidcontacts.data.repository.AuthRepository
 import dev.benica.corvidcontacts.data.repository.ContactsRepository
 import dev.benica.corvidcontacts.data.repository.SettingsRepository
@@ -60,14 +59,6 @@ class OnboardingViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             false
-        )
-
-    /** The user's preferred theme mode. */
-    val themeMode: StateFlow<ThemeMode> = settingsRepository.themeMode
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            ThemeMode.SYSTEM
         )
 
     /**
@@ -188,13 +179,6 @@ class OnboardingViewModel(
             } else {
                 // Local-only mode: no background sync needed.
             }
-        }
-    }
-
-    /** Sets the user's preferred theme mode. */
-    fun setThemeMode(mode: ThemeMode) {
-        viewModelScope.launch {
-            settingsRepository.saveThemeMode(mode)
         }
     }
 

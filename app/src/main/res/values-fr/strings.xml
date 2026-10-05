@@ -442,7 +442,7 @@
     <string name="onboarding_setup_description_complete">Synchronisation terminée ! Vous pouvez continuer la configuration.</string>
     <string name="onboarding_setup_syncing">Finalisation de la synchronisation…</string>
     <string name="onboarding_setup_transparency_title">Note</string>
-    <string name="onboarding_local_migration_title">Qu\'en est-il de vos contacts locaux ?</string>
+    <string name="onboarding_local_migration_title">Contacts locaux</string>
     <string name="onboarding_local_migration_description">Vous avez des contacts qui ne sont encore synchronisés nulle part. Pour chaque carnet d\'adresses, choisissez de le garder local sur cet appareil ou de le transférer vers votre nouveau serveur.</string>
     <string name="onboarding_local_migration_keep_separate">Garder local sur cet appareil</string>
     <string name="onboarding_local_migration_upload">Transférer vers ce serveur</string>

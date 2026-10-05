@@ -426,7 +426,7 @@
     <string name="onboarding_setup_description_complete">Synchronisierung abgeschlossen! Du kannst mit der Einrichtung fortfahren.</string>
     <string name="onboarding_setup_syncing">Synchronisierung wird abgeschlossen…</string>
     <string name="onboarding_setup_transparency_title">Hinweis</string>
-    <string name="onboarding_local_migration_title">Was passiert mit deinen lokalen Kontakten?</string>
+    <string name="onboarding_local_migration_title">Lokale Kontakte</string>
     <string name="onboarding_local_migration_description">Du hast Kontakte, die noch nirgendwo synchronisiert sind. Wähle für jedes Adressbuch, ob es lokal auf diesem Gerät bleiben oder auf deinen neuen Server hochgeladen werden soll.</string>
     <string name="onboarding_local_migration_keep_separate">Lokal auf diesem Gerät behalten</string>
     <string name="onboarding_local_migration_upload">Auf diesen Server hochladen</string>

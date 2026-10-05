@@ -442,7 +442,7 @@
     <string name="onboarding_setup_description_complete">¡Sincronización completa! Puedes continuar con la configuración.</string>
     <string name="onboarding_setup_syncing">Finalizando sincronización…</string>
     <string name="onboarding_setup_transparency_title">Nota</string>
-    <string name="onboarding_local_migration_title">¿Qué hacemos con tus contactos locales?</string>
+    <string name="onboarding_local_migration_title">Contactos locales</string>
     <string name="onboarding_local_migration_description">Tienes contactos que aún no están sincronizados en ningún sitio. Para cada libreta de direcciones, elige si quieres mantenerla local en este dispositivo o subirla a tu nuevo servidor.</string>
     <string name="onboarding_local_migration_keep_separate">Mantener local en este dispositivo</string>
     <string name="onboarding_local_migration_upload">Subir a este servidor</string>

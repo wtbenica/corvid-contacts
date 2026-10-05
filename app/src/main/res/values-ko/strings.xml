@@ -412,7 +412,7 @@
     <string name="onboarding_setup_description_complete">동기화가 완료되었습니다! 설정을 계속 진행할 수 있습니다.</string>
     <string name="onboarding_setup_syncing">동기화를 마무리하는 중…</string>
     <string name="onboarding_setup_transparency_title">참고</string>
-    <string name="onboarding_local_migration_title">로컬 연락처는 어떻게 되나요?</string>
+    <string name="onboarding_local_migration_title">로컬 연락처</string>
     <string name="onboarding_local_migration_description">아직 어디에도 동기화되지 않은 연락처가 있습니다. 각 주소록을 이 기기에만 보관할지, 새 서버에 업로드할지 선택하세요.</string>
     <string name="onboarding_local_migration_keep_separate">이 기기에만 보관</string>
     <string name="onboarding_local_migration_upload">이 서버에 업로드</string>
