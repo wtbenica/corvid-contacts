@@ -19,7 +19,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SystemContactHiddenEntity::class,
     ],
     version = 26,
-    exportSchema = false
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

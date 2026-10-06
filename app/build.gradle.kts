@@ -105,6 +105,12 @@ android {
         resValues = true
     }
 
+    sourceSets {
+        // Room's exported schemas, which the migration tests start old databases from. Robolectric
+        // reads assets from the app's own, so they go in the debug build's.
+        getByName("debug").assets.srcDir("$projectDir/schemas")
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -189,6 +195,7 @@ dependencies {
 
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
@@ -204,4 +211,8 @@ dependencies {
 
     "ksp"(libs.androidx.room.compiler)
     "ksp"(libs.moshi.kotlin.codegen)
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
