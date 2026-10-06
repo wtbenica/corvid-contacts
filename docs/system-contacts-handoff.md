@@ -554,3 +554,40 @@ notes at Everything. The test review and coverage audit stays last; it should in
 the kept rows, the reader and the absorber, which only the phone has exercised.
 Play Console work is the user's.
 
+
+### 2026-10-05 (night), Gotham to Oracle
+
+Branch `1.0.5` has `system-contacts-design` merged. Test work is on **`test-coverage`**, branched from
+`1.0.5`; it has commits that `1.0.5` lacks and none the other way, so merging it
+is a fast-forward. Read `docs/test-audit.md`, "Status", first: it is the source of truth for what
+is done.
+
+**Done on `test-coverage`:** cleanup, the provider tests (`SystemContactRowsTest` on the JVM, 13
+instrumented tests in `app/src/androidTest/.../data/system/SystemContactsMirrorInstrumentedTest.kt`),
+`ContactMerger`, migrations against the real schemas 19 to 26, `BirthdayDates`, `IntentParser`, and
+now `ContactsRepository` (local mode and the server paths). `./gradlew testDebugUnitTest` passes.
+The instrumented tests need an emulator: `ANDROID_SERIAL=emulator-5554 ./gradlew connectedDebugAndroidTest`.
+
+**Two behavior fixes the tests found**, both in `CHANGELOG.md` under Fixed: year-less and February 29
+birthdays now get reminders, and a street address shared from another app is kept.
+
+**Next:** gap 7 (view models: `OnboardingViewModel`, `MainViewModel`, `LoginViewModel`,
+`SettingsViewModel`, `ContactsViewModel`), then gap 8 (a few Compose tests: the sharing rows, the
+hidden-contact card and menu, the fill-in-address dialog, the onboarding sharing step when the
+permission is denied). Then offer the user the merge of `test-coverage` into `1.0.5`.
+
+**Gotchas for the next tests:**
+- `RepositoryTestBase` clears stored credentials before each test. The DataStores are process-wide
+  and outlive a test inside one JVM, so a login saved by one test shows up in the next; a view model
+  test that uses `AuthRepository` or `SettingsRepository` will need the same reset (and a reset of any
+  setting it changes).
+- `ContactsRepositoryServerTest` uses a `Dispatcher` that routes by method and by what the PROPFIND body
+  asks for, not a queue, so the order of the discovery requests does not matter. Seed the server book in
+  Room before testing an upload: `createAddressBook` picks the first book that was not in Room before
+  its sync, so a server book that was never synced here would be taken for the new one.
+- Check a new test by breaking the code it covers and watching it fail. Restore from a copy in the
+  scratchpad, not with `git checkout app/src/main`, which discards uncommitted work.
+
+**Still the user's:** the Play Console READ_CONTACTS declaration (`docs/play-console-1.0.5.md`),
+merging the website branch to `main` at rollout, and a native-speaker review of the translations.
+Nothing here is merged to `main` or deployed.

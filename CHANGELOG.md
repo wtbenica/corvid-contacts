@@ -62,6 +62,8 @@ on Google Play is a summary of the user-visible items below.
   sent to the server as real dates.
 - Birthday reminders now work for birthdays saved without a year, which never triggered one before,
   and a February 29 birthday is reminded on February 28 in years that have no February 29.
+- Sharing a street address to Corvid from another app now creates a contact with that address
+  instead of an empty one.
 - The color preview in the create address book dialog was squeezed out of view by the slider. The
   chosen color now shows on the selected icon while you pick it.
 

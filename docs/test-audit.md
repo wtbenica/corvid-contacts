@@ -2,8 +2,27 @@
 
 # Test review and coverage audit
 
-Done 2026-10-05 on branch `1.0.5` (commit `4d64a28`). Nothing was changed in the tests; this is the
-review, the gap list and a recommended order.
+Done 2026-10-05 on branch `1.0.5` (commit `4d64a28`). The review, the gap list and a recommended order
+follow; the status below says how far the work has got on branch `test-coverage`.
+
+## Status (updated 2026-10-05, after gap 3)
+
+| Item | State |
+| --- | --- |
+| Cleanup | Done |
+| 1. Provider tests and reader split | Done: `SystemContactRowsTest` (JVM) and 13 instrumented tests against the real provider |
+| 2. `ContactMerger` | Done |
+| 6. Migrations | Done: real schemas 19 to 26, exported to `app/schemas` |
+| 4. `BirthdayWorker` | Done: `BirthdayDates` extracted and tested; year-less and Feb 29 now remind |
+| 5. `IntentParser` | Done: found and fixed a shared street address being dropped |
+| 3. `ContactsRepository` | Done: `ContactsRepositoryLocalTest` (16), `ContactsRepositoryServerTest` (20, MockWebServer with a routing dispatcher), shared `RepositoryTestBase` and `DavFixtures` |
+| 7. View models | **Next** |
+| 8. Compose UI | After 7 |
+| 9. Lower value | Not started |
+
+Left out of gap 3 on purpose: the photo and phone repair paths inside sync (covered in part by
+`ContactsRepositorySyncTest`) and `importVCardText` with remote photo downloads (needs a photo server).
+Each new test was checked by breaking the code it covers and watching it fail.
 
 ## The numbers
 
