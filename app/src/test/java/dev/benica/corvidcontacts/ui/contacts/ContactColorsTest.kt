@@ -17,18 +17,7 @@ class ContactColorsTest {
         val contactColor = Color(0xFFFF0000).toArgb() // Red
         val bookColor = Color(0xFF00FF00).toArgb() // Green
 
-        val contact = ContactEntity(
-            id = "1",
-            displayName = "Test",
-            firstName = "First",
-            lastName = "Last",
-            emails = emptyList(),
-            phones = emptyList(),
-            photoUrl = null,
-            etag = null,
-            addressBookHref = "/book/",
-            colorInt = contactColor
-        )
+        val contact = contact(colorInt = contactColor)
         val book = AddressBookEntity(
             href = "/book/",
             displayName = "Book",
@@ -51,18 +40,7 @@ class ContactColorsTest {
     fun `resolveColor returns book override when contact override is missing`() {
         val bookColor = Color(0xFF00FF00).toArgb() // Green
 
-        val contact = ContactEntity(
-            id = "1",
-            displayName = "Test",
-            firstName = "First",
-            lastName = "Last",
-            emails = emptyList(),
-            phones = emptyList(),
-            photoUrl = null,
-            etag = null,
-            addressBookHref = "/book/",
-            colorInt = null
-        )
+        val contact = contact(colorInt = null)
         val book = AddressBookEntity(
             href = "/book/",
             displayName = "Book",
@@ -82,19 +60,8 @@ class ContactColorsTest {
     }
 
     @Test
-    fun `resolveColor returns default book color when no book missing`() {
-        val contact = ContactEntity(
-            id = "1",
-            displayName = "Test",
-            firstName = "First",
-            lastName = "Last",
-            emails = emptyList(),
-            phones = emptyList(),
-            photoUrl = null,
-            etag = null,
-            addressBookHref = "/book/",
-            colorInt = null
-        )
+    fun `resolveColor falls back to the default book color when the contact has no book`() {
+        val contact = contact(colorInt = null)
 
         val expected = ContactColors.getAddressBookColorWithFallback(
             customColor = null,
@@ -121,4 +88,17 @@ class ContactColorsTest {
             resolved
         )
     }
+
+    private fun contact(colorInt: Int?) = ContactEntity(
+        id = "1",
+        displayName = "Test",
+        firstName = "First",
+        lastName = "Last",
+        emails = emptyList(),
+        phones = emptyList(),
+        photoUrl = null,
+        etag = null,
+        addressBookHref = "/book/",
+        colorInt = colorInt
+    )
 }

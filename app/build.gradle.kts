@@ -75,6 +75,7 @@ android {
 
     buildTypes {
         debug {
+            enableUnitTestCoverage = true
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
             resValue("string", "system_contacts_account_type", "dev.benica.corvidcontacts.debug")
@@ -107,6 +108,13 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            all {
+                // Robolectric loads the app's classes itself, so the coverage agent has to count them anyway.
+                it.extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class.java) {
+                    isIncludeNoLocationClasses = true
+                    excludes = listOf("jdk.internal.*")
+                }
+            }
         }
     }
 

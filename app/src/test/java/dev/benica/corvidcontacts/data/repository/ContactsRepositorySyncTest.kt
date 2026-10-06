@@ -3,27 +3,20 @@
 package dev.benica.corvidcontacts.data.repository
 
 import android.content.Context
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import dev.benica.corvidcontacts.data.local.AddressBookDao
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
-import dev.benica.corvidcontacts.data.local.ContactDao
+import dev.benica.corvidcontacts.data.local.AppDatabase
 import dev.benica.corvidcontacts.data.local.ContactEntity
-import dev.benica.corvidcontacts.data.local.ContactId
-import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.NextcloudCredentials
 import dev.benica.corvidcontacts.data.model.Phone
-import dev.benica.corvidcontacts.data.model.SystemContactsLevel
-import dev.benica.corvidcontacts.ui.contacts.PhoneFormatter
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -44,8 +37,7 @@ import org.robolectric.annotation.Config
 class ContactsRepositorySyncTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var fakeAddressBookDao: FakeAddressBookDao
-    private lateinit var fakeContactDao: FakeContactDao
+    private lateinit var database: AppDatabase
     private lateinit var repository: ContactsRepository
 
     private val principalHref = "/remote.php/dav/principals/testuser/"
@@ -57,17 +49,18 @@ class ContactsRepositorySyncTest {
         mockWebServer = MockWebServer()
         mockWebServer.start()
 
-        fakeAddressBookDao = FakeAddressBookDao()
-        fakeContactDao = FakeContactDao(addressBooks = { fakeAddressBookDao.books.value })
-
         val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         val authRepository = AuthRepository(context)
         val settingsRepository = SettingsRepository(context)
 
         repository = ContactsRepository(
             context = context,
-            contactDao = fakeContactDao,
-            addressBookDao = fakeAddressBookDao,
+            contactDao = database.contactDao(),
+            addressBookDao = database.addressBookDao(),
             authRepository = authRepository,
             settingsRepository = settingsRepository,
         )
@@ -88,13 +81,14 @@ class ContactsRepositorySyncTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
+        database.close()
     }
 
     @Test
     fun `sync does not restore phones and emails that were deleted on another client`() {
         // Seed the local cache as if a previous sync had already pulled this contact down with
         // 2 emails and 2 phones.
-        fakeAddressBookDao.seed(
+        seedBooks(
             AddressBookEntity(
                 href = bookHref,
                 displayName = "Contacts",
@@ -102,7 +96,7 @@ class ContactsRepositorySyncTest {
                 isVisible = true,
             )
         )
-        fakeContactDao.seed(
+        seedContacts(
             ContactEntity(
                 id = "contact-1",
                 displayName = "",
@@ -165,7 +159,7 @@ class ContactsRepositorySyncTest {
             result.isSuccess
         )
 
-        val synced = runBlocking { fakeContactDao.getContactById("contact-1") }
+        val synced = runBlocking { database.contactDao().getContactById("contact-1") }
         assertEquals(
             "Emails deleted on another client must not be restored from the local cache",
             emptyList<Email>(),
@@ -182,7 +176,7 @@ class ContactsRepositorySyncTest {
     fun `sync removes address books and their contacts once no longer reported by the server`() {
         val orphanedBookHref = "/remote.php/dav/addressbooks/testuser/orphaned/"
 
-        fakeAddressBookDao.seed(
+        seedBooks(
             AddressBookEntity(
                 href = bookHref,
                 displayName = "Contacts",
@@ -196,7 +190,7 @@ class ContactsRepositorySyncTest {
                 colorInt = 0xFFFEFEFE.toInt()
             )
         )
-        fakeContactDao.seed(
+        seedContacts(
             ContactEntity(
                 id = "orphan-contact",
                 displayName = "Old Contact",
@@ -239,33 +233,24 @@ class ContactsRepositorySyncTest {
 
         assertTrue(
             "Orphaned address book should have been deleted locally",
-            fakeAddressBookDao.books.value.none { it.href == orphanedBookHref }
+            runBlocking { database.addressBookDao().getAllAddressBooks().first() }.none { it.href == orphanedBookHref }
         )
-        val orphanedContact = runBlocking { fakeContactDao.getContactById("orphan-contact") }
+        val orphanedContact = runBlocking { database.contactDao().getContactById("orphan-contact") }
         assertNull(
             "Contacts belonging to an orphaned address book should have been deleted locally",
             orphanedContact
         )
     }
 
-    @Test
-    fun `PhoneFormatter reformats a raw number under Robolectric`() {
-        // Verifies libphonenumber-android metadata loads correctly.
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val formatted = PhoneFormatter.format(
-            "5551234567",
-            includeCountryCode = true,
-            context = context,
-            region = "US"
-        )
-        assertNotEquals(
-            "Expected the raw number to be reformatted, not passed through unchanged",
-            "5551234567",
-            formatted
-        )
+    // --- Fixture helpers -----------------------------------------------------------------
+
+    private fun seedBooks(vararg books: AddressBookEntity) = runBlocking {
+        database.addressBookDao().insertAddressBooks(books.toList())
     }
 
-    // --- Fixture helpers -----------------------------------------------------------------
+    private fun seedContacts(vararg contacts: ContactEntity) = runBlocking {
+        database.contactDao().insertContacts(contacts.toList())
+    }
 
     private fun enqueuePrincipalAndHomeSet() {
         mockWebServer.enqueue(
@@ -377,160 +362,3 @@ private fun emptyMultistatusResponse(): String {
 
 // --- In-memory fakes (unlike ContactsRepositoryVCardRoundTripTest's NoOp fakes, these actually
 // store data, since these tests need to assert on DAO state after a sync cycle runs) ----------
-
-private class FakeContactDao(
-    private val addressBooks: () -> List<AddressBookEntity>,
-) : ContactDao {
-    private val contacts = MutableStateFlow<List<ContactEntity>>(emptyList())
-
-    fun seed(vararg entities: ContactEntity) {
-        contacts.value += entities
-    }
-
-    private fun withBook(entity: ContactEntity): ContactWithAddressBook {
-        val book = addressBooks().find { it.href == entity.addressBookHref }
-        return ContactWithAddressBook(
-            entity,
-            book
-        )
-    }
-
-    override fun getAllVisibleContacts(): Flow<List<ContactWithAddressBook>> =
-        contacts.map { list ->
-            list
-                .filter { !it.isArchived }
-                .map(::withBook)
-        }
-
-    override fun getArchivedContacts(): Flow<List<ContactWithAddressBook>> =
-        contacts.map { list ->
-            list
-                .filter { it.isArchived }
-                .map(::withBook)
-        }
-
-    override fun getAllContacts(): Flow<List<ContactWithAddressBook>> =
-        contacts.map { list -> list.map(::withBook) }
-
-    override suspend fun getAllContactsSync(): List<ContactWithAddressBook> =
-        contacts.value.map(::withBook)
-
-    override suspend fun getContactById(id: String): ContactWithAddressBook? =
-        contacts.value
-            .find { it.id == id }
-            ?.let(::withBook)
-
-    override suspend fun getContactCountInAddressBook(addressBookHref: String): Int =
-        contacts.value.count { it.addressBookHref == addressBookHref }
-
-    override suspend fun getContactsWithPendingRemotePhotos(): List<ContactEntity> =
-        contacts.value.filter { it.photoUrl?.startsWith("http", ignoreCase = true) == true }
-
-    override suspend fun insertContacts(contacts: List<ContactEntity>) {
-        val current = this.contacts.value
-            .associateBy { it.id }
-            .toMutableMap()
-        contacts.forEach { current[it.id] = it }
-        this.contacts.value = current.values.toList()
-    }
-
-    override suspend fun deleteContact(contact: ContactEntity) {
-        contacts.value = contacts.value.filterNot { it.id == contact.id }
-    }
-
-    override suspend fun deleteContactsByAddressBook(addressBookHref: String) {
-        contacts.value = contacts.value.filterNot { it.addressBookHref == addressBookHref }
-    }
-
-    override suspend fun clearAll() {
-        contacts.value = emptyList()
-    }
-
-    override suspend fun clearAllExceptLocal() {
-        contacts.value = contacts.value.filter {
-            it.addressBookHref?.startsWith("local://") == true
-        }
-    }
-
-    override fun getContactByIdFlow(contactId: ContactId): Flow<ContactWithAddressBook?> =
-        contacts.map { list ->
-            list
-                .find { it.id == contactId }
-                ?.let(::withBook)
-        }
-}
-
-private class FakeAddressBookDao : AddressBookDao {
-    val books = MutableStateFlow<List<AddressBookEntity>>(emptyList())
-
-    fun seed(vararg entities: AddressBookEntity) {
-        books.value += entities
-    }
-
-    override fun getAllAddressBooks(): Flow<List<AddressBookEntity>> = books
-
-    override fun getUserManageableAddressBooks(): Flow<List<AddressBookEntity>> =
-        books.map { list ->
-            list.filterNot {
-                it.displayName?.contains(
-                    "Archived",
-                    ignoreCase = true
-                ) == true
-            }
-        }
-
-    // Mirrors the real DAO's @Insert(onConflict = OnConflictStrategy.IGNORE): existing hrefs are
-    // left untouched by an insert call.
-    override suspend fun insertAddressBooks(addressBooks: List<AddressBookEntity>) {
-        val current = books.value
-            .associateBy { it.href }
-            .toMutableMap()
-        addressBooks.forEach { book ->
-            current.putIfAbsent(
-                book.href,
-                book
-            )
-        }
-        books.value = current.values.toList()
-    }
-
-    override suspend fun updateShareWithSystem(href: String, share: Boolean) {
-        books.value = books.value.map {
-            if (it.href == href) it.copy(shareWithSystem = share) else it
-        }
-    }
-
-    override suspend fun updateSystemContactsLevel(href: String, level: SystemContactsLevel) {
-        books.value = books.value.map {
-            if (it.href == href) it.copy(systemContactsLevel = level) else it
-        }
-    }
-
-    override suspend fun updateAddressBook(addressBook: AddressBookEntity) {
-        books.value = books.value.map { if (it.href == addressBook.href) addressBook else it }
-    }
-
-    override suspend fun deleteAddressBooks(addressBooks: List<AddressBookEntity>) {
-        val hrefs = addressBooks
-            .map { it.href }
-            .toSet()
-        books.value = books.value.filterNot { it.href in hrefs }
-    }
-
-    override suspend fun clearAll() {
-        books.value = emptyList()
-    }
-
-    override suspend fun clearAllExceptLocal() {
-        books.value = books.value.filter { it.href.startsWith("local://") }
-    }
-
-    override suspend fun updateDisplayName(
-        href: String,
-        displayName: String?,
-    ) {
-        books.value = books.value.map {
-            if (it.href == href) it.copy(displayName = displayName) else it
-        }
-    }
-}

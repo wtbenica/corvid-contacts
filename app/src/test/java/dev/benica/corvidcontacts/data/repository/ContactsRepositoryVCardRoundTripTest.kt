@@ -4,23 +4,18 @@ package dev.benica.corvidcontacts.data.repository
 
 import android.content.Context
 import android.util.Base64
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import dev.benica.corvidcontacts.data.local.AddressBookDao
-import dev.benica.corvidcontacts.data.local.AddressBookEntity
-import dev.benica.corvidcontacts.data.local.ContactDao
+import dev.benica.corvidcontacts.data.local.AppDatabase
 import dev.benica.corvidcontacts.data.local.ContactEntity
-import dev.benica.corvidcontacts.data.local.ContactId
-import dev.benica.corvidcontacts.data.local.ContactWithAddressBook
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.Phone
 import dev.benica.corvidcontacts.data.model.Relationship
 import dev.benica.corvidcontacts.data.model.SocialProfile
 import dev.benica.corvidcontacts.data.model.StructuredAddress
-import dev.benica.corvidcontacts.data.model.SystemContactsLevel
 import ezvcard.Ezvcard
 import ezvcard.VCardVersion
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -52,6 +47,7 @@ import java.io.File
 @Config(sdk = [34])
 class ContactsRepositoryVCardRoundTripTest {
 
+    private lateinit var database: AppDatabase
     private lateinit var repository: ContactsRepository
     private lateinit var vCardMapper: VCardMapper
     private lateinit var photoManager: PhotoManager
@@ -61,15 +57,24 @@ class ContactsRepositoryVCardRoundTripTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         photoManager = PhotoManager(context)
         vCardMapper = VCardMapper(photoManager)
+        database = Room
+            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         repository = ContactsRepository(
             context = context,
-            contactDao = NoOpContactDao(),
-            addressBookDao = NoOpAddressBookDao(),
+            contactDao = database.contactDao(),
+            addressBookDao = database.addressBookDao(),
             authRepository = AuthRepository(context),
             settingsRepository = SettingsRepository(context),
             photoManager = photoManager,
             vCardMapper = vCardMapper
         )
+    }
+
+    @After
+    fun tearDown() {
+        database.close()
     }
 
     @Test
@@ -332,42 +337,4 @@ class ContactsRepositoryVCardRoundTripTest {
         photoUrl = null,
         etag = "etag"
     )
-}
-
-/** Unused by the mapping functions under test; only exists to satisfy [ContactsRepository]'s constructor. */
-private class NoOpContactDao : ContactDao {
-    override fun getAllVisibleContacts(): Flow<List<ContactWithAddressBook>> = flowOf(emptyList())
-    override fun getArchivedContacts(): Flow<List<ContactWithAddressBook>> = flowOf(emptyList())
-    override fun getAllContacts(): Flow<List<ContactWithAddressBook>> = flowOf(emptyList())
-    override suspend fun getAllContactsSync(): List<ContactWithAddressBook> = emptyList()
-    override suspend fun getContactById(id: String): ContactWithAddressBook? = null
-    override suspend fun getContactCountInAddressBook(addressBookHref: String): Int = 0
-    override suspend fun getContactsWithPendingRemotePhotos(): List<ContactEntity> = emptyList()
-    override suspend fun insertContacts(contacts: List<ContactEntity>) = Unit
-    override suspend fun deleteContact(contact: ContactEntity) = Unit
-    override suspend fun deleteContactsByAddressBook(addressBookHref: String) = Unit
-    override suspend fun clearAll() = Unit
-    override suspend fun clearAllExceptLocal() = Unit
-    override fun getContactByIdFlow(contactId: ContactId): Flow<ContactWithAddressBook?> =
-        flowOf(null)
-}
-
-/** Unused by the mapping functions under test; only exists to satisfy [ContactsRepository]'s constructor. */
-private class NoOpAddressBookDao : AddressBookDao {
-    override fun getAllAddressBooks(): Flow<List<AddressBookEntity>> = flowOf(emptyList())
-    override fun getUserManageableAddressBooks(): Flow<List<AddressBookEntity>> =
-        flowOf(emptyList())
-
-    override suspend fun insertAddressBooks(addressBooks: List<AddressBookEntity>) = Unit
-    override suspend fun updateAddressBook(addressBook: AddressBookEntity) = Unit
-    override suspend fun deleteAddressBooks(addressBooks: List<AddressBookEntity>) = Unit
-    override suspend fun clearAll() = Unit
-    override suspend fun clearAllExceptLocal() = Unit
-    override suspend fun updateDisplayName(
-        href: String,
-        displayName: String?,
-    ) = Unit
-
-    override suspend fun updateShareWithSystem(href: String, share: Boolean) = Unit
-    override suspend fun updateSystemContactsLevel(href: String, level: SystemContactsLevel) = Unit
 }
