@@ -378,7 +378,7 @@
     <string name="detail_section_other">Otro</string>
     <string name="common_settings_phone_formatting">Formato de teléfono</string>
     <string name="common_settings_country_code_title">Agregar código de país</string>
-    <string name="common_settings_country_code_description">Agregar automáticamente el código de país a números formateados</string>
+    <string name="common_settings_country_code_description">Agrega un código de país a los números que no lo tienen. Desactivado, los números conservan el código que tienen y no se agrega ninguno.</string>
     <string name="common_settings_address_lookup_title">Búsqueda de direcciones</string>
     <string name="common_settings_address_lookup_description">Al escribir una dirección, la app puede sugerir coincidencias enviando lo que escribes a un servicio externo.</string>
     <string name="common_settings_theme_title">Tema</string>

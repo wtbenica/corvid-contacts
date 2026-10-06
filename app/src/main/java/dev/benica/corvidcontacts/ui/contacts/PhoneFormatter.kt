@@ -5,13 +5,15 @@ package dev.benica.corvidcontacts.ui.contacts
 import android.content.Context
 import android.util.Log
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import io.michaelrocks.libphonenumber.android.Phonenumber
 import java.util.Locale
 
 object PhoneFormatter {
 
     /**
      * Standardizes a number for display using the country's national standard.
-     * If [includeCountryCode] is true, it returns the international format (+XX ...).
+     * If [includeCountryCode] is true, it returns the international format (+XX ...). If false, a number
+     * keeps a country code it was given and one without gets none, so no code is ever removed.
      * If [significantOnly] is true, it returns the number without trunk prefixes (like the UK '0').
      */
     fun format(
@@ -27,10 +29,12 @@ object PhoneFormatter {
         val defaultRegion = region?.uppercase() ?: Locale.getDefault().country.ifBlank { "US" }
 
         try {
-            val numberProto = phoneUtil.parse(
+            val numberProto = phoneUtil.parseAndKeepRawInput(
                 phone,
                 defaultRegion
             )
+            val keepCountryCode = includeCountryCode ||
+                    numberProto.countryCodeSource != Phonenumber.PhoneNumber.CountryCodeSource.FROM_DEFAULT_COUNTRY
 
             if (significantOnly) {
                 // To get it formatted (with spaces/dashes), we format as INTERNATIONAL 
@@ -51,7 +55,7 @@ object PhoneFormatter {
                 }
             }
 
-            val formatted = if (includeCountryCode) {
+            val formatted = if (keepCountryCode) {
                 phoneUtil.format(
                     numberProto,
                     PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
@@ -64,7 +68,7 @@ object PhoneFormatter {
             }
 
             val numberRegion = phoneUtil.getRegionCodeForNumber(numberProto)
-            if (numberRegion == "US" || numberRegion == "CA" || (includeCountryCode && formatted.startsWith(
+            if (numberRegion == "US" || numberRegion == "CA" || (keepCountryCode && formatted.startsWith(
                     "+1"
                 ))
             ) {

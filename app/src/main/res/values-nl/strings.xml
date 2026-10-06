@@ -364,7 +364,7 @@
     <string name="detail_section_other">Overig</string>
     <string name="common_settings_phone_formatting">Telefoonnummeropmaak</string>
     <string name="common_settings_country_code_title">Landcode toevoegen</string>
-    <string name="common_settings_country_code_description">Voegt automatisch de lokale landcode toe aan geformatteerde nummers</string>
+    <string name="common_settings_country_code_description">Voegt een landcode toe aan nummers die er geen hebben. Uitgeschakeld houden nummers hun landcode en wordt er geen toegevoegd.</string>
     <string name="common_settings_address_lookup_title">Adres opzoeken</string>
     <string name="common_settings_address_lookup_description">Wanneer je een adres typt, kan de app suggesties doen door wat je typt naar een externe dienst te sturen.</string>
     <string name="common_settings_theme_title">Thema</string>

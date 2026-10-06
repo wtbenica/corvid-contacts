@@ -70,6 +70,10 @@ on Google Play is a summary of the user-visible items below.
   selected, a search active, or archived contacts, the group split in two. It now renames it on
   every contact. Merging two contacts likewise only repointed relationships on the contacts shown,
   leaving others linked to the contact that was deleted. It now repoints all of them.
+- Turning off "Prepend Country Code" used to strip the country code from every phone number, including
+  foreign ones, which could not be told apart from local numbers afterwards. It now never removes a
+  code: a number keeps the code it has, and one without a code gets none. The setting's description says
+  so. Numbers already stored without a code are not changed.
 - The "Prepend Country Code" switch no longer starts off for a moment on Settings while the saved
   choice loads. It starts from the same default (on) everywhere.
 - A relationship that links to another contact is now shared by name only when that contact is in a

@@ -364,7 +364,7 @@
     <string name="detail_section_other">Sonstiges</string>
     <string name="common_settings_phone_formatting">Telefonnummernformatierung</string>
     <string name="common_settings_country_code_title">Landesvorwahl voranstellen</string>
-    <string name="common_settings_country_code_description">Fügt formatierten Nummern automatisch die lokale Landesvorwahl hinzu</string>
+    <string name="common_settings_country_code_description">Fügt Nummern ohne Landesvorwahl eine hinzu. Ausgeschaltet behalten Nummern ihre Vorwahl, und es wird keine ergänzt.</string>
     <string name="common_settings_address_lookup_title">Adresssuche</string>
     <string name="common_settings_address_lookup_description">Wenn du eine Adresse eingibst, kann die App Vorschläge machen, indem sie deine Eingabe an einen externen Dienst sendet.</string>
     <string name="common_settings_theme_title">Design</string>
