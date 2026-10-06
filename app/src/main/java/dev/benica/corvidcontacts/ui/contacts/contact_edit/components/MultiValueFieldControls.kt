@@ -13,12 +13,12 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -301,6 +301,23 @@ fun MultiValueFieldListPreview() {
                 modifier = Modifier.padding(Dimens.innerSpacing),
                 verticalArrangement = Arrangement.spacedBy(Dimens.lgSpacing)
             ) {
+                TypedFieldControlsRow(
+                    type = "HOME",
+                    onTypeChange = {},
+                    types = VCardType.commonPhoneTypes,
+                    enabled = true,
+                    onDelete = {},
+                    extraAction = {
+                        CCIconButton(
+                            icon = Icons.Outlined.AutoFixHigh,
+                            contentDescription = null,
+                            onClick = {},
+                            modifier = Modifier.width(40.dp),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                )
+
                 MultiValueFieldList(
                     controller = MultiValueListController(
                         items = remember {

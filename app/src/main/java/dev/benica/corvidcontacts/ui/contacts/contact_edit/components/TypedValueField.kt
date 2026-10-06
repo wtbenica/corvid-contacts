@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.flowOf
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
@@ -124,7 +125,8 @@ fun StructuredAddressField(
                         icon = Icons.Outlined.AutoFixHigh,
                         contentDescription = R.string.edit_action_fill_in_address,
                         onClick = { showFillIn = true },
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.width(40.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
                         enabled = enabled && address.toSingleLine().isNotBlank(),
                     )
                 }
