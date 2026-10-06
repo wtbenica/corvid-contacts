@@ -478,7 +478,7 @@ private fun LocalDataMigrationStep(
  * book's page.
  */
 @Composable
-private fun SystemContactsSharingStep(
+internal fun SystemContactsSharingStep(
     addressBooks: List<AddressBookEntity>,
     onSave: (selected: Set<String>) -> Unit,
 ) {

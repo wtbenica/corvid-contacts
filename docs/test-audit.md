@@ -5,7 +5,7 @@
 Done 2026-10-05 on branch `1.0.5` (commit `4d64a28`). The review, the gap list and a recommended order
 follow; the status below says how far the work has got on branch `test-coverage`.
 
-## Status (updated 2026-10-06, after gap 7)
+## Status (updated 2026-10-06, after gap 8)
 
 | Item | State |
 | --- | --- |
@@ -17,8 +17,8 @@ follow; the status below says how far the work has got on branch `test-coverage`
 | 5. `IntentParser` | Done: found and fixed a shared street address being dropped |
 | 3. `ContactsRepository` | Done: `ContactsRepositoryLocalTest` (16), `ContactsRepositoryServerTest` (20, MockWebServer with a routing dispatcher), shared `RepositoryTestBase` and `DavFixtures` |
 | 7. View models | Done: `MainViewModel`, `OnboardingViewModel`, `LoginViewModel`, `SettingsViewModel`, `ContactsViewModel` and its filter and selection helpers, 133 tests. Found and fixed three bugs (see the changelog) |
-| 8. Compose UI | **Next** |
-| 9. Lower value | Not started |
+| 8. Compose UI | Done: 36 tests in 5 classes under Robolectric: the sharing rows, the hidden-contacts dialog, the hidden card, the detail top bar and its menu, the fill-in-address dialog and the onboarding sharing step with its permission prompt answered by a fake registry. See "Compose tests" |
+| 9. Lower value | **Next**, if wanted: `GeocoderRepository` Photon parsing, `SettingsRepository` round trips, `PhotoManager`, the widget, `VCardType`, the colour extensions |
 
 Left out of gap 3 on purpose: the photo and phone repair paths inside sync (covered in part by
 `ContactsRepositorySyncTest`) and `importVCardText` with remote photo downloads (needs a photo server).
@@ -26,7 +26,7 @@ Each new test was checked by breaking the code it covers and watching it fail.
 
 ## The numbers
 
-- **330 unit tests in 24 files, about 40 seconds, all passing** (see "Why the tests were flaky").
+- **366 unit tests in 30 files, about 40 seconds, all passing** (see "Why the tests were flaky").
 - **Line coverage is about 10%** (2,248 of 22,349 lines). Nearly all of it is the pure logic in
   `data/system`, plus `DavParser`, `VCardMapper` and `SystemVisibility`.
 - Measured with `enableUnitTestCoverage = true` on the debug build type, and the Robolectric tests
@@ -174,3 +174,40 @@ What to do when adding tests: build repositories through `RepositoryTestBase`, n
 or `SettingsRepository(context)` directly. If a test ever flakes again, run the class repeatedly with the
 cores busy (`yes > /dev/null` per core, or a shell busy loop) to reproduce it; a clean run proves little
 for a race.
+
+## Compose tests (gap 8)
+
+- `ComposeTestBase` (in `ui/`) runs a composable under Robolectric with the app theme and finds nodes by
+  visible text taken from the same string resources, so rewording a string does not break a test. Nothing
+  here touches Room or the network.
+- `SystemContactsSharingStep` is now `internal` (it was private) so the onboarding permission flow can be
+  tested. The prompt is a fake `ActivityResultRegistry` that answers granted or denied at once and counts how
+  many times it was asked (`FakePermissionPrompt`); a held permission is set with `shadowOf(app).grantPermissions`.
+  Not covered: the first denial, where Android still offers the prompt (`canAskAgain` true), because Robolectric
+  cannot make `shouldShowRequestPermissionRationale` return true without more shadowing than it is worth.
+- A composable that emits several sibling rows must be put in a `Column` in the test, as the real screen does;
+  in the test root they stack, and a click lands on whichever is on top.
+- Every test was checked by breaking the code it covers (19 breaks, all caught).
+- Not tested here: layout and colour (that needs screenshots), and the full screens, which are covered by
+  their view models.
+
+## Another source of flakiness: the real Application
+
+Robolectric starts the app's own `CorvidContactsApplication` for every test unless told otherwise. It builds
+`AppContainer` and starts `SystemContactsMirrorManager` on a background scope that outlives the test. After the
+test ended, that coroutine threw (`activityThread is null`), and the Compose test rule reports such a stray
+exception at the start of the next test in the JVM ("UncaughtExceptionsBeforeTest"), so an unrelated test
+failed at random. Every Robolectric test now runs with `@Config(application = Application::class)`.
+Keep it on any new Robolectric test.
+
+## Waiting on background work
+
+Some view model tests wait with `awaitUntil` because a bulk action runs in the background and ends with a
+message or a settings write. Wait for the **last** effect, not the first. Three tests waited on the first
+step of a sequence (contact "a" renamed, then asserted contact "b"; books cleared, then asserted settings
+that are written after the photos are deleted) and failed now and then with the cores busy (about 1 full run in 4, and 1 in 7 runs of the class).
+
+A third leak came from view model tests that start an action and finish before it does (a `logout()` still
+running its Room calls). Closing the in-memory database under it made the call throw on a background thread,
+and the Compose test rule blamed the next test. `RepositoryTestBase` now lets Room's executors drain before
+it closes the database.

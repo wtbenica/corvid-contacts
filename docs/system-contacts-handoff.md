@@ -644,3 +644,30 @@ directly and none is on a view model test path, so it is not needed now.
 job from inside the setter, so every test that saves that setting needs WorkManager initialized
 (`ViewModelTestBase` does it once per process). Moving the scheduling out of the repository would make
 it testable without that, but that is a behavior-neutral refactor for later.
+
+### 2026-10-06 (later), Gotham to Oracle: Compose tests, and two more flake sources
+
+Gap 8 is done, and the test review is finished except for the optional "lower value" list. Read
+`docs/test-audit.md`, "Status" and the three sections at the end.
+
+**Done:** 36 Compose tests in 5 classes (`ComposeTestBase`, the sharing rows and hidden-contacts dialog, the
+hidden card, the detail top bar and menu, the fill-in-address dialog, the onboarding sharing step with a
+fake permission prompt). 19 mutation checks, all caught. The suite is 366 tests in 30 files.
+`SystemContactsSharingStep` is now `internal` for this.
+
+**Three more flake sources found while soaking the suite with every core busy** (it is how I found them; a
+green idle run proves little):
+1. **The real Application ran in every Robolectric test.** Its mirror manager's coroutine outlived the test,
+   threw later, and the Compose rule blamed whichever test started next. Every Robolectric test now uses
+   `@Config(application = Application::class)`. Keep that on new ones.
+2. **View model tests that end before their action does** (`logout()` still running Room calls when the in-memory
+   database was closed) made the call throw on a background thread, again blamed on the next Compose test.
+   `RepositoryTestBase` drains Room's executors before closing the database.
+3. **Three tests waited for the first step of a multi-step action and asserted the last** (renaming a group on
+   contact "a" then asserting "b"; clearing books then asserting settings written after photos are deleted;
+   sign-out). They now wait for the last effect. When you add an `awaitUntil`, wait for the last thing the
+   action does.
+
+**Not done, your call:** the first-denial path of the onboarding permission step (Robolectric cannot make
+`shouldShowRequestPermissionRationale` true cheaply), and the lower-value list in the audit. `test-coverage`
+is ready to merge into `1.0.5` as a fast-forward once the user says so. Nothing is merged to `main`.
