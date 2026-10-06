@@ -6,17 +6,7 @@ import android.accounts.Account
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
-import android.provider.ContactsContract.CommonDataKinds.Email
-import android.provider.ContactsContract.CommonDataKinds.Event
-import android.provider.ContactsContract.CommonDataKinds.Nickname
-import android.provider.ContactsContract.CommonDataKinds.Note
-import android.provider.ContactsContract.CommonDataKinds.Organization
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.Photo
-import android.provider.ContactsContract.CommonDataKinds.Relation
-import android.provider.ContactsContract.CommonDataKinds.StructuredName
-import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
-import android.provider.ContactsContract.CommonDataKinds.Website
 import android.provider.ContactsContract.Data
 import android.provider.ContactsContract.DisplayPhoto
 import android.provider.ContactsContract.RawContacts
@@ -155,138 +145,31 @@ class SystemContactsReader(
     }
 
     private fun readContacts(rawIds: List<Long>): Map<Long, MirrorContact> {
-        val rows = LinkedHashMap<Long, Rows>()
-        rawIds.forEach { rows[it] = Rows() }
+        val rows = LinkedHashMap<Long, MutableList<DataRow>>()
+        rawIds.forEach { rows[it] = ArrayList() }
         val placeholders = rawIds.joinToString(",") { "?" }
         resolver.query(
             Data.CONTENT_URI,
-            arrayOf(
-                Data.RAW_CONTACT_ID,
-                Data.MIMETYPE,
-                Data.DATA1,
-                Data.DATA2,
-                Data.DATA3,
-                Data.DATA4,
-                Data.DATA5,
-                Data.DATA6,
-                Data.DATA7,
-                Data.DATA8,
-                Data.DATA9,
-                Data.DATA10,
-            ),
+            arrayOf(Data.RAW_CONTACT_ID, Data.MIMETYPE) + DATA_COLUMNS,
             "${Data.RAW_CONTACT_ID} IN ($placeholders)",
             rawIds.map { it.toString() }.toTypedArray(),
             null
         )?.use { cursor ->
             while (cursor.moveToNext()) {
-                rows[cursor.getLong(0)]?.add(cursor)
-            }
-        }
-        return rows.mapValues { (rawId, collected) -> collected.toContact(photoToken(rawId)) }
-    }
-
-    private class Rows {
-        var name: StructuredNameRow? = null
-        val phones = ArrayList<MirrorPhone>()
-        val emails = ArrayList<MirrorEmail>()
-        val addresses = ArrayList<MirrorAddress>()
-        val websites = ArrayList<String>()
-        val profileLinks = ArrayList<String>()
-        val relations = ArrayList<MirrorRelation>()
-        var birthday: String? = null
-        var organization: MirrorOrganization? = null
-        var nickname: String? = null
-        var note: String? = null
-
-        fun add(cursor: Cursor) {
-            fun text(column: Int): String? = cursor.getString(column)?.trim()?.takeIf { it.isNotEmpty() }
-            fun int(column: Int): Int = if (cursor.isNull(column)) 0 else cursor.getInt(column)
-
-            // Columns, after the raw id and the mimetype: DATA1 is 2, DATA2 is 3, and so on.
-            when (cursor.getString(1)) {
-                StructuredName.CONTENT_ITEM_TYPE -> if (name == null) {
-                    name = StructuredNameRow(
-                        display = text(2),
-                        given = text(3),
-                        family = text(4),
-                        prefix = text(5),
-                        middle = text(6),
-                        suffix = text(7)
-                    )
-                }
-
-                Phone.CONTENT_ITEM_TYPE -> text(2)?.let { phones += MirrorPhone(it, int(3)) }
-                Email.CONTENT_ITEM_TYPE -> text(2)?.let { emails += MirrorEmail(it, int(3)) }
-                StructuredPostal.CONTENT_ITEM_TYPE -> addresses += MirrorAddress(
-                    formatted = text(2).orEmpty(),
-                    street = text(5),
-                    poBox = text(6),
-                    city = text(8),
-                    region = text(9),
-                    postcode = text(10),
-                    country = text(11),
-                    type = int(3)
+                // After the raw contact id and the mimetype come DATA1 to DATA10.
+                rows[cursor.getLong(0)]?.add(
+                    DataRow(cursor.getString(1), DATA_COLUMNS.indices.map { cursor.getString(it + 2) })
                 )
-
-                Website.CONTENT_ITEM_TYPE -> text(2)?.let {
-                    if (int(3) == Website.TYPE_PROFILE) profileLinks += it else websites += it
-                }
-
-                Relation.CONTENT_ITEM_TYPE -> text(2)?.let {
-                    relations += MirrorRelation(it, int(3), text(4))
-                }
-
-                Event.CONTENT_ITEM_TYPE -> if (int(3) == Event.TYPE_BIRTHDAY && birthday == null) {
-                    birthday = text(2)
-                }
-
-                Organization.CONTENT_ITEM_TYPE -> if (organization == null) {
-                    organization = MirrorOrganization(text(2), text(5))
-                        .takeIf { it.company != null || it.title != null }
-                }
-
-                Nickname.CONTENT_ITEM_TYPE -> if (nickname == null) nickname = text(2)
-                Note.CONTENT_ITEM_TYPE -> if (note == null) note = text(2)
             }
         }
-
-        fun toContact(photoToken: String?): MirrorContact {
-            val name = name
-            return MirrorContact(
-                id = "",
-                displayName = name?.display.orEmpty(),
-                givenName = name?.given,
-                familyName = name?.family,
-                middleName = name?.middle,
-                prefix = name?.prefix,
-                suffix = name?.suffix,
-                phones = phones,
-                emails = emails,
-                addresses = addresses,
-                websites = websites,
-                profileLinks = profileLinks,
-                relations = relations,
-                birthday = birthday,
-                organization = organization,
-                nickname = nickname,
-                note = note,
-                photoStamp = null,
-                bookHref = "",
-                systemPhoto = photoToken,
-            )
-        }
+        return rows.mapValues { (rawId, dataRows) -> dataRows.toMirrorContact(photoToken(rawId)) }
     }
-
-    private class StructuredNameRow(
-        val display: String?,
-        val given: String?,
-        val family: String?,
-        val prefix: String?,
-        val middle: String?,
-        val suffix: String?,
-    )
 
     private companion object {
         const val QUERY_CHUNK = 200
+        val DATA_COLUMNS = arrayOf(
+            Data.DATA1, Data.DATA2, Data.DATA3, Data.DATA4, Data.DATA5,
+            Data.DATA6, Data.DATA7, Data.DATA8, Data.DATA9, Data.DATA10,
+        )
     }
 }
