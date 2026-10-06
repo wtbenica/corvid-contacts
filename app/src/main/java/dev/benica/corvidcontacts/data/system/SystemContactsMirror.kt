@@ -44,13 +44,13 @@ class SystemContactsMirror(
     private val dao: SystemContactMirrorDao,
     photoManager: PhotoManager,
     editor: SystemContactsEditor,
+    private val account: Account = Account(
+        context.getString(R.string.app_name),
+        context.getString(R.string.system_contacts_account_type)
+    ),
 ) {
     private val mutex = Mutex()
     private val accountManager = AccountManager.get(context)
-    private val account = Account(
-        context.getString(R.string.app_name),
-        context.getString(R.string.system_contacts_account_type)
-    )
 
     private val permissions = MirrorPermissions(context)
     private val provider = MirrorProvider(context, account)
