@@ -1,6 +1,6 @@
 # Handoff: system contacts mirror
 
-Last updated 2026-10-06. Branches: `system-contacts-design` is merged into `1.0.5`; test work is on
+Last updated 2026-10-06 (night). Branches: `system-contacts-design` is merged into `1.0.5`; test work is on
 `test-coverage` (pushed to `origin`, a fast-forward of `1.0.5`). The full design is in
 [system-contacts-design.md](system-contacts-design.md); this file is the short version
 plus what is left. The last section, "Notes between Claude instances", is a running channel
@@ -671,3 +671,55 @@ green idle run proves little):
 **Not done, your call:** the first-denial path of the onboarding permission step (Robolectric cannot make
 `shouldShowRequestPermissionRationale` true cheaply), and the lower-value list in the audit. `test-coverage`
 is ready to merge into `1.0.5` as a fast-forward once the user says so. Nothing is merged to `main`.
+
+### 2026-10-06 (night), Gotham to Oracle: three fixes, a privacy review, and one open decision
+
+All on `1.0.5` and pushed (`test-coverage` is merged into it). Nothing is on `main`; nothing is deployed.
+
+**Fixes** (all in `CHANGELOG.md`):
+- **Link names.** A relationship that links to another contact is shared by that contact's name only when
+  that contact's book is shared (`SystemContactMirrorDao.getSharedContactNames`; was any contact). The
+  user decided this. A link to an unshared contact is left out and kept as it is on read-back.
+- **Sign-in errors.** `LoginViewModel` records each probe's HTTP status and reports 401/403 as
+  "Authentication failed (Status: N)" with the real code, anything else with the new
+  `login_error_server` string ("The server answered with an error (Status: N)..."), in six locales (my
+  translations, for the native-speaker pass). A 401 or 403 from any probe wins over a 404 from the last.
+- **Country code.** `SettingsRepository.DEFAULT_ALWAYS_ADD_COUNTRY_CODE = true` is now the repository
+  fallback and the starting value in the Settings, Onboarding and Contacts view models (they disagreed).
+  With the setting off, `PhoneFormatter` no longer strips a country code: a number typed with one (a plus
+  sign or an international prefix) keeps it; one without gets none. Before, "off" stripped every code,
+  foreign ones too, and phone regions are not stored in the vCard, so a stripped number was re-read
+  later by the device's region. Numbers already stored without a code are not repaired. Reworded the
+  setting's description in six locales. The trunk digit needed no work: libphonenumber's national format
+  adds it. The user chose "leave alone" over "strip your own country only".
+
+**Privacy review** (policy in both repos, plus the deletion page; website branch
+`corvid-contacts-1.0.5-privacy` at `5bf3e32`, still not merged to `main`). Corrected against the code:
+- The policy named two settings that do not exist ("Enable Address Lookup", "Use Google Places"). It is
+  one **Address Lookup** setting with Photon (default), Google Places and Off. The photo setting is
+  **Fetch & Embed Remote Photos** (it saves the photo into the contact, so it syncs to the server).
+- **Android backup is now disclosed.** `allowBackup="true"` with only the credentials excluded means
+  Android's Auto Backup can copy the contact database, photos and settings to the user's Google account.
+  Added a paragraph, a bullet in each of the "data is", "security" and "control" lists, and a deletion
+  page section.
+- The Photon bias coordinate is found with Android's `Geocoder` (on many phones a Google service) using
+  the country name from the region setting; the policy now says that.
+- Added the link-name rule, and the routine permissions WorkManager adds (network state, wake lock,
+  boot, foreground service). "Last updated" is October 6, 2026 in all three places.
+- Not verifiable from code: the Play Installer Check described under "Anti-piracy verification" (there is
+  no code for it; it is a Play Console setting). Left as it was.
+
+**Open decision, the user's.** `welcome_use_locally_desc` (six locales) says "Nothing is backed up
+unless you export it", which Auto Backup contradicts for local-only users. Either keep backup and change
+that string (local-only users have no server copy, so backup is their safety net), or exclude the
+database and photos from backup in the two XML rules and keep the string. The policy matches today's
+behavior (backup on); if the user excludes the data, the "Android backup" paragraph, the list bullets and
+the deletion page section go away. I did not change the string or the rules.
+
+**Release notes.** Added the country-code line in all nine locales, which cost the "Pick an icon when
+creating an address book, and the book when importing contacts" line to stay under 500 characters (French
+is 492, German 496). The sign-in message is only in the changelog. Put the icon line back if the user
+prefers it, by dropping another.
+
+**Still the user's:** the Play Console declaration (planned for 2026-10-07; see `docs/play-console-1.0.5.md`,
+now with the backup question), merging the website branch at rollout, and the native-speaker review.
