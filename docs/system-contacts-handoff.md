@@ -199,8 +199,6 @@ What is left, all of it Play Console or a decision:
 - **Unshared books are easy to miss.** During testing a contact was added to an unshared book and
   was (correctly) not mirrored, but it was not obvious why. Consider making a book's shared or
   private state clearer in the book list and in the contact list.
-- **Year-less birthdays do not get reminders.** `BirthdayWorker` parses only `yyyy-MM-dd`, so a
-  birthday stored as `--01-15` syncs and displays but never triggers a reminder.
 - **Performance.** Unknown how many contacts before batching needs tuning (batches are 50
   contacts for inserts, 200 for deletes).
 - **Background read-back (optional, not planned for 1.0.5).** Edits made in other apps while Corvid

@@ -16,16 +16,13 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AppDatabase
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 /**
  * Background worker that checks for upcoming contact birthdays once per day.
  * If a birthday is today or tomorrow, it triggers a local notification.
- * Supports multiple date formats: yyyy-MM-dd, MM-dd, yyyyMMdd.
+ * See [BirthdayDates] for the date forms it reads.
  */
 class BirthdayWorker(
     context: Context,
@@ -46,67 +43,22 @@ class BirthdayWorker(
                 .contactDao()
                 .getAllContactsSync()
 
-            val today = Calendar.getInstance()
-            val tomorrow = Calendar
-                .getInstance()
-                .apply {
-                    add(
-                        Calendar.DAY_OF_YEAR,
-                        1
-                    )
-                }
-
-            val todayMonth = today.get(Calendar.MONTH)
-            val todayDay = today.get(Calendar.DAY_OF_MONTH)
-            val tomorrowMonth = tomorrow.get(Calendar.MONTH)
-            val tomorrowDay = tomorrow.get(Calendar.DAY_OF_MONTH)
-
-            val formats = listOf(
-                SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.US
-                ),
-                SimpleDateFormat(
-                    "MM-dd",
-                    Locale.US
-                ),
-                SimpleDateFormat(
-                    "yyyyMMdd",
-                    Locale.US
-                )
-            )
+            val today = LocalDate.now()
+            val tomorrow = today.plusDays(1)
 
             contacts.forEach { contactWithBook ->
                 val contact = contactWithBook.contact
-                contact.birthday?.let { bdayStr ->
-                    var bdayDate: Date? = null
-                    for (format in formats) {
-                        try {
-                            bdayDate = format.parse(bdayStr)
-                            if (bdayDate != null) break
-                        } catch (_: Exception) {
-                        }
-                    }
+                val birthday = BirthdayDates.monthDay(contact.birthday) ?: return@forEach
+                when {
+                    BirthdayDates.fallsOn(birthday, today) -> showNotification(
+                        contact.getEffectiveDisplayName(),
+                        applicationContext.getString(R.string.birthday_notification_today)
+                    )
 
-                    bdayDate?.let { date ->
-                        val cal = Calendar
-                            .getInstance()
-                            .apply { time = date }
-                        val bMonth = cal.get(Calendar.MONTH)
-                        val bDay = cal.get(Calendar.DAY_OF_MONTH)
-
-                        if (bMonth == todayMonth && bDay == todayDay) {
-                            showNotification(
-                                contact.getEffectiveDisplayName(),
-                                applicationContext.getString(R.string.birthday_notification_today)
-                            )
-                        } else if (bMonth == tomorrowMonth && bDay == tomorrowDay) {
-                            showNotification(
-                                contact.getEffectiveDisplayName(),
-                                applicationContext.getString(R.string.birthday_notification_tomorrow)
-                            )
-                        }
-                    }
+                    BirthdayDates.fallsOn(birthday, tomorrow) -> showNotification(
+                        contact.getEffectiveDisplayName(),
+                        applicationContext.getString(R.string.birthday_notification_tomorrow)
+                    )
                 }
             }
 

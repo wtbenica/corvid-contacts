@@ -60,6 +60,8 @@ on Google Play is a summary of the user-visible items below.
 - Birthdays from your server were dropped when contacts synced or were imported from a file, and
   birthdays you entered disappeared on the next sync. They now sync and import correctly, and are
   sent to the server as real dates.
+- Birthday reminders now work for birthdays saved without a year, which never triggered one before,
+  and a February 29 birthday is reminded on February 28 in years that have no February 29.
 - The color preview in the create address book dialog was squeezed out of view by the slider. The
   chosen color now shows on the selected icon while you pick it.
 
