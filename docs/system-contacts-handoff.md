@@ -698,10 +698,8 @@ All on `1.0.5` and pushed (`test-coverage` is merged into it). Nothing is on `ma
 - The policy named two settings that do not exist ("Enable Address Lookup", "Use Google Places"). It is
   one **Address Lookup** setting with Photon (default), Google Places and Off. The photo setting is
   **Fetch & Embed Remote Photos** (it saves the photo into the contact, so it syncs to the server).
-- **Android backup is now disclosed.** `allowBackup="true"` with only the credentials excluded means
-  Android's Auto Backup can copy the contact database, photos and settings to the user's Google account.
-  Added a paragraph, a bullet in each of the "data is", "security" and "control" lists, and a deletion
-  page section.
+- **Android backup** was found to be on (`allowBackup="true"`, only the credentials excluded), which would
+  have copied the contact database, photos and settings to the user's Google account. See the decision below.
 - The Photon bias coordinate is found with Android's `Geocoder` (on many phones a Google service) using
   the country name from the region setting; the policy now says that.
 - Added the link-name rule, and the routine permissions WorkManager adds (network state, wake lock,
@@ -709,17 +707,20 @@ All on `1.0.5` and pushed (`test-coverage` is merged into it). Nothing is on `ma
 - Not verifiable from code: the Play Installer Check described under "Anti-piracy verification" (there is
   no code for it; it is a Play Console setting). Left as it was.
 
-**Open decision, the user's.** `welcome_use_locally_desc` (six locales) says "Nothing is backed up
-unless you export it", which Auto Backup contradicts for local-only users. Either keep backup and change
-that string (local-only users have no server copy, so backup is their safety net), or exclude the
-database and photos from backup in the two XML rules and keep the string. The policy matches today's
-behavior (backup on); if the user excludes the data, the "Android backup" paragraph, the list bullets and
-the deletion page section go away. I did not change the string or the rules.
+**Decided: no cloud backup.** The welcome screen says "Nothing is backed up unless you export it", which
+Auto Backup contradicted, and the app's stance is that contacts stay with the user and their server. So
+`data_extraction_rules.xml` excludes the `file`, `database` and `sharedpref` domains from `cloud-backup`
+(device transfer still carries data, minus the login) and `backup_rules.xml` excludes all three for Android
+11 and older. The policy, website and deletion page say so and tell users to export; the welcome string is
+now true as written. Cost: a local-only user who loses their phone loses their contacts unless they
+exported. **Not verified on a device:** I tried Android's local backup transport on the emulator and it
+rejected even the control (the old rules), so I could not show a real backup skipping the data. Lint accepts
+the rules. To check it for real, take a backup with a Google account on a phone and look at the Google One
+backup details, or use `bmgr` with the Google transport.
 
-**Release notes.** Added the country-code line in all nine locales, which cost the "Pick an icon when
-creating an address book, and the book when importing contacts" line to stay under 500 characters (French
-is 492, German 496). The sign-in message is only in the changelog. Put the icon line back if the user
-prefers it, by dropping another.
+**Release notes.** Now four lines in all nine locales: sharing, birthdays sync, country code, and no cloud
+backup. To fit 500 characters (French 483, Spanish 479) these lines are only in the changelog: the simpler
+welcome, the birthday-reminder switch, and the icon / import-book line, plus the sign-in message. Put one
+back by dropping another.
 
-**Still the user's:** the Play Console declaration (planned for 2026-10-07; see `docs/play-console-1.0.5.md`,
-now with the backup question), merging the website branch at rollout, and the native-speaker review.
+**Still the user's:** the Play Console declaration (planned for 2026-10-07; see `docs/play-console-1.0.5.md`), merging the website branch at rollout, and the native-speaker review.

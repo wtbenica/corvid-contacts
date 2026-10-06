@@ -43,6 +43,10 @@ on Google Play is a summary of the user-visible items below.
 
 ### Changed
 
+- Corvid Contacts is no longer included in Android's cloud backup. Its contacts, photos and settings
+  used to be copied to your Google account by Android's automatic backup, which the welcome screen said
+  would not happen. Direct phone-to-phone transfer still carries the data, but not your server login.
+  Contacts that exist only on your device are not backed up anywhere, so export them to keep a copy.
 - The welcome screen asks one question, where your contacts live, with two equal choices. The
   sign-in screen has a clearer title, keeps its button above the keyboard, and works with
   password managers. English now says "Sign In" and "Sign Out" instead of "Login" and "Logout".

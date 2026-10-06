@@ -44,12 +44,10 @@ sharing feature does stays on the device: the copy is written to Android's conta
 back from it, and merged into Corvid's own database. Contacts still go to the user's own CardDAV
 server, as before, which the existing form should already cover.
 
-**Android backup (found 2026-10-06).** The app has `allowBackup="true"`, with only the server
-credentials excluded (`data_extraction_rules.xml`, `backup_rules.xml`). So Android's Auto Backup can
-copy the contact database, photos and settings to the user's Google account. That is made by Android,
-not by the app, and it was already true in 1.0.4. I could not confirm from Google's pages how the
-Data safety form treats Auto Backup; read the "Data safety section definitions" page below on the day
-and answer to match. The privacy policy now says so plainly (see "Android backup").
+**Android backup.** Auto Backup is now switched off for the app's data (decided 2026-10-06; see
+`data_extraction_rules.xml` and `backup_rules.xml`), so there is no backup question for this form.
+Before that, `allowBackup="true"` with only the server credentials excluded would have let Android copy
+the contact database to the user's Google account. Direct phone-to-phone transfer still works.
 
 Judgment call to reread on the day: other apps on the device can read the shared copy. I read Play's
 definitions as being about what leaves the device through the app, so this is not collection or
@@ -64,8 +62,8 @@ the website repo's branch `corvid-contacts-1.0.5-privacy` (not on `main`, so not
 `main` when the 1.0.5 rollout starts; the GitHub Action deploys on push to `main`. Set the "Last
 updated" date to the day it is published (it says October 6, 2026 now). `PRIVACY_POLICY.md` in this
 repo is already updated and ships with the branch merge. On 2026-10-06 both were reviewed against the
-code and corrected (setting names, Android backup, how the Photon coordinate is found, link names,
-routine permissions); the website branch is at `5bf3e32`.
+code and corrected (setting names, how the Photon coordinate is found, link names, routine permissions, and
+the cloud backup exclusion); the website branch is at `7d72548`.
 
 The policy wording says "from version 1.0.5" for the sharing feature, so it is accurate both before
 and after the rollout.

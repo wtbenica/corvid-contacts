@@ -17,8 +17,7 @@ your device. We do not operate that server,
 we do not receive a copy of your contact data ourselves, and the app contains no
 analytics, no advertising, and no crash-reporting SDKs. The only outside parties that ever see
 anything are: the server you configure; Google Play, which periodically verifies this is a genuine,
-licensed install (see "Anti-piracy verification," below); Android's own device backup to your Google
-account, if you have it turned on (see "Android backup," below); and - only while you're typing an address
+licensed install (see "Anti-piracy verification," below); and - only while you're typing an address
 or asking the app to fill in an address's details, and only if you leave address lookup turned on -
 either Komoot (Photon, the default) or
 Google Places (see "Address lookup," below). You can turn address lookup off entirely in Settings.
@@ -33,8 +32,6 @@ download that one contact's photo manually - see "Contact photos," below.
 - Stored locally on your device, in the app's own database. Unless you choose to share an address
   book with your phone's contacts (see "Sharing with your phone's contacts," below), nothing is
   placed in Android's shared system Contacts.
-- Included in Android's own device backup to your Google account, if you have that turned on (see
-  "Android backup," below).
 - Sent to and received from the CardDAV server you configure in the app (e.g., your Nextcloud instance) over an encrypted (HTTPS) connection, so that server can keep your contacts in sync across your devices.
 
 We do not have access to this data. It is never sent to us or to any server we operate.
@@ -63,13 +60,6 @@ separately. When you do:
   settings, and Corvid removes the copy from your phone's contacts.
 
 **Account/server credentials.** Your configured server address, username, and app password (or equivalent credential) are stored locally on your device using Android's secure app-private storage, solely to authenticate you to your own server. We do not receive or store these credentials ourselves.
-
-**Android backup.** Android can back up an app's data to your Google account when you have Android's
-backup turned on, and Corvid Contacts does not opt out of that. The backup can therefore include your
-contacts, address books, photos and settings. It does not include your server address, username or
-app password. The backup is made and stored by Android and Google, not by us, and Google's policies
-govern it; we cannot see it. You can turn it off, or delete an existing backup, in your device's
-backup settings.
 
 **Address lookup.** While you're typing an address for a contact, the app can look up matching
 suggestions as you type. It does the same when you choose "Fill in address details" on an address,
@@ -138,7 +128,7 @@ The app never requests location, camera, or storage permissions.
 
 ## Data security
 
-Contact data is transmitted to your configured server over HTTPS. Data at rest is stored in the app's private, sandboxed storage on your device, which other apps cannot access. There are two exceptions: a copy you choose to share with your phone's contacts, which is in Android's contacts storage, where apps you have allowed to access contacts can read it; and any backup Android makes of the app's data (see "Android backup," above). Your server credentials are excluded from Android's automatic cloud backup. As with any software, we can't guarantee absolute security, and the overall security of your synced contacts also depends on the server you choose to connect to.
+Contact data is transmitted to your configured server over HTTPS. Data at rest is stored in the app's private, sandboxed storage on your device, which other apps cannot access. The one exception is a copy you choose to share with your phone's contacts: it is in Android's contacts storage, where apps you have allowed to access contacts can read it. Corvid Contacts excludes its data from Android's cloud backup, so it is not copied to your Google account that way. Android's direct phone-to-phone transfer, if you use it when setting up a new phone, does carry the app's data, but not your server login, to the new phone. As with any software, we can't guarantee absolute security, and the overall security of your synced contacts also depends on the server you choose to connect to.
 
 ## Your control over your data
 
@@ -151,8 +141,9 @@ Contact data is transmitted to your configured server over HTTPS. Data at rest i
   off first if you want it gone right away.
 - A contact you delete from your phone's contacts stays in Corvid, hidden from there, until you
   choose to show it again or delete it in Corvid.
-- If Android's device backup is on, a backup of the app's data may exist in your Google account.
-  Manage or delete it in your device's backup settings; uninstalling the app does not remove it.
+- Because the app's data is not in Android's cloud backup, there is no backup to restore after a
+  reset or a lost phone. Export your contacts (Settings → Export Contacts) to keep a copy of
+  contacts that exist only on your device.
 - Logging out clears your stored server credentials from the device.
 - Because you control the CardDAV server, you control retention and deletion there as well, independent of this app.
 - Step-by-step instructions for deleting your data, on your device and elsewhere, are on the [data deletion page](https://benica.dev/projects/corvid-contacts/data-deletion).
