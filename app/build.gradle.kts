@@ -115,6 +115,9 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             all {
+                // Each test class gets its own JVM. The DataStores behind the settings and the login
+                // are process-wide, and view model tests that share a JVM leak state into each other.
+                it.forkEvery = 1
                 // Robolectric loads the app's classes itself, so the coverage agent has to count them anyway.
                 it.extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class.java) {
                     isIncludeNoLocationClasses = true

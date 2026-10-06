@@ -95,6 +95,13 @@ class ContactsRepository(
 
     val archivedContacts: Flow<List<ContactWithAddressBook>> = contactDao.getArchivedContacts()
 
+    /**
+     * Every contact there is, including archived ones and those in hidden books. For changes that
+     * must reach all of them (renaming a group, repointing links after a merge), unlike
+     * [allContacts], which is only what the list shows.
+     */
+    suspend fun getAllContacts(): List<ContactWithAddressBook> = contactDao.getAllContactsSync()
+
     val userManageableAddressBooks: Flow<List<AddressBookEntity>> =
         addressBookDao.getUserManageableAddressBooks()
 

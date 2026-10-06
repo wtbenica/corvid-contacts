@@ -758,8 +758,9 @@ class ContactsViewModel(
         newName: String,
     ) {
         viewModelScope.launch {
-            val contacts = (uiState.value as? ContactsUiState.Success)?.contacts ?: return@launch
-            contacts.forEach { contactWithBook ->
+            // Every contact, not just the ones the list shows: a group renamed on only some of its
+            // members would split in two.
+            repository.getAllContacts().forEach { contactWithBook ->
                 val contact = contactWithBook.contact
                 val categories = (contact.categories ?: emptyList()).toMutableList()
                 val index = categories.indexOfFirst {
@@ -980,9 +981,10 @@ class ContactsViewModel(
             return false
         }
 
-        val others = (uiState.value as? ContactsUiState.Success)
-            ?.contacts
-            .orEmpty()
+        // Every contact, not just the ones the list shows, so no link is left pointing at the
+        // contact that is about to be deleted.
+        val others = repository
+            .getAllContacts()
             .map { it.contact }
             .filter { it.id != mergedSurvivor.id && it.id != absorbedContact.id }
 

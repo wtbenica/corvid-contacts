@@ -33,6 +33,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 class LoginViewModel(
     private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository,
+    /** The scheme put in front of the server address. Always `https` in the app; a test uses `http`. */
+    private val scheme: String = "https",
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -56,7 +58,7 @@ class LoginViewModel(
             try {
                 // Ensure server URL has trailing slash and add https:// prefix
                 val formattedUrl =
-                    "https://${if (serverUrl.endsWith("/")) serverUrl else "$serverUrl/"}"
+                    "$scheme://${if (serverUrl.endsWith("/")) serverUrl else "$serverUrl/"}"
 
                 // Create a temporary Retrofit instance to check credentials
                 val client = OkHttpClient
@@ -94,8 +96,10 @@ class LoginViewModel(
                     ) {
                         isAuthorized = true
                     }
-                } catch (_: Exception) {
-                    // Not a Nextcloud server or OCS API disabled
+                } catch (e: Exception) {
+                    // Not a Nextcloud server or OCS API disabled - but a server that can't be
+                    // reached at all is a different problem, reported below.
+                    if (e.isConnectionProblem()) throw e
                 }
 
                 // If OCS failed, try generic principal discovery
@@ -116,8 +120,9 @@ class LoginViewModel(
                                 isAuthorized = true
                             }
                         }
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
                         // Not a CardDAV server or invalid credentials
+                        if (e.isConnectionProblem()) throw e
                     }
                 }
 
@@ -143,13 +148,19 @@ class LoginViewModel(
                 }
             } catch (_: java.net.UnknownServiceException) {
                 _uiState.value = LoginUiState.Error(R.string.login_error_security)
-            } catch (_: java.net.ConnectException) {
-                _uiState.value = LoginUiState.Error(R.string.login_error_connection)
-            } catch (_: Exception) {
-                _uiState.value = LoginUiState.Error(R.string.login_error_unknown)
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error(
+                    if (e.isConnectionProblem()) R.string.login_error_connection else R.string.login_error_unknown
+                )
             }
         }
     }
+
+    /** Whether this failure means the server could not be reached, as opposed to refusing the login. */
+    private fun Exception.isConnectionProblem() =
+        this is java.net.ConnectException ||
+            this is java.net.UnknownHostException ||
+            this is java.net.SocketTimeoutException
 
     /** Removes [url] from the saved-servers list. */
     fun removeSavedServer(url: String) {

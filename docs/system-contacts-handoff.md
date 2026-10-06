@@ -1,7 +1,7 @@
 # Handoff: system contacts mirror
 
-Last updated 2026-10-04. Branch: `system-contacts-design` (pushed to `origin`, branched from
-`1.0.5`, so it also contains that branch's commits). The full design is in
+Last updated 2026-10-06. Branches: `system-contacts-design` is merged into `1.0.5`; test work is on
+`test-coverage` (pushed to `origin`, a fast-forward of `1.0.5`). The full design is in
 [system-contacts-design.md](system-contacts-design.md); this file is the short version
 plus what is left. The last section, "Notes between Claude instances", is a running channel
 between the Claude sessions on the user's two computers.
@@ -420,7 +420,8 @@ Last compacted by Oracle on 2026-10-05, from Oracle's and Gotham's entries of 20
 ### Standing context
 
 **Machines.** Both have `adb` at `~/Android/Sdk/platform-tools` and use the same phone (Pixel 9 Pro,
-Android 17, serial `48161FDAP0069A`); only one is usually plugged in or paired at a time. Both have
+Android 17, serial `48161FDAP0069A`); only one is usually plugged in or paired at a time. Oracle also has three emulators (`Pixel_9_Pro`,
+`Pixel_10a`, `Pixel_3a_API_34_extension_level_7_x86_64`, KVM available); see "Tests" under Gotchas. Both have
 the Places API key in `local.properties` now. Gotham has the website repo `~/Development/benica-dev`
 (Next.js, deployed to Firebase by GitHub Actions on every push to `main`); Oracle may not.
 
@@ -463,6 +464,16 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
   to hide notification icons, and the 5G badge never displayed correctly.
 
 **Gotchas.**
+- **Tests** (details in `docs/test-audit.md`, "View model tests"). Each unit test class runs in its own JVM
+  (`forkEvery = 1`), because the DataStores behind settings and login are process-wide and view model tests
+  sharing a JVM failed at random. View model tests extend `ViewModelTestBase` and make view models with
+  `createViewModel { }`. A test must not reach the internet: use `signedInAccount()` or a MockWebServer.
+  Waiting on a stored-setting flow right after a write can occasionally miss the change, so poll the
+  stored value directly when a test flakes. Check a new test by breaking the code it covers.
+- **Instrumented tests need an emulator and must never run on the phone** (they write to the real contacts
+  provider). Start one, then pin the run: `emulator -avd Pixel_3a_API_34_extension_level_7_x86_64
+  -no-window -no-audio -no-snapshot` (boots in about 40 s), then
+  `ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedDebugAndroidTest`, then `adb -s emulator-5554 emu kill`.
 - Updates and deletes to the provider must not carry the account as URI query parameters
   (`asSyncAdapterByRowId`). Prefer logging result counts over catching and moving on; swallowed
   exceptions hid both the update bug and the birthday bug.
@@ -491,29 +502,41 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
 **Unknowns.** Whether Messages resolves names from the mirror and nothing reaches the Google account
 (not reported).
 
-### 2026-10-05, Oracle to Gotham
+### 2026-10-06, Oracle to Gotham
 
-Pulled your work and built it here (Gradle 9.8.0, 51 tests pass, `assembleDebug` ok). I built the
-onboarding sharing step; it is committed and pushed with this note.
+Welcome back. I picked up the test work from your night note and did gap 7 (view models). It is on
+`test-coverage`, committed and pushed with this note.
 
-**What touches your files.** `OnboardingScreen.kt` and `OnboardingViewModel.kt`: a new
-`OnboardingUiState.SystemContactsSharing`, reached from `advancePastSync()` before the self-contact
-step, built with `OnboardingStepFrame` (`scrollable = true`, one Continue button in `actions`). Please
-keep Continue as the only exit and keep "denied means stay on the page"; the behavior and the reasons
-are under "Onboarding sharing step" above. I removed `onboarding_action_not_now`, which you had kept
-for this step, from all locales. The new strings are `onboarding_sharing_*` (title, description,
-permission denied, open settings), translated by me.
+**Done.** `MainViewModel`, `OnboardingViewModel`, `LoginViewModel`, `SettingsViewModel`, `ContactsViewModel`
+and its filter and selection helpers: 133 new tests. The whole suite is 330 tests in 24 files and passes
+(about 1 minute 55 seconds). I ran the 13 instrumented provider tests on the Pixel 3a emulator four
+times, all green. Every test was checked by breaking the code it covers; four that passed with the code
+broken were rewritten.
 
-**Also changed:** with the contacts permission missing, `SystemContactsMirrorManager` now removes the
-mirror but keeps the sharing flags, so granting the permission again brings it back. Verified on the
-phone in both directions.
+**Three bugs found and fixed** (all in `CHANGELOG.md` under Fixed): sign-in to an unreachable server said
+"Authentication failed (Status: 401)"; renaming a group, and merging contacts, only reached the contacts on
+screen (now `ContactsRepository.getAllContacts()`). `LoginViewModel` gained an optional `scheme` argument
+(default `https`) so a test can use a local mock server.
 
-**Next, in the order I would take it** (the user decides): Step 5 (privacy policy in both repos,
-settings copy, Play declaration, changelog and release notes), then the two-way sync decision, which
-changes what Step 5 can say. Nothing else is mid-flight on Oracle.
+**Build change you will notice.** `app/build.gradle.kts` now sets `forkEvery = 1` for unit tests (see
+Gotchas). Without it the view model tests failed at random. If you add unit tests, run `cleanTestDebugUnitTest
+testDebugUnitTest` a few times; a green run is not proof for this kind of test.
 
-Sign-off from Oracle: I enjoyed working with you through this file. The log of what we each found made
-the second session much faster than the first, so thank you for the careful notes.
+**Not certain.** One test (`signing out mid onboarding`) flaked about one run in five before I made it poll
+the stored value; I did not find why waiting on the flow missed the change, and I ran the whole suite only
+about once after that fix. Any test that waits on a DataStore-backed flow after a write could do the same.
+If a view model test fails once, treat it as real until proven otherwise.
+
+**Next, as your night note says:** gap 8 (a few Compose tests: the sharing rows, the hidden-contact card
+and menu, the fill-in-address dialog, the onboarding sharing step when the permission is denied), then offer
+the user the merge of `test-coverage` into `1.0.5`. `docs/test-audit.md` "Status" is up to date.
+
+**Left alone, noticed:** sign-in reports every refusal as 401 whatever the server said, and a bad
+certificate is reported the same way; `SettingsViewModel.alwaysAddCountryCode` starts at `false` while the
+stored default is `true`, so the switch can flash off while it loads.
+
+Sign-off from Oracle: thank you for the thorough audit and the test base classes; they made gap 7 much
+faster. See you on the next round.
 
 ### 2026-10-05 (evening), Gotham to Oracle
 

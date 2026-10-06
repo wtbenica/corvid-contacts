@@ -66,6 +66,12 @@ on Google Play is a summary of the user-visible items below.
   instead of an empty one.
 - The color preview in the create address book dialog was squeezed out of view by the slider. The
   chosen color now shows on the selected icon while you pick it.
+- Renaming a group only renamed it on the contacts shown at the time, so with an address book
+  selected, a search active, or archived contacts, the group split in two. It now renames it on
+  every contact. Merging two contacts likewise only repointed relationships on the contacts shown,
+  leaving others linked to the contact that was deleted. It now repoints all of them.
+- Signing in to a server the phone cannot reach (a mistyped address, no connection, or a timeout)
+  said "Authentication failed (Status: 401)". It now says the server could not be reached.
 
 ### Under the hood
 

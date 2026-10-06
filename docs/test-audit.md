@@ -5,7 +5,7 @@
 Done 2026-10-05 on branch `1.0.5` (commit `4d64a28`). The review, the gap list and a recommended order
 follow; the status below says how far the work has got on branch `test-coverage`.
 
-## Status (updated 2026-10-05, after gap 3)
+## Status (updated 2026-10-06, after gap 7)
 
 | Item | State |
 | --- | --- |
@@ -16,8 +16,8 @@ follow; the status below says how far the work has got on branch `test-coverage`
 | 4. `BirthdayWorker` | Done: `BirthdayDates` extracted and tested; year-less and Feb 29 now remind |
 | 5. `IntentParser` | Done: found and fixed a shared street address being dropped |
 | 3. `ContactsRepository` | Done: `ContactsRepositoryLocalTest` (16), `ContactsRepositoryServerTest` (20, MockWebServer with a routing dispatcher), shared `RepositoryTestBase` and `DavFixtures` |
-| 7. View models | **Next** |
-| 8. Compose UI | After 7 |
+| 7. View models | Done: `MainViewModel`, `OnboardingViewModel`, `LoginViewModel`, `SettingsViewModel`, `ContactsViewModel` and its filter and selection helpers, 133 tests. Found and fixed three bugs (see the changelog) |
+| 8. Compose UI | **Next** |
 | 9. Lower value | Not started |
 
 Left out of gap 3 on purpose: the photo and phone repair paths inside sync (covered in part by
@@ -26,8 +26,7 @@ Each new test was checked by breaking the code it covers and watching it fail.
 
 ## The numbers
 
-- **97 unit tests in 9 files, 12.4 seconds, all passing.** 11 of those seconds are the five migration
-  tests, which open Room under Robolectric. One instrumented test exists: the Android Studio template.
+- **330 unit tests in 24 files, about 1 minute 55 seconds, all passing** (each test class runs in its own JVM, see below).
 - **Line coverage is about 10%** (2,248 of 22,349 lines). Nearly all of it is the pure logic in
   `data/system`, plus `DavParser`, `VCardMapper` and `SystemVisibility`.
 - Measured with `enableUnitTestCoverage = true` on the debug build type, and the Robolectric tests
@@ -41,7 +40,7 @@ Each new test was checked by breaking the code it covers and watching it fail.
 | `ContactsRepository` | 29% | sync and delete propagation only |
 | `data/system` provider side (`SystemContactsReader`, `MirrorWriter`, `SystemEditAbsorber`, `SystemContactsMirror`, `MirrorDataRows`, `MirrorPhotos`, `MirrorGroups`) | 2% to 31% | only ever checked by hand on a phone |
 | `ContactMerger`, `IntentParser`, `BirthdayWorker`, `SyncWorker` | 0% | |
-| The five view models (`ContactsViewModel` 574 lines) | 0% | |
+| The five view models and their helpers | tested in gap 7 | `ViewModelTestBase` builds them over in-memory Room |
 | All Compose UI | under 1% | there are no Compose tests |
 
 ## Review of what exists
@@ -129,3 +128,26 @@ all {
 Then run `./gradlew createDebugUnitTestCoverageReport` and open
 `app/build/reports/coverage/test/debug/index.html` (or read `report.xml` there). The second block is what
 makes the Robolectric tests count.
+
+## View model tests: what to know (gap 7)
+
+- `ViewModelTestBase` (in `ui/`) extends `RepositoryTestBase`: real repositories over in-memory Room,
+  `Dispatchers.Main` replaced so `viewModelScope` runs eagerly, WorkManager initialized (saving the
+  birthday setting schedules a job), and the settings the tests change reset first. Make view models with
+  `createViewModel { ... }`, which clears them after the test; one left running keeps reacting to the
+  shared settings and undid a later test's set-up. `await` waits for a flow value, `awaitUntil` polls,
+  `record()` collects one-shot events, and `signedInAccount()` gives a signed-in account on a local mock
+  server (a test must not sync against the internet).
+- **Each test class runs in its own JVM** (`forkEvery = 1` in `app/build.gradle.kts`). The DataStores behind
+  settings and login are process-wide, and view model tests that shared a JVM failed at random. With it,
+  repeated clean runs of the whole suite pass.
+- Waiting on a stored-setting flow right after a write can occasionally miss the change. Where a test
+  was flaky for that reason, it polls the stored value directly.
+- Each test was checked by breaking the code it covers and watching it fail; four tests that passed with
+  the code broken were rewritten.
+- Bugs these tests found, all fixed and in `CHANGELOG.md`: an unreachable server at sign-in said
+  "Authentication failed (Status: 401)"; renaming a group only renamed it on the contacts on screen; and
+  merging only repointed links on the contacts on screen.
+- Left alone, noticed: sign-in reports every refusal as status 401 whatever the server said, and a server
+  with a bad certificate is reported the same way; `SettingsViewModel.alwaysAddCountryCode` starts at
+  `false` while the stored default is `true`, so the switch can flash off while it loads.
