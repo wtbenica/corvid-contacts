@@ -70,6 +70,8 @@ on Google Play is a summary of the user-visible items below.
   selected, a search active, or archived contacts, the group split in two. It now renames it on
   every contact. Merging two contacts likewise only repointed relationships on the contacts shown,
   leaving others linked to the contact that was deleted. It now repoints all of them.
+- The "Prepend Country Code" switch no longer starts off for a moment on Settings while the saved
+  choice loads. It starts from the same default (on) everywhere.
 - A relationship that links to another contact is now shared by name only when that contact is in a
   shared address book. A link to a contact in a book you have not shared is left out of your phone's
   contacts.

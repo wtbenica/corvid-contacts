@@ -5,6 +5,7 @@ package dev.benica.corvidcontacts.ui.contacts
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,5 +29,27 @@ class PhoneFormatterTest {
         )
 
         assertNotEquals("5551234567", formatted)
+    }
+
+    private val context: Context get() = ApplicationProvider.getApplicationContext()
+
+    @Test
+    fun `with the country code on, a number without one gets its own country's`() {
+        assertEquals("+1 202-555-0143", PhoneFormatter.format("2025550143", true, context, "US"))
+        assertEquals("+44 20 7946 0958", PhoneFormatter.format("020 7946 0958", true, context, "GB"))
+    }
+
+    @Test
+    fun `with the country code on, a number that has one keeps it, whatever the user's region`() {
+        assertEquals("+44 20 7946 0958", PhoneFormatter.format("+44 20 7946 0958", true, context, "US"))
+        assertEquals("+33 1 23 45 67 89", PhoneFormatter.format("+33 1 23 45 67 89", true, context, "US"))
+        assertEquals("+52 55 1234 5678", PhoneFormatter.format("+52 55 1234 5678", true, context, "US"))
+    }
+
+    @Test
+    fun `formatting a number that is already formatted changes nothing`() {
+        val once = PhoneFormatter.format("2025550143", true, context, "US")
+
+        assertEquals(once, PhoneFormatter.format(once, true, context, "US"))
     }
 }

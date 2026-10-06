@@ -44,6 +44,15 @@ class SettingsRepository(
         )
     )
 
+    companion object {
+        /**
+         * Whether phone numbers keep a country code until the user chooses otherwise. On, because a number
+         * with its country code can't be misread later, and view models start from it so a switch isn't
+         * drawn off while the stored choice loads.
+         */
+        const val DEFAULT_ALWAYS_ADD_COUNTRY_CODE = true
+    }
+
     private object PreferencesKeys {
         val ALWAYS_ADD_COUNTRY_CODE = booleanPreferencesKey("always_add_country_code")
         val SELF_CONTACT_ID = stringPreferencesKey("self_contact_id")
@@ -59,9 +68,9 @@ class SettingsRepository(
         val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
-    /** Whether the local country code should be auto-prepended to phone numbers. Defaults to `true`. */
+    /** Whether the local country code should be auto-prepended to phone numbers. Defaults to [DEFAULT_ALWAYS_ADD_COUNTRY_CODE]. */
     val alwaysAddCountryCode: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[PreferencesKeys.ALWAYS_ADD_COUNTRY_CODE] ?: true
+        preferences[PreferencesKeys.ALWAYS_ADD_COUNTRY_CODE] ?: DEFAULT_ALWAYS_ADD_COUNTRY_CODE
     }
 
     /** The contact ID the user has designated as their own "My Card", or `null` if unset. */

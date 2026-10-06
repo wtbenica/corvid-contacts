@@ -54,7 +54,7 @@ class SettingsViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            false
+            SettingsRepository.DEFAULT_ALWAYS_ADD_COUNTRY_CODE
         )
 
     /** The current address lookup mode. */

@@ -68,7 +68,7 @@ class SettingsViewModelTest : ViewModelTestBase() {
     @Test
     fun `the country code choice is read from and saved to the stored setting`() {
         val viewModel = settings()
-        // The view model starts at false until the stored value (true by default) arrives.
+        assertTrue("on from the first frame, as stored by default", viewModel.alwaysAddCountryCode.value)
         assertTrue(viewModel.alwaysAddCountryCode.await { it })
 
         viewModel.setAlwaysAddCountryCode(false)

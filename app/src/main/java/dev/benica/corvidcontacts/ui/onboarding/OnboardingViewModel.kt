@@ -112,7 +112,7 @@ class OnboardingViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            true
+            SettingsRepository.DEFAULT_ALWAYS_ADD_COUNTRY_CODE
         )
 
     /** The current address lookup mode. */

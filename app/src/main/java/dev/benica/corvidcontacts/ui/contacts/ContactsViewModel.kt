@@ -87,7 +87,7 @@ class ContactsViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            false
+            SettingsRepository.DEFAULT_ALWAYS_ADD_COUNTRY_CODE
         )
 
     /** The contact ID the user has designated as their own "My Card", or `null` if unset. */
