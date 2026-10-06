@@ -694,7 +694,7 @@ All on `1.0.5` and pushed (`test-coverage` is merged into it). Nothing is on `ma
   adds it. The user chose "leave alone" over "strip your own country only".
 
 **Privacy review** (policy in both repos, plus the deletion page; website branch
-`corvid-contacts-1.0.5-privacy` at `5bf3e32`, still not merged to `main`). Corrected against the code:
+`corvid-contacts-1.0.5-privacy` at `7d72548`, still not merged to `main`). Corrected against the code:
 - The policy named two settings that do not exist ("Enable Address Lookup", "Use Google Places"). It is
   one **Address Lookup** setting with Photon (default), Google Places and Off. The photo setting is
   **Fetch & Embed Remote Photos** (it saves the photo into the contact, so it syncs to the server).
