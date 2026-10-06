@@ -1,0 +1,112 @@
+<!-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0 -->
+
+# Test review and coverage audit
+
+Done 2026-10-05 on branch `1.0.5` (commit `4d64a28`). Nothing was changed in the tests; this is the
+review, the gap list and a recommended order.
+
+## The numbers
+
+- **97 unit tests in 9 files, 12.4 seconds, all passing.** 11 of those seconds are the five migration
+  tests, which open Room under Robolectric. One instrumented test exists: the Android Studio template.
+- **Line coverage is about 10%** (2,248 of 22,349 lines). Nearly all of it is the pure logic in
+  `data/system`, plus `DavParser`, `VCardMapper` and `SystemVisibility`.
+- Measured with `enableUnitTestCoverage = true` on the debug build type, and the Robolectric tests
+  counted (see the end of this file). Without the Robolectric setting the repository tests show 0% and
+  the total is 4%.
+
+| Area | Lines covered | Notes |
+| --- | --- | --- |
+| `data/system` pure logic (`SystemEditMerge`, `MirrorPlan`) | 92%, 83% | the best tested code in the app |
+| `VCardMapper`, `DavParser` | 88%, 94% | the vCard round trip and the server parser |
+| `ContactsRepository` | 29% | sync and delete propagation only |
+| `data/system` provider side (`SystemContactsReader`, `MirrorWriter`, `SystemEditAbsorber`, `SystemContactsMirror`, `MirrorDataRows`, `MirrorPhotos`, `MirrorGroups`) | 2% to 31% | only ever checked by hand on a phone |
+| `ContactMerger`, `IntentParser`, `BirthdayWorker`, `SyncWorker` | 0% | |
+| The five view models (`ContactsViewModel` 574 lines) | 0% | |
+| All Compose UI | under 1% | there are no Compose tests |
+
+## Review of what exists
+
+- **`SystemEditMergeTest` (35) and `MirrorPlanTest` (32):** good. They are fast, name the behavior, and
+  use small builders. Nothing to change. A few merge tests repeat the same set-up and could share a
+  helper, but that is taste.
+- **`ContactsRepositoryVCardRoundTripTest` (6) and `ContactsRepositorySyncTest` (3):** the right kind of
+  test (a mock web server and real mapping code). Problems:
+  - There are four hand-written DAO fakes between them (`FakeContactDao`, `FakeAddressBookDao`,
+    `NoOpContactDao`, `NoOpAddressBookDao`). Every new DAO method has to be added to all four, which
+    happened twice during the sharing work. Room's in-memory database under Robolectric would do the
+    same job with the real queries and nothing to keep in step.
+  - One test, "PhoneFormatter reformats a raw number", is in the sync test file but tests formatting.
+- **`AppDatabaseMigrationTest` (5):** it only proves that Room accepts the migrated tables. The old
+  schemas are hand-typed SQL, and `exportSchema` is `false`, so there are no real old schemas to test
+  against. The set-up is copied five times.
+- **`ContactColorsTest` (4):** fine, but the same long `ContactEntity(...)` is built three times, and one
+  test name ("when no book missing") is garbled.
+- **`FarthestHueTest` (4), `SystemVisibilityTest` (4), `StructuredAddressTest` (4):** good, small, exact.
+- **`ExampleInstrumentedTest`:** the Android Studio template. It asserts the package name
+  `dev.benica.corvidcontacts`, but the debug build's is `dev.benica.corvidcontacts.debug`, so it would
+  fail on a device. It tests nothing about the app.
+- No sleeps, no ignored tests, no flaky timing. All tests are deterministic.
+
+## Gaps, most important first
+
+1. **The provider half of two-way sync** (reader, writer, absorber, mirror, data rows, photos, groups).
+   This code reads and writes other apps' data and decides what is overwritten. Every behavior was
+   verified by hand with `adb` and Google Contacts: sharing writes the rows, an edit is absorbed, a delete
+   hides, the version guard skips a contact, unknown rows are kept, a photo token detects a changed
+   photo, a level change rewrites, losing the permission removes the copy. None of it will notice a
+   regression. Best approach: **instrumented tests on an emulator**, using the real `ContactsContract`
+   provider, an in-memory Room database, a fake editor, and `GrantPermissionRule` for the contacts
+   permissions; the "other app" is a plain `ContentResolver` update (which the real provider marks
+   dirty). Also split `SystemContactsReader`'s row-to-contact mapping from the cursor reading, so the
+   column mapping (the easiest thing to get subtly wrong) can be unit tested on the JVM.
+2. **`ContactMerger` (0%).** Merging duplicates changes and deletes the user's contacts. Pure logic;
+   cheap to test thoroughly.
+3. **`ContactsRepository` (29%).** Saving a contact (server and local), importing vCards, uploading a
+   local book, creating a book, the photo and phone repair, logout and local-only mode.
+4. **`BirthdayWorker` (0%).** The date parsing, the known gap that year-less birthdays never trigger a
+   reminder, and the notification timing. Mostly pure.
+5. **`IntentParser` (0%).** It parses input from other apps. Test with crafted intents and vCards,
+   including garbage.
+6. **Database migrations.** Turn on schema export and use Room's `MigrationTestHelper`, so each step is
+   checked against the real older schema, with data.
+7. **View models (0%).** `OnboardingViewModel` (which steps are skipped when), `MainViewModel` (the start
+   destination), `LoginViewModel`, `SettingsViewModel` and `ContactsViewModel` (574 lines). Needs fakes
+   or in-memory Room.
+8. **Compose UI (0%).** A few Robolectric Compose tests where the screen has logic: the sharing rows
+   (disabled and dimmed states), the hidden-contact card and menu, the fill-in-address dialog states,
+   and the sharing step's permission-denied path.
+9. **Lower value:** Photon response parsing in `GeocoderRepository` (cheap, canned JSON),
+   `SettingsRepository` round trips, `PhotoManager` file handling, the glance widget, `VCardType`,
+   the colour extensions.
+
+## Cleanup to do first (small)
+
+1. Delete `ExampleInstrumentedTest`, or replace it with the first real instrumented test.
+2. Replace the four DAO fakes with in-memory Room.
+3. Move the PhoneFormatter test into its own file; share the migration test set-up; add a
+   `ContactEntity` builder to `ContactColorsTest` and fix the test name.
+4. Keep the coverage settings (below) in `app/build.gradle.kts`.
+
+## Suggested order
+
+Cleanup, then 1 (the instrumented provider tests and the reader split), 2, 6, 4, 5, 3, then 7 and 8.
+Items 1, 2 and 6 protect data the most; the rest are about confidence.
+
+## Measuring coverage
+
+Add to `app/build.gradle.kts`: `enableUnitTestCoverage = true` in the `debug` build type, and inside
+`testOptions { unitTests { ... } }`:
+
+```kotlin
+all {
+    it.extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class.java) {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+}
+```
+
+Then run `./gradlew createDebugUnitTestCoverageReport` and open
+`app/build/reports/coverage/test/debug/index.html` (or read `report.xml` there). The second block is what
+makes the Robolectric tests count.
