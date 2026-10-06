@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.core.content.IntentCompat
 import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.model.Phone
+import dev.benica.corvidcontacts.data.model.StructuredAddress
 import dev.benica.corvidcontacts.data.repository.VCardMapper
 import ezvcard.Ezvcard
 import java.util.UUID
@@ -180,7 +181,8 @@ object IntentParser {
             company = null,
             jobTitle = null,
             notes = if (!isPhoneNumber && !isEmail && !isAddress && cleanedText.length >= 40) cleanedText else null,
-            websites = detectedUrl?.let { listOf(it) } ?: emptyList()
+            websites = detectedUrl?.let { listOf(it) } ?: emptyList(),
+            structuredAddresses = if (isAddress) listOf(StructuredAddress(street = cleanedText)) else emptyList()
         )
     }
 
