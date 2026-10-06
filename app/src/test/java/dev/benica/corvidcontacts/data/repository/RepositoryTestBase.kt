@@ -3,11 +3,18 @@
 package dev.benica.corvidcontacts.data.repository
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
 import dev.benica.corvidcontacts.data.local.AppDatabase
 import dev.benica.corvidcontacts.data.local.ContactEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -15,6 +22,7 @@ import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.File
 
 /**
  * A [ContactsRepository] over an in-memory Room database, for tests that exercise it as the app
@@ -37,10 +45,8 @@ abstract class RepositoryTestBase {
             .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        authRepository = AuthRepository(context)
-        settingsRepository = SettingsRepository(context)
-        // The DataStores outlive a test within the JVM, so a login saved by an earlier test is still there.
-        runBlocking { authRepository.clearCredentials() }
+        authRepository = AuthRepository(context, newDataStore("auth"))
+        settingsRepository = SettingsRepository(context, newDataStore("settings"))
         repository = ContactsRepository(
             context = context,
             contactDao = database.contactDao(),
@@ -53,7 +59,18 @@ abstract class RepositoryTestBase {
     @After
     fun closeDatabase() {
         database.close()
+        dataStoreScope.cancel()
+        dataStoreDir.deleteRecursively()
     }
+
+    // Unconfined, so a write finishes on the calling thread. On a background thread, a collector that
+    // starts while a write is in flight can miss that write for good (seen in DataStore 1.2.1).
+    private val dataStoreScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+    private val dataStoreDir = File.createTempFile("datastore", "").also { it.delete(); it.mkdirs() }
+
+    /** A store of this test's own: the app's are process-wide, and would carry one test's state into the next. */
+    private fun newDataStore(name: String): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create(scope = dataStoreScope) { File(dataStoreDir, "$name.preferences_pb") }
 
     protected fun seedBooks(vararg books: AddressBookEntity) =
         runBlocking { database.addressBookDao().insertAddressBooks(books.toList()) }

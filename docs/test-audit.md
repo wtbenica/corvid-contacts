@@ -26,7 +26,7 @@ Each new test was checked by breaking the code it covers and watching it fail.
 
 ## The numbers
 
-- **330 unit tests in 24 files, about 1 minute 55 seconds, all passing** (each test class runs in its own JVM, see below).
+- **330 unit tests in 24 files, about 40 seconds, all passing** (see "Why the tests were flaky").
 - **Line coverage is about 10%** (2,248 of 22,349 lines). Nearly all of it is the pure logic in
   `data/system`, plus `DavParser`, `VCardMapper` and `SystemVisibility`.
 - Measured with `enableUnitTestCoverage = true` on the debug build type, and the Robolectric tests
@@ -133,16 +133,12 @@ makes the Robolectric tests count.
 
 - `ViewModelTestBase` (in `ui/`) extends `RepositoryTestBase`: real repositories over in-memory Room,
   `Dispatchers.Main` replaced so `viewModelScope` runs eagerly, WorkManager initialized (saving the
-  birthday setting schedules a job), and the settings the tests change reset first. Make view models with
+  birthday setting schedules a job), and a DataStore of its own per test. Make view models with
   `createViewModel { ... }`, which clears them after the test; one left running keeps reacting to the
   shared settings and undid a later test's set-up. `await` waits for a flow value, `awaitUntil` polls,
   `record()` collects one-shot events, and `signedInAccount()` gives a signed-in account on a local mock
   server (a test must not sync against the internet).
-- **Each test class runs in its own JVM** (`forkEvery = 1` in `app/build.gradle.kts`). The DataStores behind
-  settings and login are process-wide, and view model tests that shared a JVM failed at random. With it,
-  repeated clean runs of the whole suite pass.
-- Waiting on a stored-setting flow right after a write can occasionally miss the change. Where a test
-  was flaky for that reason, it polls the stored value directly.
+- Tests share a JVM again; there is no `forkEvery`. See "Why the tests were flaky" below.
 - Each test was checked by breaking the code it covers and watching it fail; four tests that passed with
   the code broken were rewritten.
 - Bugs these tests found, all fixed and in `CHANGELOG.md`: an unreachable server at sign-in said
@@ -151,3 +147,30 @@ makes the Robolectric tests count.
 - Left alone, noticed: sign-in reports every refusal as status 401 whatever the server said, and a server
   with a bad certificate is reported the same way; `SettingsViewModel.alwaysAddCountryCode` starts at
   `false` while the stored default is `true`, so the switch can flash off while it loads.
+
+## Why the tests were flaky (found 2026-10-06)
+
+Two problems, one in the app and one in how the tests wrote and read.
+
+1. **No seam for the stored settings.** The repositories used a file-level `by preferencesDataStore(...)`
+   that cannot be replaced, so state leaked from one test to the next. The repositories now take the
+   `DataStore` as a constructor argument (defaulting to the app's store), and each test gets its own files.
+2. **A DataStore race on a background scope.** In DataStore 1.2.1, a collector that starts while a write is
+   in flight can miss that write for good. View model setters launch the write and return, and the tests
+   collected straight away. Measured with plain DataStore, 300 trials per variant, all cores busy:
+
+   | Timing | Misses |
+   | --- | --- |
+   | Write finished before the collector started | 0 |
+   | Collector subscribed before the write | 0 |
+   | Collector started mid-write, store on `Dispatchers.IO` | 2, 18, 6, 7 |
+   | Collector started mid-write, store on `Dispatchers.Unconfined` | 0 (600 trials) |
+
+   Tests now use an unconfined store (`RepositoryTestBase.newDataStore`), so a write finishes on the calling
+   thread. The suite passed 14 clean runs in a row, 6 under full CPU load; with per-test stores on the IO scope it
+   still failed in 3 of 3 full runs.
+
+What to do when adding tests: build repositories through `RepositoryTestBase`, never `AuthRepository(context)`
+or `SettingsRepository(context)` directly. If a test ever flakes again, run the class repeatedly with the
+cores busy (`yes > /dev/null` per core, or a shell busy loop) to reproduce it; a clean run proves little
+for a race.

@@ -464,12 +464,14 @@ the Places API key in `local.properties` now. Gotham has the website repo `~/Dev
   to hide notification icons, and the 5G badge never displayed correctly.
 
 **Gotchas.**
-- **Tests** (details in `docs/test-audit.md`, "View model tests"). Each unit test class runs in its own JVM
-  (`forkEvery = 1`), because the DataStores behind settings and login are process-wide and view model tests
-  sharing a JVM failed at random. View model tests extend `ViewModelTestBase` and make view models with
+- **Tests** (details in `docs/test-audit.md`, "View model tests" and "Why the tests were flaky"). Every
+  test gets its own DataStore files, on an unconfined scope (`RepositoryTestBase`); `AuthRepository` and
+  `SettingsRepository` take the store as a constructor argument for that reason. Do not build them from a
+  bare `Context` in a test: the app's own stores are process-wide, and DataStore can lose a write for a
+  collector that starts while the write is in flight (it does so on a background scope, never on an
+  unconfined one). View model tests extend `ViewModelTestBase` and make view models with
   `createViewModel { }`. A test must not reach the internet: use `signedInAccount()` or a MockWebServer.
-  Waiting on a stored-setting flow right after a write can occasionally miss the change, so poll the
-  stored value directly when a test flakes. Check a new test by breaking the code it covers.
+  Check a new test by breaking the code it covers.
 - **Instrumented tests need an emulator and must never run on the phone** (they write to the real contacts
   provider). Start one, then pin the run: `emulator -avd Pixel_3a_API_34_extension_level_7_x86_64
   -no-window -no-audio -no-snapshot` (boots in about 40 s), then
@@ -518,14 +520,8 @@ broken were rewritten.
 screen (now `ContactsRepository.getAllContacts()`). `LoginViewModel` gained an optional `scheme` argument
 (default `https`) so a test can use a local mock server.
 
-**Build change you will notice.** `app/build.gradle.kts` now sets `forkEvery = 1` for unit tests (see
-Gotchas). Without it the view model tests failed at random. If you add unit tests, run `cleanTestDebugUnitTest
-testDebugUnitTest` a few times; a green run is not proof for this kind of test.
-
-**Not certain.** One test (`signing out mid onboarding`) flaked about one run in five before I made it poll
-the stored value; I did not find why waiting on the flow missed the change, and I ran the whole suite only
-about once after that fix. Any test that waits on a DataStore-backed flow after a write could do the same.
-If a view model test fails once, treat it as real until proven otherwise.
+**Superseded by Gotham, 2026-10-06:** the `forkEvery = 1` workaround and the "not certain" flake are
+explained and fixed, see "Gotham, flaky tests" below.
 
 **Next, as your night note says:** gap 8 (a few Compose tests: the sharing rows, the hidden-contact card
 and menu, the fill-in-address dialog, the onboarding sharing step when the permission is denied), then offer
@@ -600,10 +596,7 @@ hidden-contact card and menu, the fill-in-address dialog, the onboarding sharing
 permission is denied). Then offer the user the merge of `test-coverage` into `1.0.5`.
 
 **Gotchas for the next tests:**
-- `RepositoryTestBase` clears stored credentials before each test. The DataStores are process-wide
-  and outlive a test inside one JVM, so a login saved by one test shows up in the next; a view model
-  test that uses `AuthRepository` or `SettingsRepository` will need the same reset (and a reset of any
-  setting it changes).
+- (Superseded: `RepositoryTestBase` now gives every test its own DataStore, so nothing needs resetting.)
 - `ContactsRepositoryServerTest` uses a `Dispatcher` that routes by method and by what the PROPFIND body
   asks for, not a queue, so the order of the discovery requests does not matter. Seed the server book in
   Room before testing an upload: `createAddressBook` picks the first book that was not in Room before
@@ -614,3 +607,40 @@ permission is denied). Then offer the user the merge of `test-coverage` into `1.
 **Still the user's:** the Play Console READ_CONTACTS declaration (`docs/play-console-1.0.5.md`),
 merging the website branch to `main` at rollout, and a native-speaker review of the translations.
 Nothing here is merged to `main` or deployed.
+
+### 2026-10-06, Gotham to Oracle: flaky tests
+
+The user asked for a second look at the flakiness. Short version: it was a real race, the tests were
+not badly designed, and the app code was missing a seam. Fixed and checked.
+
+**Cause.** `AuthRepository` and `SettingsRepository` read a file-level `by preferencesDataStore(...)`,
+which is process-wide and cannot be replaced in a test. That alone leaked state between tests (hence
+`forkEvery = 1`). The flake was separate: with DataStore 1.2.1 on a background scope, a collector that
+starts while a write is in flight can miss that write for good. The view model setters are
+fire-and-forget (`viewModelScope.launch { save... }`), and the tests collect straight after calling
+them, which is exactly that timing. I reproduced it with no app code at all (plain DataStore, 300 trials
+per variant, all cores busy): collecting after the write finished, or already subscribed before it, never
+missed; collecting mid-write missed 1% to 6% of the time on the IO scope and 0 of 600 on an unconfined one.
+It is more likely under load, which is why it came and went. (It could in principle happen in the app
+too, when a screen starts collecting as a setting is saved; unlikely and not worth code.)
+
+**Fix.** `AuthRepository(context, dataStore = app's store)` and `SettingsRepository(context, dataStore =
+app's store)`; production wiring is unchanged. `RepositoryTestBase` makes a fresh store per test in a temp
+dir on `Dispatchers.Unconfined`, so a write finishes on the calling thread. Removed: `forkEvery = 1`,
+`resetSettings()` and the credential reset. (The one test that polled the stored value still does; the
+poll is harmless.) `ContactsRepositorySyncTest` now extends
+`RepositoryTestBase` instead of building its own. The whole suite takes about 40 seconds instead of about
+2 minutes, and passed 14 clean runs in a row, 6 of them with all 12 cores busy. With per-test stores
+but the store on the IO scope it still failed in 3 of 3 full runs, which is what pointed at the race.
+
+**Tried and dropped.** Making Room synchronous in tests: `setQueryCoroutineContext(Dispatchers.Unconfined)`
+breaks nearly every repository test, and inline query/transaction executors still left 6 tests needing to
+wait. So the 24 `awaitUntil` polls stay; they wait on Room's background work and a condition, not on a
+guess, and they are not a source of flakes. A better long-term seam would be injecting the dispatcher
+into the repositories, but only `PhotoManager`, `GeocoderRepository` and the mirror use `Dispatchers.IO`
+directly and none is on a view model test path, so it is not needed now.
+
+**Smell worth knowing about.** `SettingsRepository.saveBirthdayNotificationsEnabled` schedules a WorkManager
+job from inside the setter, so every test that saves that setting needs WorkManager initialized
+(`ViewModelTestBase` does it once per process). Moving the scheduling out of the repository would make
+it testable without that, but that is a behavior-neutral refactor for later.

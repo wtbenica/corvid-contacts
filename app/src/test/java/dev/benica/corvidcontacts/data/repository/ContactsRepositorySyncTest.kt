@@ -2,11 +2,7 @@
 
 package dev.benica.corvidcontacts.data.repository
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
-import dev.benica.corvidcontacts.data.local.AppDatabase
 import dev.benica.corvidcontacts.data.local.ContactEntity
 import dev.benica.corvidcontacts.data.model.Email
 import dev.benica.corvidcontacts.data.model.NextcloudCredentials
@@ -21,9 +17,6 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
 /**
  * Integration tests for [ContactsRepository.syncContacts] against a mock HTTP server.
@@ -32,13 +25,9 @@ import org.robolectric.annotation.Config
  *
  * Runs under Robolectric to support Android API dependencies (Context, Base64, libphonenumber).
  */
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
-class ContactsRepositorySyncTest {
+class ContactsRepositorySyncTest : RepositoryTestBase() {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var database: AppDatabase
-    private lateinit var repository: ContactsRepository
 
     private val principalHref = "/remote.php/dav/principals/testuser/"
     private val homeSetHref = "/remote.php/dav/addressbooks/testuser/"
@@ -48,22 +37,6 @@ class ContactsRepositorySyncTest {
     fun setUp() {
         mockWebServer = MockWebServer()
         mockWebServer.start()
-
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room
-            .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val authRepository = AuthRepository(context)
-        val settingsRepository = SettingsRepository(context)
-
-        repository = ContactsRepository(
-            context = context,
-            contactDao = database.contactDao(),
-            addressBookDao = database.addressBookDao(),
-            authRepository = authRepository,
-            settingsRepository = settingsRepository,
-        )
 
         runBlocking {
             authRepository.saveCredentials(
@@ -81,7 +54,6 @@ class ContactsRepositorySyncTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
-        database.close()
     }
 
     @Test
@@ -243,14 +215,6 @@ class ContactsRepositorySyncTest {
     }
 
     // --- Fixture helpers -----------------------------------------------------------------
-
-    private fun seedBooks(vararg books: AddressBookEntity) = runBlocking {
-        database.addressBookDao().insertAddressBooks(books.toList())
-    }
-
-    private fun seedContacts(vararg contacts: ContactEntity) = runBlocking {
-        database.contactDao().insertContacts(contacts.toList())
-    }
 
     private fun enqueuePrincipalAndHomeSet() {
         mockWebServer.enqueue(

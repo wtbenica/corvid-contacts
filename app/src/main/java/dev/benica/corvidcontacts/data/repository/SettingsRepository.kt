@@ -27,9 +27,12 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
  * flag, birthday-notification opt-in (which also toggles [BirthdayWorker]'s scheduled work),
  * saved-server history for the login screen, and contact-group ordering.
  *
- * @param context Application context used to access the DataStore.
+ * @param dataStore The store to use; the app's own file unless a test supplies one.
  */
-class SettingsRepository(private val context: Context) {
+class SettingsRepository(
+    private val context: Context,
+    private val dataStore: DataStore<Preferences> = context.settingsDataStore,
+) {
 
     private val moshi = Moshi
         .Builder()
@@ -57,17 +60,17 @@ class SettingsRepository(private val context: Context) {
     }
 
     /** Whether the local country code should be auto-prepended to phone numbers. Defaults to `true`. */
-    val alwaysAddCountryCode: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+    val alwaysAddCountryCode: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.ALWAYS_ADD_COUNTRY_CODE] ?: true
     }
 
     /** The contact ID the user has designated as their own "My Card", or `null` if unset. */
-    val selfContactId: Flow<String?> = context.settingsDataStore.data.map { preferences ->
+    val selfContactId: Flow<String?> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.SELF_CONTACT_ID]
     }
 
     /** The user's preferred display order for contact groups, stored as a JSON-encoded list. */
-    val groupOrder: Flow<List<String>> = context.settingsDataStore.data.map { preferences ->
+    val groupOrder: Flow<List<String>> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.GROUP_ORDER]?.let { json ->
             try {
                 stringListAdapter.fromJson(json)
@@ -78,7 +81,7 @@ class SettingsRepository(private val context: Context) {
     }
 
     /** The user's preferred address lookup mode. Defaults to [AddressLookupMode.PHOTON]. */
-    val addressLookupMode: Flow<AddressLookupMode> = context.settingsDataStore.data.map { preferences ->
+    val addressLookupMode: Flow<AddressLookupMode> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.ADDRESS_LOOKUP_MODE]?.let { name ->
             try {
                 AddressLookupMode.valueOf(name)
@@ -97,12 +100,12 @@ class SettingsRepository(private val context: Context) {
      * to `false`: downloading means contacting whatever third-party server hosts that photo, which
      * shouldn't happen without consent.
      */
-    val autoLoadRemotePhotos: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+    val autoLoadRemotePhotos: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.AUTO_LOAD_REMOTE_PHOTOS] ?: false
     }
 
     /** The user's preferred theme mode. Defaults to [ThemeMode.SYSTEM]. */
-    val themeMode: Flow<ThemeMode> = context.settingsDataStore.data.map { preferences ->
+    val themeMode: Flow<ThemeMode> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.THEME_MODE]?.let { name ->
             try {
                 ThemeMode.valueOf(name)
@@ -120,7 +123,7 @@ class SettingsRepository(private val context: Context) {
      * contact list - so onboarding runs once per account, not once per device, and logging out
      * doesn't need to (and doesn't) touch this value.
      */
-    val lastOnboardedAccountKey: Flow<String?> = context.settingsDataStore.data.map { preferences ->
+    val lastOnboardedAccountKey: Flow<String?> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.LAST_ONBOARDED_ACCOUNT_KEY]
     }
 
@@ -130,7 +133,7 @@ class SettingsRepository(private val context: Context) {
      * periodic work accordingly.
      */
     val birthdayNotificationsEnabled: Flow<Boolean> =
-        context.settingsDataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[PreferencesKeys.BIRTHDAY_NOTIFICATIONS_ENABLED] ?: false
         }
 
@@ -140,7 +143,7 @@ class SettingsRepository(private val context: Context) {
      * remains `null` either way before login; this flag is what distinguishes "hasn't logged in
      * yet" from "chose not to." Defaults to `false`.
      */
-    val localOnlyMode: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+    val localOnlyMode: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.LOCAL_ONLY_MODE] ?: false
     }
 
@@ -152,12 +155,12 @@ class SettingsRepository(private val context: Context) {
      * onboarding plays again the next time local-only mode is entered.
      */
     val localOnboardingCompleted: Flow<Boolean> =
-        context.settingsDataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[PreferencesKeys.LOCAL_ONBOARDING_COMPLETED] ?: false
         }
 
     /** The set of server URLs the user has previously logged into, offered as suggestions on the login screen. */
-    val savedServers: Flow<Set<String>> = context.settingsDataStore.data.map { preferences ->
+    val savedServers: Flow<Set<String>> = dataStore.data.map { preferences ->
         preferences[PreferencesKeys.SAVED_SERVERS]?.let { json ->
             try {
                 stringListAdapter
@@ -180,7 +183,7 @@ class SettingsRepository(private val context: Context) {
      * "resolved" tracks whether it's been dealt with, not whether it still exists.
      */
     val resolvedLocalBookHrefs: Flow<Set<String>> =
-        context.settingsDataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[PreferencesKeys.RESOLVED_LOCAL_BOOK_HREFS]?.let { json ->
                 try {
                     stringListAdapter
@@ -194,14 +197,14 @@ class SettingsRepository(private val context: Context) {
 
     /** Sets whether the local country code should be auto-prepended to phone numbers. */
     suspend fun saveAlwaysAddCountryCode(alwaysAdd: Boolean) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.ALWAYS_ADD_COUNTRY_CODE] = alwaysAdd
         }
     }
 
     /** Sets the contact ID representing the user's own "My Card", or clears it if [id] is `null`. */
     suspend fun saveSelfContactId(id: String?) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             if (id == null) {
                 preferences.remove(PreferencesKeys.SELF_CONTACT_ID)
             } else {
@@ -212,28 +215,28 @@ class SettingsRepository(private val context: Context) {
 
     /** Persists the user's preferred display [order] for contact groups. */
     suspend fun saveGroupOrder(order: List<String>) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.GROUP_ORDER] = stringListAdapter.toJson(order)
         }
     }
 
     /** Sets the preferred address lookup mode. */
     suspend fun saveAddressLookupMode(mode: AddressLookupMode) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.ADDRESS_LOOKUP_MODE] = mode.name
         }
     }
 
     /** Sets whether externally-hosted contact photos are downloaded automatically (see [autoLoadRemotePhotos]). */
     suspend fun saveAutoLoadRemotePhotos(enabled: Boolean) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.AUTO_LOAD_REMOTE_PHOTOS] = enabled
         }
     }
 
     /** Sets the user's preferred theme mode. */
     suspend fun saveThemeMode(mode: ThemeMode) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = mode.name
         }
     }
@@ -244,7 +247,7 @@ class SettingsRepository(private val context: Context) {
      * currently logged in - see [SettingsViewModel.resetOnboarding][dev.benica.corvidcontacts.ui.settings.SettingsViewModel.resetOnboarding]).
      */
     suspend fun saveLastOnboardedAccountKey(accountKey: String?) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             if (accountKey != null) {
                 preferences[PreferencesKeys.LAST_ONBOARDED_ACCOUNT_KEY] = accountKey
             } else {
@@ -258,7 +261,7 @@ class SettingsRepository(private val context: Context) {
      * [BirthdayWorker]'s periodic work to match.
      */
     suspend fun saveBirthdayNotificationsEnabled(enabled: Boolean) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.BIRTHDAY_NOTIFICATIONS_ENABLED] = enabled
         }
         if (enabled) {
@@ -270,21 +273,21 @@ class SettingsRepository(private val context: Context) {
 
     /** Sets whether the user is using the app in local-only mode (see [localOnlyMode]). */
     suspend fun saveLocalOnlyMode(enabled: Boolean) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.LOCAL_ONLY_MODE] = enabled
         }
     }
 
     /** Sets whether local-only mode's first-run onboarding flow has been completed (see [localOnboardingCompleted]). */
     suspend fun saveLocalOnboardingCompleted(completed: Boolean) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.LOCAL_ONBOARDING_COMPLETED] = completed
         }
     }
 
     /** Adds [url] to the set of saved servers offered on the login screen. */
     suspend fun addSavedServer(url: String) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             val current = preferences[PreferencesKeys.SAVED_SERVERS]?.let { json ->
                 try {
                     stringListAdapter
@@ -301,7 +304,7 @@ class SettingsRepository(private val context: Context) {
 
     /** Removes [url] from the set of saved servers offered on the login screen. */
     suspend fun removeSavedServer(url: String) {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             val current = preferences[PreferencesKeys.SAVED_SERVERS]?.let { json ->
                 try {
                     stringListAdapter
@@ -319,7 +322,7 @@ class SettingsRepository(private val context: Context) {
     /** Adds [hrefs] to the set of local address books already offered a keep-local-or-upload decision (see [resolvedLocalBookHrefs]). */
     suspend fun markLocalBooksResolved(hrefs: Collection<String>) {
         if (hrefs.isEmpty()) return
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             val current = preferences[PreferencesKeys.RESOLVED_LOCAL_BOOK_HREFS]?.let { json ->
                 try {
                     stringListAdapter
@@ -339,7 +342,7 @@ class SettingsRepository(private val context: Context) {
      * Forgets every local address book resolution recorded by [markLocalBooksResolved].
      */
     suspend fun clearResolvedLocalBookHrefs() {
-        context.settingsDataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.remove(PreferencesKeys.RESOLVED_LOCAL_BOOK_HREFS)
         }
     }

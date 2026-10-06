@@ -340,7 +340,7 @@ class OnboardingViewModelTest : ViewModelTestBase() {
 
         viewModel.logout()
 
-        // Read the stored account directly: waiting on its flow occasionally misses the change.
+        // Logging out runs in the background, so wait for the stored account to go.
         awaitUntil { runBlocking { authRepository.credentials.first() } == null }
         assertNull(runBlocking { authRepository.credentials.first() })
     }

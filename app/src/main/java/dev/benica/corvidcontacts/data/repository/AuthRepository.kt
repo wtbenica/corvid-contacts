@@ -21,9 +21,12 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * Backed by a Jetpack DataStore Preferences file (`auth_prefs`), separate from
  * [SettingsRepository]'s general app-preferences store.
  *
- * @param context Application context used to access the DataStore.
+ * @param dataStore The store to use; the app's own file unless a test supplies one.
  */
-class AuthRepository(private val context: Context) {
+class AuthRepository(
+    context: Context,
+    private val dataStore: DataStore<Preferences> = context.dataStore,
+) {
 
     private object PreferencesKeys {
         val SERVER_URL = stringPreferencesKey("server_url")
@@ -35,7 +38,7 @@ class AuthRepository(private val context: Context) {
      * Emits the currently saved [NextcloudCredentials], or `null` if the user isn't logged in
      * (i.e. any of server URL, username, or app password is missing).
      */
-    val credentials: Flow<NextcloudCredentials?> = context.dataStore.data.map { preferences ->
+    val credentials: Flow<NextcloudCredentials?> = dataStore.data.map { preferences ->
         val serverUrl = preferences[PreferencesKeys.SERVER_URL]
         val username = preferences[PreferencesKeys.USERNAME]
         val appPassword = preferences[PreferencesKeys.APP_PASSWORD]
@@ -55,7 +58,7 @@ class AuthRepository(private val context: Context) {
      * Saves the given [credentials], overwriting any previously stored login details.
      */
     suspend fun saveCredentials(credentials: NextcloudCredentials) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PreferencesKeys.SERVER_URL] = credentials.serverUrl
             preferences[PreferencesKeys.USERNAME] = credentials.username
             preferences[PreferencesKeys.APP_PASSWORD] = credentials.appPassword
@@ -66,7 +69,7 @@ class AuthRepository(private val context: Context) {
      * Clears all saved credentials, effectively logging the user out.
      */
     suspend fun clearCredentials() {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.clear()
         }
     }

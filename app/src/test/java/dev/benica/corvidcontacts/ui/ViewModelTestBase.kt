@@ -33,8 +33,7 @@ import org.junit.Before
 
 /**
  * Base for view model tests: the real repositories over in-memory Room (see [RepositoryTestBase]),
- * with `Dispatchers.Main` replaced so `viewModelScope` runs eagerly, and the settings these tests
- * change reset first, because the DataStores outlive a test inside one JVM.
+ * with `Dispatchers.Main` replaced so `viewModelScope` runs eagerly.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class ViewModelTestBase : RepositoryTestBase() {
@@ -43,7 +42,6 @@ abstract class ViewModelTestBase : RepositoryTestBase() {
     fun replaceMainDispatcher() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         initializeWorkManager()
-        resetSettings()
     }
 
     /**
@@ -116,26 +114,6 @@ abstract class ViewModelTestBase : RepositoryTestBase() {
         return ViewModelProvider.create(viewModels, factory)["${type.name}#${viewModelCount++}", type]
     }
 
-    /** Puts back the stored settings a view model reads, so one test's choices don't reach the next. */
-    private fun resetSettings() = runBlocking {
-        settingsRepository.apply {
-            saveLocalOnlyMode(false)
-            saveLocalOnboardingCompleted(false)
-            saveLastOnboardedAccountKey(null)
-            saveSelfContactId(null)
-            saveAlwaysAddCountryCode(true)
-            saveBirthdayNotificationsEnabled(false)
-            saveAutoLoadRemotePhotos(false)
-            clearResolvedLocalBookHrefs()
-            saveGroupOrder(emptyList())
-            savedServers.first().forEach { removeSavedServer(it) }
-        }
-    }
-
-    /**
-     * The first value of this flow that satisfies [predicate]. The stored settings are read on
-     * another thread, so a view model that reads them settles a moment after it is created.
-     */
     /** Waits until [condition] holds, polling, for results a view model produces in the background. */
     protected fun awaitUntil(timeoutMillis: Long = 5_000, condition: () -> Boolean) = runBlocking {
         withTimeout(timeoutMillis) {
@@ -143,6 +121,10 @@ abstract class ViewModelTestBase : RepositoryTestBase() {
         }
     }
 
+    /**
+     * The first value of this flow that satisfies [predicate]. The stored settings are read on
+     * another thread, so a view model that reads them settles a moment after it is created.
+     */
     protected fun <T> Flow<T>.await(timeoutMillis: Long = 5_000, predicate: (T) -> Boolean): T =
         runBlocking { withTimeout(timeoutMillis) { first(predicate) } }
 }
