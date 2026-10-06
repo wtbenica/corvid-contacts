@@ -31,6 +31,7 @@
     <string name="login_error_security">Security error: This server requires a secure connection (HTTPS) or the app\'s network policy blocked this cleartext (HTTP) request.</string>
     <string name="login_error_connection">Connection error: Could not connect to the server. Please check your URL and internet connection.</string>
     <string name="login_error_generic">Authentication failed (Status: %1$d)</string>
+    <string name="login_error_server">The server answered with an error (Status: %1$d). Please check the server address.</string>
     <string name="login_error_unknown">Unknown error</string>
 
     <!-- Welcome Screen -->

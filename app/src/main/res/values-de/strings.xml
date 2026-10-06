@@ -27,6 +27,7 @@
     <string name="login_error_security">Sicherheitsfehler: Dieser Server erfordert eine sichere Verbindung (HTTPS), oder die Netzwerkrichtlinie der App hat diese unverschlüsselte (HTTP) Anfrage blockiert.</string>
     <string name="login_error_connection">Verbindungsfehler: Es konnte keine Verbindung zum Server hergestellt werden. Bitte überprüfe deine URL und Internetverbindung.</string>
     <string name="login_error_generic">Authentifizierung fehlgeschlagen (Status: %1$d)</string>
+    <string name="login_error_server">Der Server hat mit einem Fehler geantwortet (Status: %1$d). Bitte überprüfe die Serveradresse.</string>
     <string name="login_error_unknown">Unbekannter Fehler</string>
 
     <!-- Welcome Screen -->

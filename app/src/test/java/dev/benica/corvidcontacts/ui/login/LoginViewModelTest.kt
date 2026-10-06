@@ -158,6 +158,63 @@ class LoginViewModelTest : ViewModelTestBase() {
     }
 
     @Test
+    fun `a server that forbids the sign-in is reported with its own status`() {
+        ocsStatus = 403
+        principalStatus = 403
+        genericPrincipalStatus = 403
+        val viewModel = loginViewModel()
+
+        viewModel.signIn()
+
+        val error = viewModel.result() as LoginUiState.Error
+        assertEquals(R.string.login_error_generic, error.resId)
+        assertEquals(403, error.formatArgs)
+    }
+
+    @Test
+    fun `a server error is reported as a server error with its status, not as bad credentials`() {
+        ocsStatus = 500
+        principalStatus = 500
+        genericPrincipalStatus = 503
+        val viewModel = loginViewModel()
+
+        viewModel.signIn()
+
+        val error = viewModel.result() as LoginUiState.Error
+        assertEquals(R.string.login_error_server, error.resId)
+        assertEquals(503, error.formatArgs)
+        assertNull(savedCredentials())
+    }
+
+    @Test
+    fun `an address with no Nextcloud or CardDAV server says what the server answered`() {
+        ocsStatus = 404
+        principalStatus = 404
+        genericPrincipalStatus = 404
+        val viewModel = loginViewModel()
+
+        viewModel.signIn()
+
+        val error = viewModel.result() as LoginUiState.Error
+        assertEquals(R.string.login_error_server, error.resId)
+        assertEquals(404, error.formatArgs)
+    }
+
+    @Test
+    fun `a refusal of the credentials wins over a 404 from the last path tried`() {
+        ocsStatus = 401
+        principalStatus = 401
+        genericPrincipalStatus = 404
+        val viewModel = loginViewModel()
+
+        viewModel.signIn()
+
+        val error = viewModel.result() as LoginUiState.Error
+        assertEquals(R.string.login_error_generic, error.resId)
+        assertEquals(401, error.formatArgs)
+    }
+
+    @Test
     fun `a Nextcloud answer that is not a success is not accepted`() {
         ocsBody = """{"ocs":{"meta":{"status":"failure","statuscode":997,"message":"Unauthorised"}}}"""
         principalStatus = 401

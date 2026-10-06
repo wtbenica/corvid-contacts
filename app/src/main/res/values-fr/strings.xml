@@ -27,6 +27,7 @@
     <string name="login_error_security">Erreur de sécurité : ce serveur nécessite une connexion sécurisée (HTTPS) ou la politique réseau de l\'application a bloqué cette requête en texte clair (HTTP).</string>
     <string name="login_error_connection">Erreur de connexion : impossible de se connecter au serveur. Veuillez vérifier votre URL et votre connexion Internet.</string>
     <string name="login_error_generic">Échec de l\'authentification (Statut : %1$d)</string>
+    <string name="login_error_server">Le serveur a répondu par une erreur (Statut : %1$d). Veuillez vérifier l\'adresse du serveur.</string>
     <string name="login_error_unknown">Erreur inconnue</string>
 
     <!-- Welcome Screen -->

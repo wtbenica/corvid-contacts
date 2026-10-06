@@ -105,8 +105,16 @@ interface SystemContactMirrorDao {
     @Query("DELETE FROM system_contact_mirror")
     suspend fun deleteAll()
 
-    @Query("SELECT id, displayName, firstName, lastName FROM contacts WHERE id IN (:ids)")
-    suspend fun getContactNames(ids: List<ContactId>): List<ContactName>
+    /** Only contacts in shared books: a link to any other contact must not give its name away. */
+    @Query(
+        """
+        SELECT c.id, c.displayName, c.firstName, c.lastName
+        FROM contacts c
+        INNER JOIN address_books b ON c.addressBookHref = b.href
+        WHERE c.id IN (:ids) AND b.shareWithSystem = 1
+        """
+    )
+    suspend fun getSharedContactNames(ids: List<ContactId>): List<ContactName>
 
     @Query("SELECT contactId FROM system_contact_hidden")
     suspend fun getHiddenIds(): List<ContactId>

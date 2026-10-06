@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -39,6 +40,16 @@ class LoginViewModel(
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    /** A refused sign-in is an authentication failure when the server said so, and a server error otherwise. */
+    private fun refusalError(refusals: List<Int>): LoginUiState.Error {
+        val status = refusals.firstOrNull { it == 401 || it == 403 } ?: refusals.lastOrNull()
+        return when (status) {
+            null -> LoginUiState.Error(R.string.login_error_unknown)
+            401, 403 -> LoginUiState.Error(R.string.login_error_generic, status)
+            else -> LoginUiState.Error(R.string.login_error_server, status)
+        }
+    }
 
     /** Server URLs the user has previously logged into successfully, for the saved-servers dropdown. */
     val savedServers = settingsRepository.savedServers
@@ -85,6 +96,9 @@ class LoginViewModel(
 
                 val service = retrofit.create(NextcloudService::class.java)
 
+                // The status of every refusal, to report what the server really said.
+                val refusals = mutableListOf<Int>()
+
                 // Try Nextcloud OCS API first
                 var isAuthorized = false
                 try {
@@ -100,6 +114,7 @@ class LoginViewModel(
                     // Not a Nextcloud server or OCS API disabled - but a server that can't be
                     // reached at all is a different problem, reported below.
                     if (e.isConnectionProblem()) throw e
+                    if (e is HttpException) refusals += e.code()
                 }
 
                 // If OCS failed, try generic principal discovery
@@ -114,10 +129,13 @@ class LoginViewModel(
                         if (response.isSuccessful) {
                             isAuthorized = true
                         } else {
+                            refusals += response.code()
                             // Try root path
                             response = service.getPrincipalGeneric(body = requestBody)
                             if (response.isSuccessful) {
                                 isAuthorized = true
+                            } else {
+                                refusals += response.code()
                             }
                         }
                     } catch (e: Exception) {
@@ -141,10 +159,7 @@ class LoginViewModel(
                     authRepository.saveCredentials(credentials)
                     _uiState.value = LoginUiState.Success
                 } else {
-                    _uiState.value = LoginUiState.Error(
-                        R.string.login_error_generic,
-                        401
-                    )
+                    _uiState.value = refusalError(refusals)
                 }
             } catch (_: java.net.UnknownServiceException) {
                 _uiState.value = LoginUiState.Error(R.string.login_error_security)

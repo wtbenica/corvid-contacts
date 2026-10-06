@@ -27,6 +27,7 @@
     <string name="login_error_security">Beveiligingsfout: Deze server vereist een beveiligde verbinding (HTTPS), of het netwerkbeleid van de app heeft dit onversleutelde (HTTP) verzoek geblokkeerd.</string>
     <string name="login_error_connection">Verbindingsfout: Kan geen verbinding maken met de server. Controleer je URL en internetverbinding.</string>
     <string name="login_error_generic">Authenticatie mislukt (status: %1$d)</string>
+    <string name="login_error_server">De server antwoordde met een fout (status: %1$d). Controleer het serveradres.</string>
     <string name="login_error_unknown">Onbekende fout</string>
 
     <!-- Welcome Screen -->
