@@ -331,7 +331,7 @@ class ContactsViewModelActionsTest : ViewModelTestBase() {
 
         viewModel.renameGroup("Family", "Relatives")
 
-        awaitUntil { stored("a")!!.categories == listOf("Relatives") }
+        awaitUntil { stored("a")!!.categories == listOf("Relatives") && stored("b")!!.categories == listOf("Relatives") }
         assertEquals("a contact outside the selected book is renamed too", listOf("Relatives"), stored("b")!!.categories)
     }
 
@@ -348,7 +348,9 @@ class ContactsViewModelActionsTest : ViewModelTestBase() {
 
         viewModel.renameGroup("Family", "Relatives")
 
-        awaitUntil { stored("shown")!!.categories == listOf("Relatives") }
+        awaitUntil {
+            listOf("shown", "archived", "hidden book").all { stored(it)!!.categories == listOf("Relatives") }
+        }
         assertEquals(listOf("Relatives"), stored("archived")!!.categories)
         assertEquals(listOf("Relatives"), stored("hidden book")!!.categories)
     }
@@ -552,7 +554,11 @@ class ContactsViewModelActionsTest : ViewModelTestBase() {
 
         viewModel.deleteAllLocalData()
 
-        awaitUntil { booksInRoom().isEmpty() }
+        // Settings are cleared last, after the photos are deleted in the background.
+        awaitUntil {
+            runBlocking { settingsRepository.selfContactId.first() == null && settingsRepository.groupOrder.first().isEmpty() }
+        }
+        assertTrue(booksInRoom().isEmpty())
         assertNull(stored("1"))
         assertNull(runBlocking { settingsRepository.selfContactId.first() })
         assertTrue(runBlocking { settingsRepository.groupOrder.first() }.isEmpty())

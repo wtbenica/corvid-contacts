@@ -2,6 +2,7 @@
 
 package dev.benica.corvidcontacts.data.repository
 
+import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -23,13 +24,15 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * A [ContactsRepository] over an in-memory Room database, for tests that exercise it as the app
  * does. Runs under Robolectric for the Context, DataStore and libphonenumber the repository uses.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
+@Config(sdk = [34], application = Application::class)
 abstract class RepositoryTestBase {
 
     protected lateinit var context: Context
@@ -58,6 +61,7 @@ abstract class RepositoryTestBase {
 
     @After
     fun closeDatabase() {
+        finishRoomWork()
         database.close()
         dataStoreScope.cancel()
         dataStoreDir.deleteRecursively()
@@ -65,6 +69,20 @@ abstract class RepositoryTestBase {
 
     // Unconfined, so a write finishes on the calling thread. On a background thread, a collector that
     // starts while a write is in flight can miss that write for good (seen in DataStore 1.2.1).
+    /**
+     * A view model cancelled mid-action can leave a Room call in flight. Closing the database under it
+     * makes the call throw on a background thread, and the Compose test rule blames whichever test
+     * starts next. Room's executors are serial or drain in order, so a marker task run on each
+     * means everything queued before it has finished.
+     */
+    private fun finishRoomWork() {
+        listOf(database.transactionExecutor, database.queryExecutor).forEach { executor ->
+            val done = CountDownLatch(1)
+            executor.execute { done.countDown() }
+            done.await(5, TimeUnit.SECONDS)
+        }
+    }
+
     private val dataStoreScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
     private val dataStoreDir = File.createTempFile("datastore", "").also { it.delete(); it.mkdirs() }
 

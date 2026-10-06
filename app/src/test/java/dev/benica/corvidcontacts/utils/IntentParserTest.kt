@@ -2,6 +2,7 @@
 
 package dev.benica.corvidcontacts.utils
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -26,7 +27,7 @@ import java.io.ByteArrayInputStream
  * the content resolver and the vCard mapper's use of Android.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
+@Config(sdk = [34], application = Application::class)
 class IntentParserTest {
 
     private lateinit var context: Context

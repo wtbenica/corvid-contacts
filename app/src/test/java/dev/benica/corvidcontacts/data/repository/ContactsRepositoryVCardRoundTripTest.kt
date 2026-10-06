@@ -2,6 +2,7 @@
 
 package dev.benica.corvidcontacts.data.repository
 
+import android.app.Application
 import android.content.Context
 import android.util.Base64
 import androidx.room.Room
@@ -44,7 +45,7 @@ import java.io.File
  * unit-test stubs.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
+@Config(sdk = [34], application = Application::class)
 class ContactsRepositoryVCardRoundTripTest {
 
     private lateinit var database: AppDatabase

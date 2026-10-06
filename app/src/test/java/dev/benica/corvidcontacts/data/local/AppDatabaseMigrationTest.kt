@@ -2,6 +2,7 @@
 
 package dev.benica.corvidcontacts.data.local
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
@@ -27,7 +28,7 @@ import org.robolectric.annotation.Config
  * in the old tables first, to see what the migrations do to them.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
+@Config(sdk = [34], application = Application::class)
 class AppDatabaseMigrationTest {
 
     @get:Rule

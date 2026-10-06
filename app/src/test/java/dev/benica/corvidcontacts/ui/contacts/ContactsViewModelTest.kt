@@ -362,7 +362,7 @@ class ContactsViewModelTest : ViewModelTestBase() {
         viewModel()
 
         assertTrue(address in settingsRepository.savedServers.await { address in it })
-        assertTrue("a sync was attempted", mock.requestCount > 0 || run { awaitUntil { mock.requestCount > 0 }; true })
+        awaitUntil { mock.requestCount > 0 }
     }
 
     @Test

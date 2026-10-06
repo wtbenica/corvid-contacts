@@ -56,8 +56,9 @@ class SettingsViewModelTest : ViewModelTestBase() {
 
         viewModel.logout()
 
-        assertNull(authRepository.credentials.await { it == null })
-        awaitUntil { booksInRoom().none { it.href == "/server/" } }
+        // Logging out is a sequence: credentials, then data, then settings. Wait for the last step.
+        awaitUntil { runBlocking { settingsRepository.selfContactId.first() == null } }
+        assertNull(runBlocking { authRepository.credentials.first() })
         assertEquals(listOf(localHref), booksInRoom().map { it.href })
         assertNull(runBlocking { settingsRepository.selfContactId.first() })
     }
