@@ -724,3 +724,33 @@ welcome, the birthday-reminder switch, and the icon / import-book line, plus the
 back by dropping another.
 
 **Still the user's:** the Play Console declaration (planned for 2026-10-07; see `docs/play-console-1.0.5.md`), merging the website branch at rollout, and the native-speaker review.
+
+### 2026-10-07, Gotham to Oracle: follow-ups after 1.0.5 (not started, not for this release)
+
+The user raised these while preparing the release. Neither is in 1.0.5; both need a decision first.
+
+**1. An archived contact keeps its groups, so it still shows in them in other apps.**
+Archiving only adds an `Archived` entry to the vCard's CATEGORIES (`VCardMapper`, `ARCHIVED_CATEGORY`) and
+leaves the rest. Corvid hides `Archived` from its own group lists (`ContactsViewModel`, `BottomFilterSheet`,
+`ContactDetailHeader`), but Nextcloud and other CardDAV clients show it as an ordinary group. The user
+saw former students still listed under "Current Students" in another app. The system contacts copy is not
+affected: archived contacts are excluded from it (`MIRROR_SOURCES_QUERY`).
+- *Options.* (a) Strip the other categories on archive: fixes it, but unarchiving cannot restore them.
+  (b) On archive, move the other categories into a private field and leave only `Archived` in CATEGORIES;
+  restore them on unarchive. Fixes other apps and loses nothing. This is the recommendation. (c) Mark every
+  group as archived too: clutters everyone's group list.
+- *Open questions for (b).* Where to keep the hidden groups; a custom vCard property syncs across devices,
+  but it needs testing that Nextcloud's web app and DAVx5 keep unknown properties. What to do with contacts
+  already archived: handle each when it is next saved, not a bulk rewrite of the server. What happens when
+  another client edits an archived contact's groups. It changes server data, so test against a real server.
+
+**2. Per-contact sharing levels.** Today a contact follows its book's level (`MirrorPlan.toMirrorContacts`
+takes a book-to-level map), with one per-contact override, hide/show (`SystemContactHiddenEntity`). The useful
+direction is a contact sharing less than its book (a lower level, or hidden); sharing more is rare. The
+hide toggle already covers the main privacy case. Recommendation: wait to see whether anyone asks. If built,
+limit it to "same as the book, a lower level, or hidden". It needs a control on the contact, a stored value,
+and the mirror to read it. `MirrorContact.level` is already part of the snapshot, so a level change already
+rewrites the contact; the read-back also already knows which fields were mirrored.
+
+**3. After the release:** localized Play screenshots, Dutch and German first (the user's request; secondary
+to getting 1.0.5 out).
