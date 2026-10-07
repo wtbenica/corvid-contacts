@@ -1,53 +1,53 @@
 <en-US>
-New: share an address book with your phone's contacts so names and photos are available to your other apps for things like Caller ID
+New: share an address book with your phone's contacts so your other apps can show names and photos, from Caller ID to choosing who to email or message.
 Birthdays now sync correctly.
 Turning Prepend Country Code off retains existing country codes.
 Contacts are no longer included in Android's cloud backup. Use manual export for backups of local contacts.
 </en-US>
 <es-419>
-Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos estén disponibles en tus otras apps, por ejemplo en el identificador de llamadas.
+Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
 Los cumpleaños ahora se sincronizan correctamente.
 Al desactivar Agregar código de país, se conservan los códigos de país existentes.
 Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
 </es-419>
 <es-ES>
-Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos estén disponibles en tus otras apps, por ejemplo en el identificador de llamadas.
+Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
 Los cumpleaños ahora se sincronizan correctamente.
 Al desactivar Agregar código de país, se conservan los códigos de país existentes.
 Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
 </es-ES>
 <es-US>
-Nuevo: comparte una libreta con los contactos del teléfono para que nombres y fotos estén disponibles en tus otras apps, por ejemplo en el identificador de llamadas.
+Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
 Los cumpleaños ahora se sincronizan correctamente.
 Al desactivar Agregar código de país, se conservan los códigos de país existentes.
 Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
 </es-US>
 <fr-FR>
-Nouveau : partagez un carnet avec les contacts du téléphone pour que noms et photos soient disponibles dans vos autres applis, par exemple pour l'identification de l'appelant.
+Nouveau : partagez un carnet avec les contacts du téléphone pour que vos autres applis affichent noms et photos, de l'identification de l'appelant au choix d'un destinataire d'e-mail ou de message.
 Les anniversaires se synchronisent désormais correctement.
 Désactiver « Préfixe de pays » conserve les codes pays existants.
 Les contacts ne sont plus inclus dans la sauvegarde cloud d'Android. Utilisez l'export manuel pour sauvegarder les contacts locaux.
 </fr-FR>
 <fr-CA>
-Nouveau : partagez un carnet avec les contacts du téléphone pour que noms et photos soient disponibles dans vos autres applis, par exemple pour l'identification de l'appelant.
+Nouveau : partagez un carnet avec les contacts du téléphone pour que vos autres applis affichent noms et photos, de l'identification de l'appelant au choix d'un destinataire d'e-mail ou de message.
 Les anniversaires se synchronisent désormais correctement.
 Désactiver « Préfixe de pays » conserve les codes pays existants.
 Les contacts ne sont plus inclus dans la sauvegarde cloud d'Android. Utilisez l'export manuel pour sauvegarder les contacts locaux.
 </fr-CA>
 <de-DE>
-Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit Namen und Fotos in deinen anderen Apps verfügbar sind, etwa für die Anrufer-ID.
+Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit deine anderen Apps Namen und Fotos anzeigen, von der Anrufer-ID bis zur Auswahl, wem du eine E-Mail oder Nachricht schickst.
 Geburtstage werden jetzt korrekt synchronisiert.
 Wenn „Landesvorwahl voranstellen“ aus ist, bleiben vorhandene Landesvorwahlen erhalten.
 Kontakte sind nicht mehr im Android-Cloud-Backup enthalten. Sichere lokale Kontakte mit dem manuellen Export.
 </de-DE>
 <nl-NL>
-Nieuw: deel een adresboek met de contacten van je telefoon, zodat namen en foto's beschikbaar zijn voor je andere apps, bijvoorbeeld voor nummerweergave.
+Nieuw: deel een adresboek met de contacten van je telefoon, zodat je andere apps namen en foto's tonen, van nummerweergave tot het kiezen van wie je mailt of een bericht stuurt.
 Verjaardagen worden nu correct gesynchroniseerd.
 Als „Landcode toevoegen” uit staat, blijven bestaande landcodes behouden.
 Contacten zitten niet meer in de cloudback-up van Android. Gebruik handmatig exporteren om lokale contacten te back-uppen.
 </nl-NL>
 <ko-KR>
-새 기능: 주소록을 휴대전화 연락처와 공유하면 이름과 사진을 발신자 표시 등 다른 앱에서 사용할 수 있습니다.
+새 기능: 주소록을 휴대전화 연락처와 공유하면 발신자 표시부터 이메일이나 메시지 받는 사람을 고를 때까지 다른 앱에서 이름과 사진이 표시됩니다.
 생일이 이제 올바르게 동기화됩니다.
 ‘국가 코드 자동 추가’를 끄면 기존 국가 코드가 유지됩니다.
 연락처는 더 이상 Android 클라우드 백업에 포함되지 않습니다. 로컬 연락처는 수동 내보내기로 백업하세요.
