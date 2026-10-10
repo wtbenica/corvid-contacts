@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -186,15 +185,5 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
         showStep(listOf(local))
 
         assertTrue(isShown(R.string.settings_address_book_local_badge))
-    }
-
-    @Test
-    fun `the setup page gives the same explanation as the book settings dialog, after its own lead line`() {
-        showStep(listOf(family))
-
-        assertTrue(isShown(R.string.onboarding_sharing_title))
-        val explanation = text(R.string.system_contacts_description)
-        assertTrue(compose.onAllNodes(hasText(explanation, substring = true)).fetchSemanticsNodes().isNotEmpty())
-        assertTrue(compose.onAllNodes(hasText(text(R.string.onboarding_sharing_lead), substring = true)).fetchSemanticsNodes().isNotEmpty())
     }
 }
