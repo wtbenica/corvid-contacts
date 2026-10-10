@@ -510,7 +510,8 @@ internal fun SystemContactsSharingStep(
 
     OnboardingStepFrame(
         title = stringResource(R.string.onboarding_sharing_title),
-        description = stringResource(R.string.onboarding_sharing_description),
+        description = stringResource(R.string.onboarding_sharing_lead) + "\n\n" +
+                stringResource(R.string.system_contacts_description),
         scrollable = true,
         actions = {
             CCButton(

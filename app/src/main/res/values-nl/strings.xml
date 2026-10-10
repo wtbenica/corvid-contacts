@@ -442,7 +442,7 @@
     <string name="onboarding_sharing_title">Delen met de contacten van de telefoon</string>
     <string name="onboarding_sharing_permission_denied">De toestemming voor contacten is geweigerd, dus er is niets gedeeld. Zet de adresboeken uit om door te gaan, of sta de toestemming toe om ze te delen.</string>
     <string name="onboarding_sharing_open_settings">App-instellingen openen</string>
-    <string name="onboarding_sharing_description">Deel je contacten met de contacten van je telefoon, zodat Berichten, je Telefoon-app en andere apps hun namen en foto\'s kunnen tonen. Kies welke adresboeken je deelt. Elke app met toegang tot contacten kan zien wat je deelt, en wijzigingen daar worden terug in Corvid opgeslagen. Je kunt dit altijd aanpassen in de instellingen van elk adresboek.</string>
+    <string name="onboarding_sharing_lead">Kies welke adresboeken je deelt. Je kunt dit altijd aanpassen in de instellingen van elk adresboek.</string>
     <string name="onboarding_self_contact_title">Jouw profiel</string>
     <string name="onboarding_self_contact_description">Kies de contactkaart met jouw eigen gegevens. Dit maakt delen met anderen makkelijker.</string>
     <string name="onboarding_self_contact_empty_syncing">Je gesynchroniseerde contacten verschijnen hier binnenkort. Zodra dat gebeurt, kun je die van jou uit de lijst selecteren.</string>
@@ -486,7 +486,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Delen met de contacten van de telefoon</string>
-    <string name="system_contacts_description">Kopieert de contacten van dit adresboek naar de contacten van de telefoon, op het niveau dat je kiest, zodat Berichten en de telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan dan zien wat je deelt. Corvid stuurt het niet naar Google.\n\nWijzigingen die je in andere apps aan deze contacten aanbrengt, worden terug in Corvid opgeslagen. Als je er daar een verwijdert, wordt het alleen verborgen in de contacten van de telefoon; in Corvid blijft het staan.\n\nAndroid vraagt of Corvid je contacten mag lezen en wijzigen. Corvid leest alleen de contacten die het deelt.</string>
+    <string name="system_contacts_description">Kopieert de contacten van een gedeeld adresboek naar de contacten van de telefoon, op het niveau dat je in de instellingen ervan kiest, zodat Berichten en de telefoon-app kunnen tonen wie er belt of appt. Elke app met toegang tot contacten kan dan zien wat je deelt. Corvid stuurt het niet naar Google.\n\nWijzigingen die je in andere apps aan deze contacten aanbrengt, worden terug in Corvid opgeslagen. Als je er daar een verwijdert, wordt het alleen verborgen in de contacten van de telefoon; in Corvid blijft het staan.\n\nAndroid vraagt of Corvid je contacten mag lezen en wijzigen. Corvid leest alleen de contacten die het deelt.</string>
     <string name="system_contacts_level_title">Wat je deelt</string>
     <string name="system_contacts_level_caller_id">Nummerweergave</string>
     <string name="system_contacts_level_caller_id_description">Naam, telefoonnummers en foto</string>

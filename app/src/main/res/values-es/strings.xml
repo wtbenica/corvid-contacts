@@ -458,7 +458,7 @@
     <string name="onboarding_sharing_title">Compartir con los contactos del teléfono</string>
     <string name="onboarding_sharing_permission_denied">Se denegó el permiso de contactos, así que no se compartió nada. Desactiva las libretas para continuar, o permite el permiso para compartirlas.</string>
     <string name="onboarding_sharing_open_settings">Abrir ajustes de la app</string>
-    <string name="onboarding_sharing_description">Comparte tus contactos con los contactos del teléfono para que Mensajes, tu app de teléfono y otras apps muestren sus nombres y fotos. Elige qué libretas de direcciones compartir. Cualquier app con acceso a los contactos puede ver lo que compartes, y las ediciones que hagas allí se guardan de nuevo en Corvid. Puedes cambiarlo en cualquier momento en los ajustes de cada libreta.</string>
+    <string name="onboarding_sharing_lead">Elige qué libretas de direcciones compartir. Puedes cambiarlo en cualquier momento en los ajustes de cada libreta.</string>
     <string name="onboarding_self_contact_title">Tu perfil</string>
     <string name="onboarding_self_contact_description">Elige la tarjeta de contacto que contenga tu información. Esto facilita compartir tus datos con otros.</string>
     <string name="onboarding_self_contact_empty_syncing">Tus contactos sincronizados aparecerán aquí en breve. Una vez que lo hagan, podrás seleccionar el tuyo de la lista.</string>
@@ -501,7 +501,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Compartir con los contactos del teléfono</string>
-    <string name="system_contacts_description">Copia los contactos de esta libreta a los contactos del teléfono, con el nivel que elijas, para que Mensajes y el teléfono puedan mostrar quién llama o escribe. Cualquier app con acceso a los contactos podrá ver lo que compartas. Corvid no lo envía a Google.\n\nLas ediciones que hagas a estos contactos en otras apps se guardan de nuevo en Corvid. Si eliminas uno allí, solo se oculta en los contactos del teléfono; sigue en Corvid.\n\nAndroid te pedirá permiso para que Corvid lea y modifique tus contactos. Corvid solo lee los contactos que comparte.</string>
+    <string name="system_contacts_description">Copia los contactos de una libreta compartida a los contactos del teléfono, con el nivel que elijas en sus ajustes, para que Mensajes y el teléfono puedan mostrar quién llama o escribe. Cualquier app con acceso a los contactos podrá ver lo que compartas. Corvid no lo envía a Google.\n\nLas ediciones que hagas a estos contactos en otras apps se guardan de nuevo en Corvid. Si eliminas uno allí, solo se oculta en los contactos del teléfono; sigue en Corvid.\n\nAndroid te pedirá permiso para que Corvid lea y modifique tus contactos. Corvid solo lee los contactos que comparte.</string>
     <string name="system_contacts_level_title">Qué compartir</string>
     <string name="system_contacts_level_caller_id">Identificador de llamadas</string>
     <string name="system_contacts_level_caller_id_description">Nombre, números de teléfono y foto</string>

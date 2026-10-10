@@ -754,3 +754,14 @@ rewrites the contact; the read-back also already knows which fields were mirrore
 
 **3. After the release:** localized Play screenshots, Dutch and German first (the user's request; secondary
 to getting 1.0.5 out).
+
+### 2026-10-10, Gotham to Oracle: one explanation for sharing
+
+The setup sharing page and the book settings dialog explained sharing in two different texts, and the
+setup one lacked "Android will ask..." and "Corvid only reads the contacts it shares" (the scope promise made
+on the Play READ_CONTACTS form). Both now show `system_contacts_description`, reworded to say "a shared
+address book" and "the level you choose in its settings" (setup cannot pick a level). Setup keeps its own
+short `onboarding_sharing_lead` ("Choose which address books to share..."); the old
+`onboarding_sharing_description` is removed in all six locales (my translations, for the native-speaker
+pass). A test fails if the setup page stops showing the shared text. In the Play form answer, the claim
+"after the app explains what sharing does" now refers to one identical text in both entry points.

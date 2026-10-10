@@ -442,7 +442,7 @@
     <string name="onboarding_sharing_title">Mit Telefonkontakten teilen</string>
     <string name="onboarding_sharing_permission_denied">Die Berechtigung für Kontakte wurde abgelehnt, daher wurde nichts geteilt. Schalte die Bücher aus, um fortzufahren, oder erlaube die Berechtigung, um sie zu teilen.</string>
     <string name="onboarding_sharing_open_settings">App-Einstellungen öffnen</string>
-    <string name="onboarding_sharing_description">Teile deine Kontakte mit den Telefonkontakten, damit Nachrichten, deine Telefon-App und andere Apps ihre Namen und Fotos anzeigen können. Wähle, welche Adressbücher geteilt werden. Jede App mit Kontaktzugriff kann sehen, was du teilst, und Änderungen dort werden in Corvid zurückgespeichert. Du kannst das jederzeit in den Einstellungen des jeweiligen Adressbuchs ändern.</string>
+    <string name="onboarding_sharing_lead">Wähle, welche Adressbücher geteilt werden. Du kannst das jederzeit in den Einstellungen des jeweiligen Adressbuchs ändern.</string>
     <string name="onboarding_self_contact_title">Dein Profil</string>
     <string name="onboarding_self_contact_description">Wähle die Kontaktkarte mit deinen eigenen Informationen aus. Das erleichtert das Teilen mit anderen.</string>
     <string name="onboarding_self_contact_empty_syncing">Deine synchronisierten Kontakte werden in Kürze hier angezeigt. Sobald das passiert, kannst du deinen eigenen aus der Liste auswählen.</string>
@@ -486,7 +486,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Mit Telefonkontakten teilen</string>
-    <string name="system_contacts_description">Kopiert die Kontakte dieses Adressbuchs in dem von dir gewählten Umfang in die Telefonkontakte, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google.\n\nÄnderungen, die du an diesen Kontakten in anderen Apps vornimmst, werden in Corvid zurückgespeichert. Löschst du einen Kontakt dort, wird er nur in den Telefonkontakten ausgeblendet; in Corvid bleibt er erhalten.\n\nAndroid fragt, ob Corvid deine Kontakte lesen und ändern darf. Corvid liest nur die Kontakte, die es teilt.</string>
+    <string name="system_contacts_description">Kopiert die Kontakte eines geteilten Adressbuchs in dem Umfang, den du in dessen Einstellungen wählst, in die Telefonkontakte, damit Nachrichten und die Telefon-App anzeigen können, wer anruft oder schreibt. Jede App mit Kontaktzugriff kann dann sehen, was du teilst. Corvid sendet nichts an Google.\n\nÄnderungen, die du an diesen Kontakten in anderen Apps vornimmst, werden in Corvid zurückgespeichert. Löschst du einen Kontakt dort, wird er nur in den Telefonkontakten ausgeblendet; in Corvid bleibt er erhalten.\n\nAndroid fragt, ob Corvid deine Kontakte lesen und ändern darf. Corvid liest nur die Kontakte, die es teilt.</string>
     <string name="system_contacts_level_title">Was geteilt wird</string>
     <string name="system_contacts_level_caller_id">Anrufer-ID</string>
     <string name="system_contacts_level_caller_id_description">Name, Telefonnummern und Foto</string>

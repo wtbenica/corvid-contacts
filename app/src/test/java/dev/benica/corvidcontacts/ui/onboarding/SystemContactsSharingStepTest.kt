@@ -11,8 +11,10 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.core.app.ActivityOptionsCompat
 import dev.benica.corvidcontacts.R
 import dev.benica.corvidcontacts.data.local.AddressBookEntity
@@ -69,6 +71,9 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
 
     private fun switchOf(index: Int) = compose.onAllNodes(isToggleable())[index]
 
+    /** Taps a switch the way a user does: scrolling to it first, since the page is taller than the screen. */
+    private fun toggle(index: Int) = switchOf(index).performScrollTo().performClick()
+
     private fun switchStates(count: Int) = (0 until count).map {
         switchOf(it).fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
     }
@@ -90,7 +95,7 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
         val prompt = FakePermissionPrompt(granted = true)
         showStep(listOf(family, work), prompt)
 
-        switchOf(1).performClick()
+        toggle(1)
         node(R.string.onboarding_action_continue).performClick()
 
         assertEquals(1, prompt.asked)
@@ -111,8 +116,8 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
         val prompt = FakePermissionPrompt(granted = false)
         showStep(listOf(family, work), prompt)
 
-        switchOf(0).performClick()
-        switchOf(1).performClick()
+        toggle(0)
+        toggle(1)
         node(R.string.onboarding_action_continue).performClick()
 
         assertEquals(1, prompt.asked)
@@ -125,7 +130,7 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
     fun `after a denial that cannot be asked again the app's settings are offered`() {
         showStep(listOf(family), FakePermissionPrompt(granted = false))
 
-        switchOf(0).performClick()
+        toggle(0)
         node(R.string.onboarding_action_continue).performClick()
 
         assertTrue(isShown(R.string.onboarding_sharing_open_settings))
@@ -135,7 +140,7 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
     fun `after a denial, continuing with the books off saves nothing and moves on`() {
         val prompt = FakePermissionPrompt(granted = false)
         showStep(listOf(family), prompt)
-        switchOf(0).performClick()
+        toggle(0)
         node(R.string.onboarding_action_continue).performClick()
 
         node(R.string.onboarding_action_continue).performClick()
@@ -147,11 +152,11 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
     @Test
     fun `changing a switch after a denial clears the message`() {
         showStep(listOf(family), FakePermissionPrompt(granted = false))
-        switchOf(0).performClick()
+        toggle(0)
         node(R.string.onboarding_action_continue).performClick()
         assertTrue(isShown(R.string.onboarding_sharing_permission_denied))
 
-        switchOf(0).performClick()
+        toggle(0)
 
         assertFalse(isShown(R.string.onboarding_sharing_permission_denied))
     }
@@ -181,5 +186,15 @@ class SystemContactsSharingStepTest : ComposeTestBase() {
         showStep(listOf(local))
 
         assertTrue(isShown(R.string.settings_address_book_local_badge))
+    }
+
+    @Test
+    fun `the setup page gives the same explanation as the book settings dialog, after its own lead line`() {
+        showStep(listOf(family))
+
+        assertTrue(isShown(R.string.onboarding_sharing_title))
+        val explanation = text(R.string.system_contacts_description)
+        assertTrue(compose.onAllNodes(hasText(explanation, substring = true)).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(compose.onAllNodes(hasText(text(R.string.onboarding_sharing_lead), substring = true)).fetchSemanticsNodes().isNotEmpty())
     }
 }

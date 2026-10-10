@@ -458,7 +458,7 @@
     <string name="onboarding_sharing_title">Partager avec les contacts du téléphone</string>
     <string name="onboarding_sharing_permission_denied">L\'autorisation d\'accès aux contacts a été refusée, rien n\'a donc été partagé. Désactivez les carnets pour continuer, ou autorisez l\'accès pour les partager.</string>
     <string name="onboarding_sharing_open_settings">Ouvrir les réglages de l\'appli</string>
-    <string name="onboarding_sharing_description">Partagez vos contacts avec les contacts du téléphone pour que Messages, votre appli Téléphone et d\'autres applis affichent leurs noms et photos. Choisissez les carnets d\'adresses à partager. Toute appli ayant accès aux contacts peut voir ce que vous partagez, et les modifications faites là-bas sont enregistrées de nouveau dans Corvid. Vous pouvez le modifier à tout moment dans les réglages de chaque carnet.</string>
+    <string name="onboarding_sharing_lead">Choisissez les carnets d\'adresses à partager. Vous pouvez le modifier à tout moment dans les réglages de chaque carnet.</string>
     <string name="onboarding_self_contact_title">Votre profil</string>
     <string name="onboarding_self_contact_description">Choisissez la fiche contact qui contient vos informations. Cela facilite le partage avec les autres.</string>
     <string name="onboarding_self_contact_empty_syncing">Vos contacts synchronisés apparaîtront ici sous peu. Une fois qu\'ils seront là, vous pourrez sélectionner le vôtre dans la liste.</string>
@@ -501,7 +501,7 @@
 
     <!-- System contacts -->
     <string name="system_contacts_title">Partager avec les contacts du téléphone</string>
-    <string name="system_contacts_description">Copie les contacts de ce carnet dans les contacts du téléphone, au niveau que vous choisissez, afin que Messages et le téléphone puissent afficher qui appelle ou écrit. Toute application ayant accès aux contacts pourra voir ce que vous partagez. Corvid ne l\'envoie pas à Google.\n\nLes modifications que vous apportez à ces contacts dans d\'autres applications sont enregistrées de nouveau dans Corvid. Supprimer un contact là-bas le masque seulement des contacts du téléphone ; il reste dans Corvid.\n\nAndroid vous demandera d\'autoriser Corvid à lire et à modifier vos contacts. Corvid ne lit que les contacts qu\'il partage.</string>
+    <string name="system_contacts_description">Copie les contacts d\'un carnet partagé dans les contacts du téléphone, au niveau que vous choisissez dans ses réglages, afin que Messages et le téléphone puissent afficher qui appelle ou écrit. Toute application ayant accès aux contacts pourra voir ce que vous partagez. Corvid ne l\'envoie pas à Google.\n\nLes modifications que vous apportez à ces contacts dans d\'autres applications sont enregistrées de nouveau dans Corvid. Supprimer un contact là-bas le masque seulement des contacts du téléphone ; il reste dans Corvid.\n\nAndroid vous demandera d\'autoriser Corvid à lire et à modifier vos contacts. Corvid ne lit que les contacts qu\'il partage.</string>
     <string name="system_contacts_level_title">Ce qui est partagé</string>
     <string name="system_contacts_level_caller_id">Identification de l\'appelant</string>
     <string name="system_contacts_level_caller_id_description">Nom, numéros de téléphone et photo</string>
