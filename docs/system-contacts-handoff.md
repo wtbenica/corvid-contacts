@@ -765,3 +765,18 @@ short `onboarding_sharing_lead` ("Choose which address books to share..."); the 
 `onboarding_sharing_description` is removed in all six locales (my translations, for the native-speaker
 pass). (A test that the page shows the shared text was added and then removed: it only checked wiring, not behavior.) In the Play form answer, the claim
 "after the app explains what sharing does" now refers to one identical text in both entry points.
+
+### 2026-10-28, Gotham to Oracle: Google Places failed on the Play build (key restriction)
+
+Address lookup with Google Places returned nothing on the Play-installed 1.0.5. The log had `GeocoderRepository:
+Google Autocomplete failed` and `9011: Requests from this Android client application dev.benica.corvidcontacts
+are blocked`. Cause: the Places API key's Android app restriction listed neither the Play app-signing
+certificate nor the upload certificate that signs the bundle. Play re-signs the app, so the request comes from
+Play's key (SHA-1 `3D:2A:FB:4C:3E:2F:1C:BC:57:E7:2A:A1:40:64:2F:69:F7:B0:96:E4`, from Play Console, App integrity).
+Not a code or SDK problem (the Places SDK 5.3.0 to 6.0.2 change was ruled out); it affected 1.0.4 too. Fixed by
+adding an item, package `dev.benica.corvidcontacts` plus that SHA-1, to the key in Google Cloud; the upload key's
+SHA-1 (`51:68:C2:38:46:04:BA:B5:AE:09:13:98:33:85:C2:8C:32:4F:BE:97`) is also worth keeping for release builds
+installed from a computer. The key's pair list is package plus fingerprint, so a second fingerprint is a new item.
+To diagnose again: `adb logcat -d -s GeocoderRepository`, or filter the app's process for the error.
+Follow-up idea, not done: the app swallows this failure and shows nothing. A short message when Google lookup
+fails would have shown the problem at once.
