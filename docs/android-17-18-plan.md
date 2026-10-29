@@ -36,7 +36,8 @@ Blocked TCP connections "typically result in a timeout".
 **Who is affected.** A user whose Nextcloud is reached over Wi-Fi at a private address, including a public name that
 resolves to a private address at home (split DNS). Not affected: a server reached over the internet, over cellular, or over
 a VPN such as Tailscale (the VPN interface is excluded). The developer's own test server is a public-looking domain, which
-is why this has not shown up.
+is why this has not shown up. Confirmed 2026-10-29: the developer's phone (fully updated Android 17) syncs without any problem,
+which fits: the permission matters only for a server at a local address.
 
 **A1. Confirm it (about 1 to 2 hours).**
 - Emulator `Pixel_10_Pro` (37.1), debug build. Host runs `python3 -m http.server 8443` bound to all interfaces. The
@@ -65,8 +66,9 @@ is why this has not shown up.
 - Play Console: a declaration for the permission (required from Aug 25, 2027). Draft: Corvid connects to a CardDAV server the user
   types in, often self-hosted at a local address; a device picker cannot supply a server the user runs.
 
-**Target: ship as 1.0.6, soon.** Users on Android 17 with a local server cannot sync today, so this should not wait for the
-2027 policy date.
+**Target: ship as 1.0.6, soon, if A1 confirms the blocking.** Users on Android 17 with a server on a local address
+probably cannot sync today (unconfirmed until A1), so this should not wait for the 2027 policy date. If A1 shows no blocking, drop
+the urgency and do it with the Aug 25, 2027 declaration in mind.
 
 ## Workstream B: contacts policy, January 27, 2027
 
