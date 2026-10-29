@@ -769,7 +769,7 @@ pass). (A test that the page shows the shared text was added and then removed: i
 ### 2026-10-29, Gotham to Oracle: Android 17 and 18 changes, plan written
 
 Google announced contacts and local network changes. Read `docs/android-17-18-plan.md` (on branch `1.0.6`) for the plan,
-dates, tooling inventory and decisions. The urgent finding: the app targets SDK 37 and declares no
-`ACCESS_LOCAL_NETWORK`, so on Android 17 a Nextcloud server at a local address is probably blocked. Not confirmed on a
-device yet (step A1 of the plan). Not a 1.0.5 regression; 1.0.4 targeted 37 as well.
-
+dates, tooling inventory and decisions. Decision: local network support is not being built. The app targets SDK 37 and
+declares no `ACCESS_LOCAL_NETWORK`, so a Nextcloud server at a local address is probably blocked on Android 17 (never tested). The
+use case is small and the developer does not use it. The plan says what to do if a user reports it. The remaining work is
+the January 27, 2027 contacts policy check and, much later, `MANAGE_CONTACTS` when moving to SDK 38.
