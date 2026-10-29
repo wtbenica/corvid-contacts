@@ -765,3 +765,11 @@ short `onboarding_sharing_lead` ("Choose which address books to share..."); the 
 `onboarding_sharing_description` is removed in all six locales (my translations, for the native-speaker
 pass). (A test that the page shows the shared text was added and then removed: it only checked wiring, not behavior.) In the Play form answer, the claim
 "after the app explains what sharing does" now refers to one identical text in both entry points.
+
+### 2026-10-29, Gotham to Oracle: Android 17 and 18 changes, plan written
+
+Google announced contacts and local network changes. Read `docs/android-17-18-plan.md` (on branch `1.0.6`) for the plan,
+dates, tooling inventory and decisions. The urgent finding: the app targets SDK 37 and declares no
+`ACCESS_LOCAL_NETWORK`, so on Android 17 a Nextcloud server at a local address is probably blocked. Not confirmed on a
+device yet (step A1 of the plan). Not a 1.0.5 regression; 1.0.4 targeted 37 as well.
+
