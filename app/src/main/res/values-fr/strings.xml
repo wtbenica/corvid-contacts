@@ -393,6 +393,9 @@
     <string name="edit_label_url">URL</string>
     <string name="common_error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="common_error_sync_title">Échec de la synchronisation</string>
+    <string name="sync_error_certificate_expired">Échec de la synchronisation : le certificat du serveur a expiré.</string>
+    <string name="sync_error_certificate">Échec de la synchronisation : le certificat du serveur n\'est pas approuvé.</string>
+    <string name="sync_error_unreachable">Échec de la synchronisation : impossible de joindre le serveur. Vérifiez votre connexion et l\'adresse du serveur.</string>
     <string name="common_error_step1">Impossible de trouver votre profil utilisateur Nextcloud.</string>
     <string name="common_error_step2">Impossible de localiser vos carnets d\'adresses.</string>
     <string name="common_error_step3">Échec du téléchargement de vos listes de contacts.</string>

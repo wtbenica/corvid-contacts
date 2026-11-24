@@ -147,8 +147,9 @@ setting.
   server sync replaces contact rows wholesale, which would wipe it. The hash
   covers the fields at the book's current sharing level, so changing the level
   also causes updates. The table was added with a 19 to 20 Room migration.
-- Who is mirrored: a contact with no name or no phone number is not mirrored,
-  since it is no use for caller ID. Archived contacts are not mirrored either.
+- Who is mirrored: a contact with no name is not mirrored. A contact with no
+  phone number is mirrored at the Full contact and Everything levels but not at
+  Caller ID, where it is no use. Archived contacts are not mirrored either.
   A contact that stops qualifying is deleted from the mirror on the next
   reconcile.
 - Map phones to `Phone`, emails to `Email`, addresses to `StructuredPostal`,

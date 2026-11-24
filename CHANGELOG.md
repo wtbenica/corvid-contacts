@@ -5,7 +5,16 @@
 All notable changes to Corvid Contacts are listed here, newest first. The short "What's new" text on
 Google Play is a summary of the user-visible items below.
 
-## 1.0.5 (unreleased)
+## 1.0.6 (unreleased)
+
+### Fixed
+
+- Sharing with your phone's contacts now includes contacts without a phone number, at the Full
+  contact and Everything levels.
+- Sync errors now say when the server's certificate has expired or can't be trusted, or when the
+  server can't be reached.
+
+## 1.0.5
 
 ### Added
 

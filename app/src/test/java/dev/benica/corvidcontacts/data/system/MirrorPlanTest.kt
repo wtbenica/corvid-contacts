@@ -88,10 +88,39 @@ class MirrorPlanTest {
     }
 
     @Test
-    fun `contacts with no phone numbers or no name are not mirrored`() {
+    fun `contacts with no phone numbers are not mirrored for caller id`() {
         assertNull(MirrorPlan.toMirrorContact(source(phones = emptyList()), null))
         assertNull(MirrorPlan.toMirrorContact(source(phones = listOf(Phone("  ", "CELL"))), null))
-        assertNull(MirrorPlan.toMirrorContact(source(displayName = "", firstName = null, lastName = null), null))
+    }
+
+    @Test
+    fun `contacts with no phone numbers are mirrored above caller id`() {
+        listOf(SystemContactsLevel.FULL, SystemContactsLevel.EVERYTHING).forEach { level ->
+            val contact = mirrored(source(phones = emptyList()), level = level)
+            assertTrue(contact.phones.isEmpty())
+            assertEquals(listOf(MirrorEmail("ada@example.org", MirrorPlan.EMAIL_TYPE_WORK)), contact.emails)
+        }
+    }
+
+    @Test
+    fun `a contact with no phone number is mirrored according to the level of its own book`() {
+        val sources = listOf(
+            source(id = "1", phones = emptyList(), addressBookHref = "/full/"),
+            source(id = "2", phones = emptyList(), addressBookHref = "/caller-id/"),
+        )
+        val levels = mapOf("/full/" to SystemContactsLevel.FULL, "/caller-id/" to SystemContactsLevel.CALLER_ID)
+
+        val mirrored = MirrorPlan.toMirrorContacts(sources, levels, photoStamp = { null })
+
+        assertEquals(listOf("1"), mirrored.map { it.id })
+    }
+
+    @Test
+    fun `contacts with no name are never mirrored`() {
+        SystemContactsLevel.entries.forEach { level ->
+            val nameless = source(displayName = "", firstName = null, lastName = null)
+            assertNull(MirrorPlan.toMirrorContact(nameless, null, level))
+        }
     }
 
     @Test

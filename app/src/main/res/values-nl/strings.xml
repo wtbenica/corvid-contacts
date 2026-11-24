@@ -379,6 +379,9 @@
     <string name="edit_label_url">URL</string>
     <string name="common_error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="common_error_sync_title">Synchronisatie mislukt</string>
+    <string name="sync_error_certificate_expired">Synchronisatie mislukt: het certificaat van de server is verlopen.</string>
+    <string name="sync_error_certificate">Synchronisatie mislukt: het certificaat van de server wordt niet vertrouwd.</string>
+    <string name="sync_error_unreachable">Synchronisatie mislukt: de server is niet bereikbaar. Controleer je verbinding en het serveradres.</string>
     <string name="common_error_step1">Je Nextcloud-gebruikersprofiel kon niet worden gevonden.</string>
     <string name="common_error_step2">Je adresboeken konden niet worden gevonden.</string>
     <string name="common_error_step3">Je contactenlijsten konden niet worden gedownload.</string>

@@ -178,8 +178,8 @@ data class MirrorPlan(
 
         /**
          * Builds the [MirrorContact] for [source] at [level], or `null` if it shouldn't be
-         * mirrored: a contact with no name or no phone number is no use for caller ID, so it
-         * isn't shared at all.
+         * mirrored: a contact with no name is never shared, and one with no phone number is only
+         * shared above [SystemContactsLevel.CALLER_ID], since it is no use for caller ID.
          */
         fun toMirrorContact(
             source: MirrorSource,
@@ -198,7 +198,7 @@ data class MirrorPlan(
                 .orEmpty()
                 .filter { it.value.isNotBlank() }
                 .map { MirrorPhone(it.value.trim(), phoneType(it.type)) }
-            if (phones.isEmpty()) return null
+            if (phones.isEmpty() && !level.includesFullContact) return null
 
             val base = MirrorContact(
                 id = source.id,

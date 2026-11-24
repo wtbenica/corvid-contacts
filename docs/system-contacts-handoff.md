@@ -773,3 +773,13 @@ dates, tooling inventory and decisions. Decision: local network support is not b
 declares no `ACCESS_LOCAL_NETWORK`, so a Nextcloud server at a local address is probably blocked on Android 17 (never tested). The
 use case is small and the developer does not use it. The plan says what to do if a user reports it. The remaining work is
 the January 27, 2027 contacts policy check and, much later, `MANAGE_CONTACTS` when moving to SDK 38.
+
+### 2026-11-24, Gotham: two fixes on 1.0.6
+
+Contacts without a phone number (for example email-only) were never shared, at any level. They are
+now shared at Full contact and Everything; Caller ID still needs a phone number. A name is still
+required. Sync failures from pull-to-refresh now name an expired or untrusted server certificate, or
+an unreachable server, instead of only "Sync Failed" (`SyncFailure.kt`). The new strings in the five
+other locales are my translations, for the native-speaker pass. Not checked on a device: whether the
+phone's real certificate error carries `CertificateExpiredException` in its cause chain, which is
+what picks the "expired" wording; otherwise it shows the "isn't trusted" wording.

@@ -576,7 +576,7 @@ class ContactsViewModel(
                     "Sync Failed: $errorMsg"
                 )
 
-                surfaceError(R.string.common_error_sync_title)
+                surfaceError(syncFailureMessage(result.exceptionOrNull()))
             } else {
                 Log.d(
                     "ContactsViewModel",

@@ -393,6 +393,9 @@
     <string name="edit_label_url">URL</string>
     <string name="common_error_unknown">Ocurrió un error desconocido</string>
     <string name="common_error_sync_title">Sincronización fallida</string>
+    <string name="sync_error_certificate_expired">Sincronización fallida: el certificado del servidor ha caducado.</string>
+    <string name="sync_error_certificate">Sincronización fallida: el certificado del servidor no es de confianza.</string>
+    <string name="sync_error_unreachable">Sincronización fallida: no se pudo conectar con el servidor. Revisa tu conexión y la dirección del servidor.</string>
     <string name="common_error_step1">No se pudo encontrar tu perfil de usuario de Nextcloud.</string>
     <string name="common_error_step2">No se pudieron localizar tus libretas de direcciones.</string>
     <string name="common_error_step3">Error al descargar tus listas de contactos.</string>

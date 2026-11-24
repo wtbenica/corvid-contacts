@@ -379,6 +379,9 @@
     <string name="edit_label_url">URL</string>
     <string name="common_error_unknown">Ein unbekannter Fehler ist aufgetreten</string>
     <string name="common_error_sync_title">Synchronisierung fehlgeschlagen</string>
+    <string name="sync_error_certificate_expired">Synchronisierung fehlgeschlagen: Das Zertifikat des Servers ist abgelaufen.</string>
+    <string name="sync_error_certificate">Synchronisierung fehlgeschlagen: Dem Zertifikat des Servers wird nicht vertraut.</string>
+    <string name="sync_error_unreachable">Synchronisierung fehlgeschlagen: Der Server ist nicht erreichbar. Prüfe deine Verbindung und die Serveradresse.</string>
     <string name="common_error_step1">Dein Nextcloud-Benutzerprofil konnte nicht gefunden werden.</string>
     <string name="common_error_step2">Deine Adressbücher konnten nicht gefunden werden.</string>
     <string name="common_error_step3">Deine Kontaktlisten konnten nicht heruntergeladen werden.</string>

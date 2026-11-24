@@ -391,6 +391,9 @@
     <string name="edit_label_url">URL</string>
     <string name="common_error_unknown">An unknown error occurred</string>
     <string name="common_error_sync_title">Sync Failed</string>
+    <string name="sync_error_certificate_expired">Sync failed: the server\'s certificate has expired.</string>
+    <string name="sync_error_certificate">Sync failed: the server\'s certificate isn\'t trusted.</string>
+    <string name="sync_error_unreachable">Sync failed: couldn\'t reach the server. Check your connection and the server address.</string>
     <string name="common_error_step1">Could not find your Nextcloud user profile.</string>
     <string name="common_error_step2">Could not locate your address books.</string>
     <string name="common_error_step3">Failed to download your contact lists.</string>
