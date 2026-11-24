@@ -1,54 +1,36 @@
 <en-US>
-New: share an address book with your phone's contacts so your other apps can show names and photos, from Caller ID to choosing who to email or message.
-Birthdays now sync correctly.
-Turning Prepend Country Code off retains existing country codes.
-Contacts are no longer included in Android's cloud backup. Use manual export for backups of local contacts.
+Sync errors now say when the server's certificate has expired or can't be trusted, or when the server can't be reached.
+Sharing with your phone's contacts now includes contacts without a phone number, such as ones with only an email, at the Full contact and Everything levels.
 </en-US>
 <es-419>
-Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
-Los cumpleaños ahora se sincronizan correctamente.
-Al desactivar Agregar código de país, se conservan los códigos de país existentes.
-Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
+Los errores de sincronización ahora indican si el certificado del servidor ha caducado o no es de confianza, o si no se puede conectar con el servidor.
+Al compartir con los contactos del teléfono, ahora se incluyen los contactos sin número de teléfono, como los que solo tienen correo, en los niveles Contacto completo y Todo.
 </es-419>
 <es-ES>
-Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
-Los cumpleaños ahora se sincronizan correctamente.
-Al desactivar Agregar código de país, se conservan los códigos de país existentes.
-Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
+Los errores de sincronización ahora indican si el certificado del servidor ha caducado o no es de confianza, o si no se puede conectar con el servidor.
+Al compartir con los contactos del teléfono, ahora se incluyen los contactos sin número de teléfono, como los que solo tienen correo, en los niveles Contacto completo y Todo.
 </es-ES>
 <es-US>
-Nuevo: comparte una libreta con los contactos del teléfono para que tus otras apps muestren nombres y fotos, del identificador de llamadas a la elección de destinatarios de correo o mensajes.
-Los cumpleaños ahora se sincronizan correctamente.
-Al desactivar Agregar código de país, se conservan los códigos de país existentes.
-Los contactos ya no se incluyen en la copia de seguridad en la nube de Android. Usa la exportación manual para respaldar los contactos locales.
+Los errores de sincronización ahora indican si el certificado del servidor ha caducado o no es de confianza, o si no se puede conectar con el servidor.
+Al compartir con los contactos del teléfono, ahora se incluyen los contactos sin número de teléfono, como los que solo tienen correo, en los niveles Contacto completo y Todo.
 </es-US>
 <fr-FR>
-Nouveau : partagez un carnet avec les contacts du téléphone pour que vos autres applis affichent noms et photos, de l'identification de l'appelant au choix d'un destinataire d'e-mail ou de message.
-Les anniversaires se synchronisent désormais correctement.
-Désactiver « Préfixe de pays » conserve les codes pays existants.
-Les contacts ne sont plus inclus dans la sauvegarde cloud d'Android. Utilisez l'export manuel pour sauvegarder les contacts locaux.
+Les erreurs de synchronisation indiquent maintenant si le certificat du serveur a expiré ou n'est pas approuvé, ou si le serveur est injoignable.
+Le partage avec les contacts du téléphone inclut maintenant les contacts sans numéro de téléphone, par exemple avec seulement un e-mail, aux niveaux Contact complet et Tout.
 </fr-FR>
 <fr-CA>
-Nouveau : partagez un carnet avec les contacts du téléphone pour que vos autres applis affichent noms et photos, de l'identification de l'appelant au choix d'un destinataire d'e-mail ou de message.
-Les anniversaires se synchronisent désormais correctement.
-Désactiver « Préfixe de pays » conserve les codes pays existants.
-Les contacts ne sont plus inclus dans la sauvegarde cloud d'Android. Utilisez l'export manuel pour sauvegarder les contacts locaux.
+Les erreurs de synchronisation indiquent maintenant si le certificat du serveur a expiré ou n'est pas approuvé, ou si le serveur est injoignable.
+Le partage avec les contacts du téléphone inclut maintenant les contacts sans numéro de téléphone, par exemple avec seulement un e-mail, aux niveaux Contact complet et Tout.
 </fr-CA>
 <de-DE>
-Neu: Teile ein Adressbuch mit den Kontakten deines Telefons, damit deine anderen Apps Namen und Fotos anzeigen, von der Anrufer-ID bis zur Auswahl, wem du eine E-Mail oder Nachricht schickst.
-Geburtstage werden jetzt korrekt synchronisiert.
-Wenn „Landesvorwahl voranstellen“ aus ist, bleiben vorhandene Landesvorwahlen erhalten.
-Kontakte sind nicht mehr im Android-Cloud-Backup enthalten. Sichere lokale Kontakte mit dem manuellen Export.
+Synchronisierungsfehler zeigen jetzt an, wenn das Zertifikat des Servers abgelaufen ist oder ihm nicht vertraut wird oder wenn der Server nicht erreichbar ist.
+Beim Teilen mit den Kontakten des Telefons werden jetzt auch Kontakte ohne Telefonnummer berücksichtigt, etwa mit nur einer E-Mail-Adresse, auf den Stufen Vollständiger Kontakt und Alles.
 </de-DE>
 <nl-NL>
-Nieuw: deel een adresboek met de contacten van je telefoon, zodat je andere apps namen en foto's tonen, van nummerweergave tot het kiezen van wie je mailt of een bericht stuurt.
-Verjaardagen worden nu correct gesynchroniseerd.
-Als „Landcode toevoegen” uit staat, blijven bestaande landcodes behouden.
-Contacten zitten niet meer in de cloudback-up van Android. Gebruik handmatig exporteren om lokale contacten te back-uppen.
+Synchronisatiefouten geven nu aan wanneer het certificaat van de server is verlopen of niet wordt vertrouwd, of wanneer de server niet bereikbaar is.
+Delen met de contacten van je telefoon omvat nu ook contacten zonder telefoonnummer, bijvoorbeeld met alleen een e-mailadres, op de niveaus Volledig contact en Alles.
 </nl-NL>
 <ko-KR>
-새 기능: 주소록을 휴대전화 연락처와 공유하면 발신자 표시부터 이메일이나 메시지 받는 사람을 고를 때까지 다른 앱에서 이름과 사진이 표시됩니다.
-생일이 이제 올바르게 동기화됩니다.
-‘국가 코드 자동 추가’를 끄면 기존 국가 코드가 유지됩니다.
-연락처는 더 이상 Android 클라우드 백업에 포함되지 않습니다. 로컬 연락처는 수동 내보내기로 백업하세요.
+동기화 오류에 서버의 인증서가 만료되었거나 신뢰할 수 없는 경우, 또는 서버에 연결할 수 없는 경우가 이제 표시됩니다.
+휴대전화 연락처와 공유할 때 전화번호가 없는 연락처(예: 이메일만 있는 연락처)도 전체 연락처와 모두 단계에서 포함됩니다.
 </ko-KR>
