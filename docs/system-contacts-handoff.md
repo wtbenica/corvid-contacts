@@ -780,7 +780,6 @@ Contacts without a phone number (for example email-only) were never shared, at a
 now shared at Full contact and Everything; Caller ID still needs a phone number. A name is still
 required. Sync failures from pull-to-refresh now name an expired or untrusted server certificate, or
 an unreachable server, instead of only "Sync Failed" (`SyncFailure.kt`). The new strings in the five
-other locales are my translations, for the native-speaker pass. The "expired" wording is picked from the
-exception types and the validator's `BasicReason.EXPIRED`, not from message text, so the phone's language
-doesn't matter. Not checked against a real expired certificate on a device; if it isn't recognized, it
-shows the "isn't trusted" wording.
+other locales are my translations, for the native-speaker pass. Not checked on a device: whether the
+phone's real certificate error carries `CertificateExpiredException` in its cause chain, which is
+what picks the "expired" wording; otherwise it shows the "isn't trusted" wording.

@@ -20,11 +20,7 @@ import javax.net.ssl.SSLPeerUnverifiedException
 internal fun syncFailureMessage(error: Throwable?): Int {
     val causes = generateSequence(error) { it.cause }.toList()
     return when {
-        causes.any {
-            it is CertificateExpiredException ||
-                (it is CertPathValidatorException && it.reason == CertPathValidatorException.BasicReason.EXPIRED)
-        } -> R.string.sync_error_certificate_expired
-
+        causes.any { it is CertificateExpiredException } -> R.string.sync_error_certificate_expired
         causes.any {
             it is CertificateException || it is CertPathValidatorException || it is SSLPeerUnverifiedException
         } -> R.string.sync_error_certificate

@@ -25,15 +25,6 @@ class SyncFailureTest {
     }
 
     @Test
-    fun `an expired certificate is named when only the validator's reason says so`() {
-        val expired = SSLHandshakeException("Chain validation failed").initCause(
-            CertPathValidatorException("timestamp check failed", null, null, -1, CertPathValidatorException.BasicReason.EXPIRED)
-        )
-
-        assertEquals(R.string.sync_error_certificate_expired, syncFailureMessage(expired))
-    }
-
-    @Test
     fun `a certificate that isn't trusted is named`() {
         val untrusted = SSLHandshakeException("Trust anchor not found")
             .initCause(CertPathValidatorException("Trust anchor for certification path not found."))
